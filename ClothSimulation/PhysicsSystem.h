@@ -9,7 +9,7 @@ class PhysicsSystem : public System {
 public:
 	PhysicsSystem(Scene&);
 
-	void update(Entity&) override;
+	void update() override;
 
 	void beginFrame() override {};
 	void endFrame() override {};

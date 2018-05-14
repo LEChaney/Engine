@@ -9,7 +9,7 @@ public:
 	System(const System&) = delete;
 	System& operator=(const System&) = delete;
 
-	virtual void update(Entity&) = 0;
+	virtual void update() = 0;
 	virtual void beginFrame() = 0;
 	virtual void endFrame() = 0;
 

@@ -8,7 +8,7 @@ public:
 	~BasicCameraMovementSystem() override;
 
 	// Inherited via System
-	virtual void update(Entity&) override;
+	virtual void update() override;
 	virtual void beginFrame() override;
 	virtual void endFrame() override;
 

@@ -9,17 +9,22 @@ PhysicsSystem::PhysicsSystem(Scene& scene)
 {
 }
 
-void PhysicsSystem::update(Entity& entity)
+void PhysicsSystem::update()
 {
-	if (!entity.hasComponents(COMPONENT_PHYSICS, COMPONENT_TRANSFORM))
-		return;
+	m_scene.physWorld.step();
 
-	float defaultDrag = 0.1f;
-	entity.physics.velocity += (entity.physics.acceleration - entity.physics.velocity * defaultDrag) * Clock::getDeltaTime();
-	entity.transform.position += entity.physics.velocity * Clock::getDeltaTime();
+	for (size_t i = 0; i < m_scene.getEntityCount(); ++i) {
+		Entity& entity = m_scene.getEntity(i);
+		if (!entity.hasComponents(COMPONENT_PHYSICS, COMPONENT_TRANSFORM))
+			continue;
 
-	entity.physics.acceleration = { 0, 0, 0 };
+		float defaultDrag = 0.1f;
+		entity.physics.velocity += (entity.physics.acceleration - entity.physics.velocity * defaultDrag) * Clock::getDeltaTime();
+		entity.transform.position += entity.physics.velocity * Clock::getDeltaTime();
 
-	//RenderSystem::drawDebugArrow(entity.lookAt[3], entity.physics.velocity, glm::length(entity.physics.velocity), { 0, 1, 0 });
-	//RenderSystem::drawDebugArrow(glm::vec3(entity.lookAt[3]) + entity.physics.velocity, entity.physics.acceleration, glm::length(entity.physics.acceleration));
+		entity.physics.acceleration = { 0, 0, 0 };
+
+		//RenderSystem::drawDebugArrow(entity.lookAt[3], entity.physics.velocity, glm::length(entity.physics.velocity), { 0, 1, 0 });
+		//RenderSystem::drawDebugArrow(glm::vec3(entity.lookAt[3]) + entity.physics.velocity, entity.physics.acceleration, glm::length(entity.physics.acceleration));
+	}
 }

@@ -21,6 +21,7 @@
 #include "Scene.h"
 #include "Entity.h"
 #include "UniformBlockFormat.h"
+#include "UBOBlockFormats.h"
 #include "PrimitivePrefabs.h"
 #include "ModelUtils.h"
 #include "Game.h"
@@ -29,6 +30,7 @@
 #include "GLPrimitives.h"
 #include "Clock.h"
 #include "Shader.h"
+#include "PointMassFormat.h"
 
 #include <glad\glad.h>
 #include <GLFW\glfw3.h>
@@ -79,8 +81,13 @@ RenderSystem::RenderSystem(Scene& scene)
 
 	// Create buffer for uniformBlock
 	glGenBuffers(1, &m_renderState.uboUniforms);
-	glBindBufferBase(GL_UNIFORM_BUFFER, m_renderState.uniformBindingPoint, m_renderState.uboUniforms);
+	glBindBufferBase(GL_UNIFORM_BUFFER, 0, m_renderState.uboUniforms);
 	glBufferData(GL_UNIFORM_BUFFER, sizeof(UniformBlockFormat), nullptr, GL_DYNAMIC_DRAW);
+
+	// Create buffer for cameraDataBlock
+	glGenBuffers(1, &m_renderState.uboCameraData);
+	glBindBufferBase(GL_UNIFORM_BUFFER, 0, m_renderState.uboCameraData);
+	glBufferData(GL_UNIFORM_BUFFER, sizeof(CameraDataBlockFormat), nullptr, GL_DYNAMIC_DRAW);
 
 	glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 }
@@ -170,30 +177,80 @@ void RenderSystem::endFrame()
 	glfwSwapBuffers(m_renderState.glContext);
 }
 
-void RenderSystem::update(Entity& entity)
+void RenderSystem::initializePhysicsVAOs()
 {
-	// Filter renderable entities
-	const size_t kRenderableMask = COMPONENT_MODEL;
-	if (!entity.hasComponents(kRenderableMask))
-		return;
+	glGenVertexArrays(1, &m_pointMassesVAO);
+	glBindVertexArray(m_pointMassesVAO);
 
-	// If it is an non-active pickup do not render it
-	const size_t kPickup = COMPONENT_PICKUP;
-	if (entity.hasComponents(kPickup) && !entity.pickup.isActive)
-		return;
+	// Bind position buffer as vertex buffer and define layout
+	glBindBuffer(GL_ARRAY_BUFFER, m_scene.physWorld.getPointMassBuffer());
+	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(PointMassFormat), 0);
+	glEnableVertexAttribArray(0);
 
-	// Can't render anything without a camera set
-	if (!m_renderState.cameraEntity) {
-		return;
+	glBindVertexArray(0);
+}
+
+void RenderSystem::renderPhysics()
+{
+	if (!m_physicsVAOsAreInitialized) {
+		initializePhysicsVAOs();
+		m_physicsVAOsAreInitialized = true;
 	}
 
-	bool hasTransform = entity.hasComponents(COMPONENT_TRANSFORM);
+	// Get Aspect ratio
+	// TODO: Have camera properly encapsulate projection matrix
+	int width, height;
+	GLFWwindow* glContext = Game::getWindowContext();
+	glfwGetFramebufferSize(glContext, &width, &height);
+	float aspectRatio = static_cast<float>(width) / height;
 
-	// Swap the current global render state with this RenderSystems state.
-	s_renderState = m_renderState;
+	// Setup point shader
+	const Shader& shader = GLUtils::getPointShader();
+	shader.use();
 
-	// Render the current entities model
-	renderModel(entity.model, GLMUtils::transformToMat(entity.transform));
+	// Buffer transform matrices
+	CameraDataBlockFormat camData;
+	camData.view = m_renderState.cameraEntity->camera.getView();
+	camData.projection = glm::perspective(glm::radians(60.0f), aspectRatio, 0.01f, 10000.0f);
+	glBindBufferBase(GL_UNIFORM_BUFFER, 0, m_renderState.uboCameraData);
+	glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(CameraDataBlockFormat), &camData);
+
+	// Draw points
+	glEnable(GL_PROGRAM_POINT_SIZE);
+	glBindVertexArray(m_pointMassesVAO);
+	glDrawArrays(GL_POINTS, 0, m_scene.physWorld.getPointMassCount());
+	glDisable(GL_PROGRAM_POINT_SIZE);
+}
+
+void RenderSystem::update()
+{
+	// Render the physics world for debugging
+	if (m_shouldRenderPhysics) {
+		renderPhysics();
+	}
+
+	// Render entity models
+	for (size_t i = 0; i < m_scene.getEntityCount(); ++i) {
+		Entity& entity = m_scene.getEntity(i);
+
+		// Can't render anything without a camera set
+		if (!m_renderState.cameraEntity) {
+			return;
+		}
+
+		// Filter renderable entities
+		const size_t kRenderableMask = COMPONENT_MODEL;
+		if (!entity.hasComponents(kRenderableMask))
+			continue;
+
+		bool hasTransform = entity.hasComponents(COMPONENT_TRANSFORM);
+
+		// Swap the current global render state with this RenderSystems state.
+		s_renderState = m_renderState;
+
+		// Render the current entities model
+		renderModel(entity.model, GLMUtils::transformToMat(entity.transform));
+	}
 }
 
 void RenderSystem::setCamera(const Entity* entity)

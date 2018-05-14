@@ -51,96 +51,99 @@ void InputSystem::beginFrame()
 	lastMousePos = mousePos;
 }
 
-void InputSystem::update(Entity& entity)
+void InputSystem::update()
 {
-	GLFWwindow* window = Game::getWindowContext();
+	for (size_t i = 0; i < m_scene.getEntityCount(); ++i) {
+		Entity& entity = m_scene.getEntity(i);
+		GLFWwindow* window = Game::getWindowContext();
 
-	// DEBUG!!!
-	if (entity.hasComponents(COMPONENT_MODEL)) {
-		if (glfwGetKey(window, GLFW_KEY_KP_MULTIPLY) == GLFW_PRESS) {
-			for (size_t i = 0; i < entity.model.materials.size(); ++i) {
-				entity.model.materials.at(i).shaderParams.metallicness = clamp(entity.model.materials.at(i).shaderParams.metallicness + 0.01f, 0.001f, 1.0f);
+		// DEBUG!!!
+		if (entity.hasComponents(COMPONENT_MODEL)) {
+			if (glfwGetKey(window, GLFW_KEY_KP_MULTIPLY) == GLFW_PRESS) {
+				for (size_t i = 0; i < entity.model.materials.size(); ++i) {
+					entity.model.materials.at(i).shaderParams.metallicness = clamp(entity.model.materials.at(i).shaderParams.metallicness + 0.01f, 0.001f, 1.0f);
+				}
+			}
+			if (glfwGetKey(window, GLFW_KEY_KP_DIVIDE) == GLFW_PRESS) {
+				for (size_t i = 0; i < entity.model.materials.size(); ++i) {
+					entity.model.materials.at(i).shaderParams.metallicness = clamp(entity.model.materials.at(i).shaderParams.metallicness - 0.01f, 0.001f, 1.0f);
+				}
+			}
+			if (glfwGetKey(window, GLFW_KEY_KP_ADD) == GLFW_PRESS) {
+				for (size_t i = 0; i < entity.model.materials.size(); ++i) {
+					entity.model.materials.at(i).shaderParams.glossiness = clamp(entity.model.materials.at(i).shaderParams.glossiness + 0.01f, 0.0001f, 1.0f);
+				}
+			}
+			if (glfwGetKey(window, GLFW_KEY_KP_SUBTRACT) == GLFW_PRESS) {
+				for (size_t i = 0; i < entity.model.materials.size(); ++i) {
+					entity.model.materials.at(i).shaderParams.glossiness = clamp(entity.model.materials.at(i).shaderParams.glossiness - 0.01f, 0.0001f, 1.0f);
+				}
+			}
+			if (glfwGetKey(window, GLFW_KEY_PAGE_UP) == GLFW_PRESS) {
+				for (size_t i = 0; i < entity.model.materials.size(); ++i) {
+					entity.model.materials.at(i).shaderParams.specBias = clamp(entity.model.materials.at(i).shaderParams.specBias + 0.01f, 0.0f, 0.96f);
+				}
+			}
+			if (glfwGetKey(window, GLFW_KEY_PAGE_DOWN) == GLFW_PRESS) {
+				for (size_t i = 0; i < entity.model.materials.size(); ++i) {
+					entity.model.materials.at(i).shaderParams.specBias = clamp(entity.model.materials.at(i).shaderParams.specBias - 0.01f, 0.0f, 0.9599f);
+				}
 			}
 		}
-		if (glfwGetKey(window, GLFW_KEY_KP_DIVIDE) == GLFW_PRESS) {
-			for (size_t i = 0; i < entity.model.materials.size(); ++i) {
-				entity.model.materials.at(i).shaderParams.metallicness = clamp(entity.model.materials.at(i).shaderParams.metallicness - 0.01f, 0.001f, 1.0f);
-			}
+
+		// Filter input receivers
+		const size_t kInputReceiverMask = COMPONENT_INPUT | COMPONENT_INPUT_MAP;
+		if (!entity.hasComponents(kInputReceiverMask))
+			continue;
+
+		InputComponent& input = entity.input;
+		InputMapComponent& inputMap = entity.inputMap;
+		int gamepadIdx = inputMap.gamepadIdx;
+
+		// Update input from axes
+		int count;
+		const float* pAxes = glfwGetJoystickAxes(gamepadIdx, &count);
+		if (count > 0) {
+			std::vector<float> axes(pAxes, pAxes + count);
+			input.turnAxis = axes[inputMap.turnAxisMap];
 		}
-		if (glfwGetKey(window, GLFW_KEY_KP_ADD) == GLFW_PRESS) {
-			for (size_t i = 0; i < entity.model.materials.size(); ++i) {
-				entity.model.materials.at(i).shaderParams.glossiness = clamp(entity.model.materials.at(i).shaderParams.glossiness + 0.01f, 0.0001f, 1.0f);
-			}
+
+		// Update input from buttons
+		const unsigned char* pBtns = glfwGetJoystickButtons(gamepadIdx, &count);
+		if (count > 0) {
+			std::vector<unsigned char> btns(pBtns, pBtns + count);
+			input.acceleratorDown = btns[inputMap.accelerationBtnMap];
+			input.brakeDown = btns[inputMap.brakeBtnMap];
 		}
-		if (glfwGetKey(window, GLFW_KEY_KP_SUBTRACT) == GLFW_PRESS) {
-			for (size_t i = 0; i < entity.model.materials.size(); ++i) {
-				entity.model.materials.at(i).shaderParams.glossiness = clamp(entity.model.materials.at(i).shaderParams.glossiness - 0.01f, 0.0001f, 1.0f);
-			}
-		}
-		if (glfwGetKey(window, GLFW_KEY_PAGE_UP) == GLFW_PRESS) {
-			for (size_t i = 0; i < entity.model.materials.size(); ++i) {
-				entity.model.materials.at(i).shaderParams.specBias = clamp(entity.model.materials.at(i).shaderParams.specBias + 0.01f, 0.0f, 0.96f);
-			}
-		}
-		if (glfwGetKey(window, GLFW_KEY_PAGE_DOWN) == GLFW_PRESS) {
-			for (size_t i = 0; i < entity.model.materials.size(); ++i) {
-				entity.model.materials.at(i).shaderParams.specBias = clamp(entity.model.materials.at(i).shaderParams.specBias - 0.01f, 0.0f, 0.9599f);
-			}
-		}
+
+		// Update input from mouse
+		input.orientationDelta = {};
+		if (inputMap.mouseInputEnabled)
+			input.orientationDelta = glm::vec3{ m_mouseDelta, 0 };
+
+		// Update input from buttons
+		input.axis = {};
+		if (inputMap.leftBtnMap && glfwGetKey(window, inputMap.leftBtnMap) == GLFW_PRESS)
+			input.axis.x -= 1;
+		if (inputMap.rightBtnMap && glfwGetKey(window, inputMap.rightBtnMap) == GLFW_PRESS)
+			input.axis.x += 1;
+		if (inputMap.forwardBtnMap && glfwGetKey(window, inputMap.forwardBtnMap) == GLFW_PRESS)
+			input.axis.z += 1;
+		if (inputMap.backwardBtnMap && glfwGetKey(window, inputMap.backwardBtnMap) == GLFW_PRESS)
+			input.axis.z -= 1;
+		if (inputMap.downBtnMap && glfwGetKey(window, inputMap.downBtnMap) == GLFW_PRESS)
+			input.axis.y -= 1;
+		if (inputMap.upBtnMap && glfwGetKey(window, inputMap.upBtnMap) == GLFW_PRESS)
+			input.axis.y += 1;
+		if (inputMap.azimuthPosBtnMap && glfwGetKey(window, inputMap.azimuthPosBtnMap) == GLFW_PRESS)
+			input.orientationDelta.x += 1;
+		if (inputMap.azimuthNegBtnMap && glfwGetKey(window, inputMap.azimuthNegBtnMap) == GLFW_PRESS)
+			input.orientationDelta.x -= 1;
+		if (inputMap.elevationPosBtnMap && glfwGetKey(window, inputMap.elevationPosBtnMap) == GLFW_PRESS)
+			input.orientationDelta.y += 1;
+		if (inputMap.elevationNegBtnMap && glfwGetKey(window, inputMap.elevationNegBtnMap) == GLFW_PRESS)
+			input.orientationDelta.y -= 1;
+		if (inputMap.rollBtnMap && glfwGetKey(window, inputMap.rollBtnMap) == GLFW_PRESS)
+			input.orientationDelta.z += 1;
 	}
-
-	// Filter input receivers
-	const size_t kInputReceiverMask = COMPONENT_INPUT | COMPONENT_INPUT_MAP;
-	if (!entity.hasComponents(kInputReceiverMask))
-		return;
-
-	InputComponent& input = entity.input;
-	InputMapComponent& inputMap = entity.inputMap;
-	int gamepadIdx = inputMap.gamepadIdx;
-
-	// Update input from axes
-	int count;
-	const float* pAxes = glfwGetJoystickAxes(gamepadIdx, &count);
-	if (count > 0) {
-		std::vector<float> axes(pAxes, pAxes + count);
-		input.turnAxis = axes[inputMap.turnAxisMap];
-	}
-
-	// Update input from buttons
-	const unsigned char* pBtns = glfwGetJoystickButtons(gamepadIdx, &count);
-	if (count > 0) {
-		std::vector<unsigned char> btns(pBtns, pBtns + count);
-		input.acceleratorDown = btns[inputMap.accelerationBtnMap];
-		input.brakeDown = btns[inputMap.brakeBtnMap];
-	}
-
-	// Update input from mouse
-	input.orientationDelta = {};
-	if (inputMap.mouseInputEnabled)
-		input.orientationDelta = glm::vec3{ m_mouseDelta, 0 };
-
-	// Update input from buttons
-	input.axis = {};
-	if (inputMap.leftBtnMap && glfwGetKey(window, inputMap.leftBtnMap) == GLFW_PRESS)
-		input.axis.x -= 1;
-	if (inputMap.rightBtnMap && glfwGetKey(window, inputMap.rightBtnMap) == GLFW_PRESS)
-		input.axis.x += 1;
-	if (inputMap.forwardBtnMap && glfwGetKey(window, inputMap.forwardBtnMap) == GLFW_PRESS)
-		input.axis.z += 1;
-	if (inputMap.backwardBtnMap && glfwGetKey(window, inputMap.backwardBtnMap) == GLFW_PRESS)
-		input.axis.z -= 1;
-	if (inputMap.downBtnMap && glfwGetKey(window, inputMap.downBtnMap) == GLFW_PRESS)
-		input.axis.y -= 1;
-	if (inputMap.upBtnMap && glfwGetKey(window, inputMap.upBtnMap) == GLFW_PRESS)
-		input.axis.y += 1;
-	if (inputMap.azimuthPosBtnMap && glfwGetKey(window, inputMap.azimuthPosBtnMap) == GLFW_PRESS)
-		input.orientationDelta.x += 1;
-	if (inputMap.azimuthNegBtnMap && glfwGetKey(window, inputMap.azimuthNegBtnMap) == GLFW_PRESS)
-		input.orientationDelta.x -= 1;
-	if (inputMap.elevationPosBtnMap && glfwGetKey(window, inputMap.elevationPosBtnMap) == GLFW_PRESS)
-		input.orientationDelta.y += 1;
-	if (inputMap.elevationNegBtnMap && glfwGetKey(window, inputMap.elevationNegBtnMap) == GLFW_PRESS)
-		input.orientationDelta.y -= 1;
-	if (inputMap.rollBtnMap && glfwGetKey(window, inputMap.rollBtnMap) == GLFW_PRESS)
-		input.orientationDelta.z += 1; 
 }

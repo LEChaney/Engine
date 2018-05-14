@@ -76,10 +76,14 @@ void BasicCameraMovementSystem::beginFrame()
 	cameraComponent.setLookAt(pos, pos + forward, up);
 }
 
-void BasicCameraMovementSystem::update(Entity& entity)
+void BasicCameraMovementSystem::update()
 {
-	if (entity.hasComponents(COMPONENT_BASIC_CAMERA_MOVEMENT, COMPONENT_CAMERA) && !m_cameraToControl)
-		setCameraToControl(&entity);
+	for (size_t i = 0; i < m_scene.getEntityCount(); ++i) {
+		Entity& entity = m_scene.getEntity(i);
+
+		if (entity.hasComponents(COMPONENT_BASIC_CAMERA_MOVEMENT, COMPONENT_CAMERA) && !m_cameraToControl)
+			setCameraToControl(&entity);
+	}
 }
 
 void BasicCameraMovementSystem::endFrame()

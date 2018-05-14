@@ -12,16 +12,20 @@ SimpleWorldSpaceMoveSystem::SimpleWorldSpaceMoveSystem(Scene& scene)
 {
 }
 
-void SimpleWorldSpaceMoveSystem::update(Entity& entity)
+void SimpleWorldSpaceMoveSystem::update()
 {
-	if (!entity.hasComponents(COMPONENT_SIMPLE_WORLD_SPACE_MOVE_COMPONENT, COMPONENT_INPUT))
-		return;
+	for (size_t i = 0; i < m_scene.getEntityCount(); ++i) {
+		Entity& entity = m_scene.getEntity(i);
 
-	glm::vec3 axis = GLMUtils::limitVec(entity.input.axis, 1);
-	float moveSpeed = entity.simpleWorldSpaceMovement.moveSpeed;
+		if (!entity.hasComponents(COMPONENT_SIMPLE_WORLD_SPACE_MOVE_COMPONENT, COMPONENT_INPUT))
+			continue;
 
-	entity.transform.position.x += axis.x * moveSpeed * Clock::getDeltaTime();
-	entity.transform.position.z -= axis.z * moveSpeed * Clock::getDeltaTime();
+		glm::vec3 axis = GLMUtils::limitVec(entity.input.axis, 1);
+		float moveSpeed = entity.simpleWorldSpaceMovement.moveSpeed;
+
+		entity.transform.position.x += axis.x * moveSpeed * Clock::getDeltaTime();
+		entity.transform.position.z -= axis.z * moveSpeed * Clock::getDeltaTime();
+	}
 }
 
 void SimpleWorldSpaceMoveSystem::beginFrame()

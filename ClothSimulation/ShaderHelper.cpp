@@ -103,6 +103,13 @@ GLint validateProgram(GLuint programObjectId) {
 	return Success;
 }
 
+Shader compileAndLinkComputeShader(const std::string& computeShaderFile) {
+	std::string computeShaderSource = readShaderFileFromResource(computeShaderFile);
+
+	GLuint program = linkProgram({ compileShader(GL_COMPUTE_SHADER, computeShaderSource) });
+	return Shader(program, false);
+}
+
 Shader compileAndLinkShaders(const std::string& vertexShaderFile, const std::string& fragmentShaderFile,
                              const char* tessCtrlShaderFile, const char* tessEvalShaderFile, const char* geometryShaderFile) {
 	std::string vertexShaderSource = readShaderFileFromResource(vertexShaderFile);

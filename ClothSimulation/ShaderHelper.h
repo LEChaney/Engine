@@ -34,4 +34,6 @@ Shader compileAndLinkShaders(const std::string& vertexShaderFile, const std::str
                              const char* tessCtrlShaderFile = nullptr, const char* tessEvalShaderFile = nullptr,
                              const char* geometryShaderFile = nullptr);
 
+Shader compileAndLinkComputeShader(const std::string& computeShaderFile);
+
 #endif

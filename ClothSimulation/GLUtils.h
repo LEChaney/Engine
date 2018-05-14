@@ -31,6 +31,11 @@ namespace GLUtils {
 	// Initializes the window, opengl context and opengl function pointers
 	GLFWwindow* initOpenGL();
 
+	// Returns a shader that takes in vec4s in world position and displays them as points
+	const Shader& getPointShader();
+
+	const Shader& getPhysicsComputeShader();
+
 	// Returns a handler to the default shader.
 	// This function will build the shader if it is not already built.
 	const Shader& getDefaultShader();
@@ -83,4 +88,6 @@ namespace GLUtils {
 	// Filename can be KTX or DDS files.
 	// Returns a texture object with GPU handler and texture target.
 	Texture loadDDSTexture(const std::string& path);
+
+	GLuint createBuffer(GLsizeiptr sizeInBytes, const void* data = nullptr, GLenum usageHint = GL_STATIC_DRAW, GLenum target = GL_SHADER_STORAGE_BUFFER);
 }

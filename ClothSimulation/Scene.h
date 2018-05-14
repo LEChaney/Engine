@@ -15,6 +15,7 @@
 #pragma once
 
 #include "Entity.h"
+#include "PhysicsWorld.h"
 
 #include <vector>
 #include <memory>
@@ -33,6 +34,8 @@ public:
 	static Scene* getCurrentScene();
 	void registerEntityEventListener(EntityEventListener*);
 	void removeEntityEventListener(EntityEventListener*);
+
+	PhysicsWorld physWorld;
 
 private:
 	// TODO: Change this to be a vector of 'observable' entities

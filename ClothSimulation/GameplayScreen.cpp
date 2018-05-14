@@ -4,13 +4,9 @@
 #include "InputSystem.h"
 #include "PhysicsSystem.h"
 #include "RenderSystem.h"
-#include "PickupSystem.h"
-#include "VehicleMovementSystem.h"
 #include "PrimitivePrefabs.h"
 #include "GLUtils.h"
 #include "LevelLoader.h"
-#include "CameraSystem.h"
-#include "SnakeTailSystem.h"
 #include "BasicCameraMovementSystem.h"
 #include "Utils.h"
 #include "Terrain.h"
@@ -26,8 +22,11 @@ GameplayScreen::GameplayScreen()
 	m_activeSystems.push_back(std::make_unique<InputSystem>(m_scene));
 	m_activeSystems.push_back(std::make_unique<TerrainFollowSystem>(m_scene));
 	m_activeSystems.push_back(std::make_unique<SimpleWorldSpaceMoveSystem>(m_scene));
+	m_activeSystems.push_back(std::make_unique<PhysicsSystem>(m_scene));
 	auto basicCameraMovementSystem = std::make_unique<BasicCameraMovementSystem>(m_scene);
 	auto renderSystem = std::make_unique<RenderSystem>(m_scene);
+
+	renderSystem->m_shouldRenderPhysics = true;
 
 	// Create environment map / skybox
 	Entity& skybox = Prefabs::createSkybox(m_scene, {
@@ -83,6 +82,10 @@ GameplayScreen::GameplayScreen()
 	diffuseSphere.inputMap.rightBtnMap = GLFW_KEY_RIGHT;
 	diffuseSphere.simpleWorldSpaceMovement.moveSpeed = 10;
 	diffuseSphere.terrainFollow.followerHalfHeight = 1.0f;
+
+	for (size_t i = 0; i < 1000000; ++i) {
+		m_scene.physWorld.addPointMass(glm::vec3{ randomReal(0.0f, 100.0f), randomReal(0.0f, 100.0f), randomReal(0.0f, 100.0f) }, 1);
+	}
 
 	m_activeSystems.push_back(std::move(renderSystem));
 	m_activeSystems.push_back(std::move(basicCameraMovementSystem));

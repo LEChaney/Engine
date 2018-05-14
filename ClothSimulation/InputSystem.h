@@ -29,7 +29,7 @@ public:
 	InputSystem(Scene& scene);
 
 	// Updates the entity with input
-	void update(Entity&) override;
+	void update() override;
 
 	// Does per frame input system update
 	void beginFrame() override;

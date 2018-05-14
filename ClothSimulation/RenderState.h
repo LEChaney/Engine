@@ -19,7 +19,8 @@ struct RenderState {
 	bool hasRadianceMap;
 	GLuint irradianceMap;
 	bool hasIrradianceMap;
-	GLuint uboUniforms;
+	GLuint uboUniforms; // TODO: Remove this and replace with more specific UBOs that can be buffered at different times to remove uneccessary buffering from CPU to GPU.
+	GLuint uboCameraData;
 	FrameBuffer sceneFramebuffer;
 	Texture sceneColorBuffer;
 	RenderBuffer sceneDepthStencilBuffer;

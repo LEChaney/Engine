@@ -165,7 +165,6 @@ xcopy "$(ProjectDir)ext\assimp\lib_64\assimp-vc140-mt.dll" "$(OutDir)" /dsy</Com
     <ClCompile Include="Audio.cpp" />
     <ClCompile Include="BasicCameraMovementSystem.cpp" />
     <ClCompile Include="CameraComponent.cpp" />
-    <ClCompile Include="CameraSystem.cpp" />
     <ClCompile Include="Clock.cpp" />
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="ext\glad\src\glad.c" />
@@ -175,18 +174,16 @@ xcopy "$(ProjectDir)ext\assimp\lib_64\assimp-vc140-mt.dll" "$(OutDir)" /dsy</Com
     <ClCompile Include="GLPrimitives.cpp" />
     <ClCompile Include="GLUtils.cpp" />
     <ClCompile Include="InputSystem.cpp" />
-    <ClCompile Include="LevelLoader.cpp" />
     <ClCompile Include="Log.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="ModelUtils.cpp" />
     <ClCompile Include="PhysicsSystem.cpp" />
+    <ClCompile Include="PhysicsWorld.cpp" />
     <ClCompile Include="RenderBuffer.cpp" />
     <ClCompile Include="SimpleWorldSpaceMoveSystem.cpp" />
     <ClCompile Include="Terrain.cpp" />
     <ClCompile Include="TerrainFollowSystem.cpp" />
     <ClCompile Include="Texture.cpp" />
-    <ClCompile Include="VehicleMovementSystem.cpp" />
-    <ClCompile Include="PickupSystem.cpp" />
     <ClCompile Include="RenderSystem.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="PrimitivePrefabs.cpp" />
@@ -194,7 +191,6 @@ xcopy "$(ProjectDir)ext\assimp\lib_64\assimp-vc140-mt.dll" "$(OutDir)" /dsy</Com
     <ClCompile Include="ScreenManager.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="ShaderHelper.cpp" />
-    <ClCompile Include="SnakeTailSystem.cpp" />
     <ClCompile Include="stb_image.cpp" />
     <ClCompile Include="System.cpp" />
     <ClCompile Include="TextLabel.cpp" />
@@ -206,7 +202,8 @@ xcopy "$(ProjectDir)ext\assimp\lib_64\assimp-vc140-mt.dll" "$(OutDir)" /dsy</Com
     <ClInclude Include="BasicCameraMovementComponent.h" />
     <ClInclude Include="BasicCameraMovementSystem.h" />
     <ClInclude Include="CameraComponent.h" />
-    <ClInclude Include="CameraSystem.h" />
+    <ClInclude Include="PointMassFormat.h" />
+    <ClInclude Include="UBOBlockFormats.h" />
     <ClInclude Include="Clock.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="EntityEventListener.h" />
@@ -228,6 +225,7 @@ xcopy "$(ProjectDir)ext\assimp\lib_64\assimp-vc140-mt.dll" "$(OutDir)" /dsy</Com
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="ModelUtils.h" />
     <ClInclude Include="PhysicsComponent.h" />
+    <ClInclude Include="PhysicsWorld.h" />
     <ClInclude Include="RenderBuffer.h" />
     <ClInclude Include="ShaderParams.h" />
     <ClInclude Include="SimpleWorldSpaceMoveComponent.h" />
@@ -236,10 +234,6 @@ xcopy "$(ProjectDir)ext\assimp\lib_64\assimp-vc140-mt.dll" "$(OutDir)" /dsy</Com
     <ClInclude Include="TerrainFollowComponent.h" />
     <ClInclude Include="TerrainFollowSystem.h" />
     <ClInclude Include="VehicleMovementComponent.h" />
-    <ClInclude Include="VehicleMovementSystem.h" />
-    <ClInclude Include="PickupComponent.h" />
-    <ClInclude Include="PickupSystem.h" />
-    <ClInclude Include="PlayerStatsComponent.h" />
     <ClInclude Include="RenderState.h" />
     <ClInclude Include="RenderSystem.h" />
     <ClInclude Include="Scene.h" />
@@ -248,8 +242,6 @@ xcopy "$(ProjectDir)ext\assimp\lib_64\assimp-vc140-mt.dll" "$(OutDir)" /dsy</Com
     <ClInclude Include="ScreenManager.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="ShaderHelper.h" />
-    <ClInclude Include="SnakeTailComponent.h" />
-    <ClInclude Include="SnakeTailSystem.h" />
     <ClInclude Include="stb_image.h" />
     <ClInclude Include="System.h" />
     <ClInclude Include="TextLabel.h" />
@@ -266,6 +258,9 @@ xcopy "$(ProjectDir)ext\assimp\lib_64\assimp-vc140-mt.dll" "$(OutDir)" /dsy</Com
     <None Include="Assets\Shaders\fullscreen_quad_frag.glsl" />
     <None Include="Assets\Shaders\grass_frag.glsl" />
     <None Include="Assets\Shaders\grass_geo.glsl" />
+    <None Include="Assets\Shaders\physics_step.glsl" />
+    <None Include="Assets\Shaders\point_frag.glsl" />
+    <None Include="Assets\Shaders\point_vert.glsl" />
     <None Include="Assets\Shaders\pp_edge_detect_frag.glsl" />
     <None Include="Assets\Shaders\fullscreen_quad_vert.glsl" />
     <None Include="Assets\Shaders\metal_frag.glsl" />

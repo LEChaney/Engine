@@ -52,7 +52,7 @@ GLFWwindow* GLUtils::initOpenGL()
 
 	// Create opengl glContext and glContext
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	GLFWwindow* glContext = glfwCreateWindow(1400, 800, "Doge-otron 2017", nullptr, nullptr);
 	if (!glContext)
@@ -86,6 +86,21 @@ GLFWwindow* GLUtils::initOpenGL()
 	glViewport(0, 0, width, height);
 
 	return glContext;
+}
+
+const Shader& GLUtils::getPointShader()
+{
+	static Shader s_shader = compileAndLinkShaders(
+		"Assets/Shaders/point_vert.glsl",
+		"Assets/Shaders/point_frag.glsl");
+
+	return s_shader;
+}
+
+const Shader & GLUtils::getPhysicsComputeShader()
+{
+	static Shader s_shader = compileAndLinkComputeShader("Assets/Shaders/physics_step.glsl");
+	return s_shader;
 }
 
 const Shader& GLUtils::getDefaultShader()
@@ -512,4 +527,14 @@ Texture GLUtils::loadDDSTexture(const std::string& path)
 	}
 
 	return finalTexture;
+}
+
+GLuint GLUtils::createBuffer(GLsizeiptr sizeInBytes, const void* data, GLenum usageHint, GLenum target)
+{
+	GLuint buf;
+	glGenBuffers(1, &buf);
+	glBindBuffer(target, buf);
+	glBufferData(target, sizeInBytes, data, usageHint);
+	glBindBuffer(target, 0);
+	return buf;
 }

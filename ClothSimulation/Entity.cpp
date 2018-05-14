@@ -16,9 +16,6 @@ Entity::Entity(std::vector<EntityEventListener*>& eventListeners)
 	, input{}
 	, inputMap{}
 	, camera{}
-	, pickup{}
-	, playerStats{}
-	, snakeTail{}
 	, basicCameraMovement{}
 	, terrain{}
 	, terrainFollow{}

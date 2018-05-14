@@ -7,9 +7,6 @@
 #include "PhysicsComponent.h"
 #include "TransformComponent.h"
 #include "CameraComponent.h"
-#include "PickupComponent.h"
-#include "PlayerStatsComponent.h"
-#include "SnakeTailComponent.h"
 #include "BasicCameraMovementComponent.h"
 #include "Terrain.h"
 #include "TerrainFollowComponent.h"
@@ -24,12 +21,8 @@ enum ComponentType {
 	COMPONENT_PHYSICS = 1 << 1,
 	COMPONENT_MODEL = 1 << 2,
 	COMPONENT_CAMERA = 1 << 3,
-	COMPONENT_VEHICLE_MOVEMENT = 1 << 4,
 	COMPONENT_INPUT = 1 << 5,
 	COMPONENT_INPUT_MAP = 1 << 6,
-	COMPONENT_PICKUP = 1 << 7,
-	COMPONENT_PLAYERSTATS = 1 << 8,
-	COMPONENT_SNAKETAIL = 1 << 9,
 	COMPONENT_BASIC_CAMERA_MOVEMENT = 1 << 10,
 	COMPONENT_TERRAIN = 1 << 11,
 	COMPONENT_TERRAIN_FOLLOW = 1 << 12,
@@ -48,9 +41,6 @@ public:
 	InputComponent input;
 	InputMapComponent inputMap;
 	CameraComponent camera;
-	PickupComponent pickup;
-	PlayerStatsComponent playerStats;
-	SnakeTailComponent snakeTail;
 	BasicCameraMovementComponent basicCameraMovement;
 	TerrainComponent terrain;
 	TerrainFollowComponent terrainFollow;
