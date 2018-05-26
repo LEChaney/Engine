@@ -8,14 +8,14 @@ PhysicsWorld::PhysicsWorld()
 	: m_pointMassCount{ 0 }
 	, m_kMaxPointMasses{ 2000000 }
 {
-	GLuint bufferSize = m_kMaxPointMasses * sizeof(PointMassFormat);
+	GLuint bufferSize = m_kMaxPointMasses * sizeof(PointMass);
 
 	m_pointMassBuffer = GLUtils::createBuffer(bufferSize, nullptr, GL_DYNAMIC_DRAW, GL_SHADER_STORAGE_BUFFER);
 }
 
 GLuint PhysicsWorld::addPointMass(glm::vec3 position, GLfloat mass)
 {
-	PointMassFormat pointMass{};
+	PointMass pointMass{};
 	pointMass.position = glm::vec4(position, 1);
 	//pointMass.mass = mass;
 
@@ -25,6 +25,11 @@ GLuint PhysicsWorld::addPointMass(glm::vec3 position, GLfloat mass)
 
 	++m_pointMassCount;
 	return m_pointMassCount - 1;
+}
+
+void PhysicsWorld::createSpring(GLuint& point1, GLuint& point2)
+{
+
 }
 
 void PhysicsWorld::step()

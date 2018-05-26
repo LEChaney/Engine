@@ -203,6 +203,7 @@ xcopy "$(ProjectDir)ext\assimp\lib_64\assimp-vc140-mt.dll" "$(OutDir)" /dsy</Com
     <ClInclude Include="BasicCameraMovementSystem.h" />
     <ClInclude Include="CameraComponent.h" />
     <ClInclude Include="PointMassFormat.h" />
+    <ClInclude Include="Spring.h" />
     <ClInclude Include="UBOBlockFormats.h" />
     <ClInclude Include="Clock.h" />
     <ClInclude Include="Entity.h" />

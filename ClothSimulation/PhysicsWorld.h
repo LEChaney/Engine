@@ -13,6 +13,7 @@ public:
 	// void applyImpulse(GLuint hBody, const glm::vec3& impulse);
 	// void applyForce(GLuint hBody, const glm::vec3& force);
 	GLuint addPointMass(glm::vec3 position, GLfloat mass);
+	void createSpring(GLuint& point1, GLuint& point2);
 	void step();
 	//GLuint addSpringConstraint(GLuint bodyID1, GLuint bodyID2, GLfloat stiffness, GLfloat damping);
 

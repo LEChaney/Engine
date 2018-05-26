@@ -184,7 +184,7 @@ void RenderSystem::initializePhysicsVAOs()
 
 	// Bind position buffer as vertex buffer and define layout
 	glBindBuffer(GL_ARRAY_BUFFER, m_scene.physWorld.getPointMassBuffer());
-	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(PointMassFormat), 0);
+	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(PointMass), 0);
 	glEnableVertexAttribArray(0);
 
 	glBindVertexArray(0);
