@@ -129,9 +129,6 @@
     <ClCompile Include="PrimitivePrefabs.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="AIUtils.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Shader.cpp">
       <Filter>Source Files\Graphics</Filter>
     </ClCompile>
@@ -159,7 +156,10 @@
     <ClCompile Include="Terrain.cpp">
       <Filter>Source Files\Components</Filter>
     </ClCompile>
-    <ClCompile Include="PhysicsWorld.cpp">
+    <ClCompile Include="SpringConstraint.cpp">
+      <Filter>Source Files\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="Cloth.cpp">
       <Filter>Source Files\Physics</Filter>
     </ClCompile>
   </ItemGroup>
@@ -217,9 +217,6 @@
     </ClInclude>
     <ClInclude Include="GLPrimitives.h">
       <Filter>Header Files\Graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="AIUtils.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="RenderState.h">
       <Filter>Header Files\Graphics</Filter>
@@ -314,16 +311,16 @@
     <ClInclude Include="SimpleWorldSpaceMoveSystem.h">
       <Filter>Header Files\Systems</Filter>
     </ClInclude>
-    <ClInclude Include="PhysicsWorld.h">
-      <Filter>Header Files\Physics</Filter>
-    </ClInclude>
     <ClInclude Include="UBOBlockFormats.h">
       <Filter>Header Files\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="PointMassFormat.h">
+    <ClInclude Include="PointMass.h">
       <Filter>Header Files\Physics</Filter>
     </ClInclude>
-    <ClInclude Include="Spring.h">
+    <ClInclude Include="SpringConstraint.h">
+      <Filter>Header Files\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="Cloth.h">
       <Filter>Header Files\Physics</Filter>
     </ClInclude>
   </ItemGroup>

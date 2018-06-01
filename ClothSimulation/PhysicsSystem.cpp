@@ -11,8 +11,6 @@ PhysicsSystem::PhysicsSystem(Scene& scene)
 
 void PhysicsSystem::update()
 {
-	m_scene.physWorld.step();
-
 	for (size_t i = 0; i < m_scene.getEntityCount(); ++i) {
 		Entity& entity = m_scene.getEntity(i);
 		if (!entity.hasComponents(COMPONENT_PHYSICS, COMPONENT_TRANSFORM))

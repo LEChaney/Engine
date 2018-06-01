@@ -20,6 +20,7 @@ Entity::Entity(std::vector<EntityEventListener*>& eventListeners)
 	, terrain{}
 	, terrainFollow{}
 	, simpleWorldSpaceMovement{}
+	, cloth{}
 {
 }
 

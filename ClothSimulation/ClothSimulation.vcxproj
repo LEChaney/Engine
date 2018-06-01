@@ -161,11 +161,11 @@ xcopy "$(ProjectDir)ext\assimp\lib_64\assimp-vc140-mt.dll" "$(OutDir)" /dsy</Com
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="AIUtils.cpp" />
     <ClCompile Include="Audio.cpp" />
     <ClCompile Include="BasicCameraMovementSystem.cpp" />
     <ClCompile Include="CameraComponent.cpp" />
     <ClCompile Include="Clock.cpp" />
+    <ClCompile Include="Cloth.cpp" />
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="ext\glad\src\glad.c" />
     <ClCompile Include="FrameBuffer.cpp" />
@@ -178,9 +178,9 @@ xcopy "$(ProjectDir)ext\assimp\lib_64\assimp-vc140-mt.dll" "$(OutDir)" /dsy</Com
     <ClCompile Include="main.cpp" />
     <ClCompile Include="ModelUtils.cpp" />
     <ClCompile Include="PhysicsSystem.cpp" />
-    <ClCompile Include="PhysicsWorld.cpp" />
     <ClCompile Include="RenderBuffer.cpp" />
     <ClCompile Include="SimpleWorldSpaceMoveSystem.cpp" />
+    <ClCompile Include="SpringConstraint.cpp" />
     <ClCompile Include="Terrain.cpp" />
     <ClCompile Include="TerrainFollowSystem.cpp" />
     <ClCompile Include="Texture.cpp" />
@@ -197,13 +197,13 @@ xcopy "$(ProjectDir)ext\assimp\lib_64\assimp-vc140-mt.dll" "$(OutDir)" /dsy</Com
     <ClCompile Include="TransformComponent.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="AIUtils.h" />
     <ClInclude Include="Audio.h" />
     <ClInclude Include="BasicCameraMovementComponent.h" />
     <ClInclude Include="BasicCameraMovementSystem.h" />
     <ClInclude Include="CameraComponent.h" />
-    <ClInclude Include="PointMassFormat.h" />
-    <ClInclude Include="Spring.h" />
+    <ClInclude Include="Cloth.h" />
+    <ClInclude Include="PointMass.h" />
+    <ClInclude Include="SpringConstraint.h" />
     <ClInclude Include="UBOBlockFormats.h" />
     <ClInclude Include="Clock.h" />
     <ClInclude Include="Entity.h" />
@@ -226,7 +226,6 @@ xcopy "$(ProjectDir)ext\assimp\lib_64\assimp-vc140-mt.dll" "$(OutDir)" /dsy</Com
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="ModelUtils.h" />
     <ClInclude Include="PhysicsComponent.h" />
-    <ClInclude Include="PhysicsWorld.h" />
     <ClInclude Include="RenderBuffer.h" />
     <ClInclude Include="ShaderParams.h" />
     <ClInclude Include="SimpleWorldSpaceMoveComponent.h" />

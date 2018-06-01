@@ -11,6 +11,7 @@
 #include "Terrain.h"
 #include "TerrainFollowComponent.h"
 #include "SimpleWorldSpaceMoveComponent.h"
+#include "Cloth.h"
 
 #include <vector>
 
@@ -26,7 +27,8 @@ enum ComponentType {
 	COMPONENT_BASIC_CAMERA_MOVEMENT = 1 << 10,
 	COMPONENT_TERRAIN = 1 << 11,
 	COMPONENT_TERRAIN_FOLLOW = 1 << 12,
-	COMPONENT_SIMPLE_WORLD_SPACE_MOVE_COMPONENT = 1 << 13
+	COMPONENT_SIMPLE_WORLD_SPACE_MOVE_COMPONENT = 1 << 13,
+	COMPONENT_CLOTH = 1 << 14
 };
 
 class Entity {
@@ -45,6 +47,7 @@ public:
 	TerrainComponent terrain;
 	TerrainFollowComponent terrainFollow;
 	SimpleWorldSpcaeMoveComponent simpleWorldSpaceMovement;
+	ClothComponent cloth;
 
 	Entity(Entity&&) = default;
 	Entity(const Entity&) = delete;

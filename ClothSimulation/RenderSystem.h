@@ -67,18 +67,11 @@ public:
 	// Sets the irradiance map for image based lighting
 	void setIrradianceMap(GLuint irradianceMap);
 
-	bool m_shouldRenderPhysics;
 private:
 	static void renderModel(const ModelComponent&, const glm::mat4& transform);
-
-	void renderPhysics();
 
 	static RenderState s_renderState;
 	RenderState m_renderState;
 	std::vector<const Shader*> m_postProcessShaders;
 	GLsizei m_curPostProcessShaderIdx;
-
-	GLuint m_pointMassesVAO;
-	bool m_physicsVAOsAreInitialized;
-	void initializePhysicsVAOs();
 };
