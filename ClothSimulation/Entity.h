@@ -11,7 +11,7 @@
 #include "Terrain.h"
 #include "TerrainFollowComponent.h"
 #include "SimpleWorldSpaceMoveComponent.h"
-#include "Cloth.h"
+#include "ClothComponent.h"
 
 #include <vector>
 

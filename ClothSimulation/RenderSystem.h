@@ -31,7 +31,7 @@ class Shader;
 class RenderSystem : public System {
 public:
 	RenderSystem(Scene&);
-	~RenderSystem();
+	~RenderSystem() override;
 	RenderSystem(const RenderSystem&) = delete;
 	RenderSystem& operator=(const RenderSystem&) = delete;
 

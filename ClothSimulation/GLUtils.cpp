@@ -220,18 +220,17 @@ void GLUtils::createTessellatedQuadData(GLsizei numVertsX, GLsizei numVertsZ, fl
 	}
 }
 
-GLuint GLUtils::bufferMeshData(const std::vector<VertexFormat>& vertices, const std::vector<GLuint>& indices)
+Mesh GLUtils::bufferMeshData(const std::vector<VertexFormat>& vertices, const std::vector<GLuint>& indices, GLenum usageHint)
 {
 	GLuint VAO;
 	GLuint buffers[2];
 	glGenVertexArrays(1, &VAO);
 	glBindVertexArray(VAO);
-	glGenBuffers(1, &buffers[0]);
-	glGenBuffers(1, &buffers[1]);
+	glGenBuffers(2, buffers);
 	glBindBuffer(GL_ARRAY_BUFFER, buffers[0]);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buffers[1]);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(VertexFormat) * vertices.size(), vertices.data(), GL_STATIC_DRAW);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * indices.size(), indices.data(), GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(VertexFormat) * vertices.size(), vertices.data(), usageHint);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * indices.size(), indices.data(), usageHint);
 	
 	GLuint positionLoc = 0;
 	GLuint normalLoc = 1;
@@ -248,7 +247,12 @@ GLuint GLUtils::bufferMeshData(const std::vector<VertexFormat>& vertices, const 
 	glEnableVertexAttribArray(texCoordLoc);
 	glEnableVertexAttribArray(colorLoc);
 
-	return VAO;
+	return Mesh{
+		0, // Use the first material on the model
+		VAO,
+		buffers[0],
+		static_cast<GLsizei>(indices.size())
+	};
 }
 
 Texture GLUtils::loadTexture(const std::string& path, bool sRGB, bool generateMipmaps)

@@ -296,11 +296,7 @@ const Mesh& GLPrimitives::getQuadMesh()
 {
 	static const std::vector<VertexFormat>& vertices = getQuadVertices();
 	static const std::vector<GLuint>& indices = getQuadIndices();
-	static const Mesh mesh{
-		0,
-		GLUtils::bufferMeshData(vertices, indices),
-		static_cast<GLsizei>(indices.size())
-	};
+	static const Mesh mesh = GLUtils::bufferMeshData(vertices, indices);
 
 	return mesh;
 }
@@ -333,11 +329,7 @@ const Mesh& GLPrimitives::getSphereMesh()
 {
 	static const std::vector<VertexFormat>& vertices = getSphereVertices();
 	static const std::vector<GLuint>& indices = getSphereIndices();
-	static const Mesh mesh{
-		0, // Use the first material on the model
-		GLUtils::bufferMeshData(vertices, indices),
-		static_cast<GLsizei>(indices.size())
-	};
+	static const Mesh mesh = GLUtils::bufferMeshData(vertices, indices);
 
 	return mesh;
 }
@@ -370,11 +362,7 @@ const Mesh& GLPrimitives::getCylinderMesh()
 {
 	static const std::vector<VertexFormat>& vertices = getCylinderVertices();
 	static const std::vector<GLuint>& indices = getCylinderIndices();
-	static const Mesh mesh{
-		0, // Use the first material on the model
-		GLUtils::bufferMeshData(vertices, indices),
-		static_cast<GLsizei>(indices.size())
-	};
+	static const Mesh mesh = GLUtils::bufferMeshData(vertices, indices);
 
 	return mesh;
 }
@@ -407,11 +395,7 @@ const Mesh& GLPrimitives::getPyramidMesh()
 {
 	static const std::vector<VertexFormat>& vertices = getPyramidVertices();
 	static const std::vector<GLuint>& indices = getPyramidIndices();
-	static const Mesh mesh{
-		0,
-		GLUtils::bufferMeshData(vertices, indices),
-		static_cast<GLsizei>(indices.size())
-	};
+	static const Mesh mesh = GLUtils::bufferMeshData(vertices, indices);
 
 	return mesh;
 }
@@ -444,11 +428,7 @@ const Mesh& GLPrimitives::getCubeMesh()
 {
 	static const std::vector<VertexFormat>& vertices = getCubeVertices();
 	static const std::vector<GLuint>& indices = getCubeIndices();
-	static const Mesh mesh{
-		0, // Use the first material on the model
-		GLUtils::bufferMeshData(vertices, indices),
-		static_cast<GLsizei>(indices.size())
-	};
+	static const Mesh mesh = GLUtils::bufferMeshData(vertices, indices);
 
 	return mesh;
 }

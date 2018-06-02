@@ -238,7 +238,13 @@ void RenderSystem::renderModel(const ModelComponent& model, const glm::mat4& tra
 	// Loop over all the meshes in the model
 	for (size_t i = 0; i < model.meshes.size(); ++i) {
 		const Mesh& mesh = model.meshes.at(i);
+		if (mesh.materialIndex >= model.materials.size()) // Check for valid material index
+			continue;
 		const Material& material = model.materials.at(mesh.materialIndex);
+
+		// Enable wireframe if requested
+		if (material.willDrawWireframe)
+			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
 		// Tell the gpu what shader to use
 		material.shader->use();
@@ -349,5 +355,9 @@ void RenderSystem::renderModel(const ModelComponent& model, const glm::mat4& tra
 		}
 		else
 			glDrawElements(GL_TRIANGLES, mesh.numIndices, GL_UNSIGNED_INT, 0);
+
+		// Reset GL state
+		if (material.willDrawWireframe)
+			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	}
 }

@@ -165,7 +165,8 @@ xcopy "$(ProjectDir)ext\assimp\lib_64\assimp-vc140-mt.dll" "$(OutDir)" /dsy</Com
     <ClCompile Include="BasicCameraMovementSystem.cpp" />
     <ClCompile Include="CameraComponent.cpp" />
     <ClCompile Include="Clock.cpp" />
-    <ClCompile Include="Cloth.cpp" />
+    <ClCompile Include="ClothComponent.cpp" />
+    <ClCompile Include="ClothSystem.cpp" />
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="ext\glad\src\glad.c" />
     <ClCompile Include="FrameBuffer.cpp" />
@@ -176,8 +177,10 @@ xcopy "$(ProjectDir)ext\assimp\lib_64\assimp-vc140-mt.dll" "$(OutDir)" /dsy</Com
     <ClCompile Include="InputSystem.cpp" />
     <ClCompile Include="Log.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Material.cpp" />
     <ClCompile Include="ModelUtils.cpp" />
     <ClCompile Include="PhysicsSystem.cpp" />
+    <ClCompile Include="PointMass.cpp" />
     <ClCompile Include="RenderBuffer.cpp" />
     <ClCompile Include="SimpleWorldSpaceMoveSystem.cpp" />
     <ClCompile Include="SpringConstraint.cpp" />
@@ -201,7 +204,8 @@ xcopy "$(ProjectDir)ext\assimp\lib_64\assimp-vc140-mt.dll" "$(OutDir)" /dsy</Com
     <ClInclude Include="BasicCameraMovementComponent.h" />
     <ClInclude Include="BasicCameraMovementSystem.h" />
     <ClInclude Include="CameraComponent.h" />
-    <ClInclude Include="Cloth.h" />
+    <ClInclude Include="ClothComponent.h" />
+    <ClInclude Include="ClothSystem.h" />
     <ClInclude Include="PointMass.h" />
     <ClInclude Include="SpringConstraint.h" />
     <ClInclude Include="UBOBlockFormats.h" />

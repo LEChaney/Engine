@@ -26,6 +26,7 @@ struct VertexFormat;
 struct GLFWwindow;
 class Scene;
 class InputSystem;
+struct Mesh;
 
 namespace GLUtils {
 	// Initializes the window, opengl context and opengl function pointers
@@ -74,7 +75,7 @@ namespace GLUtils {
 
 	// Buffers vertex and index data to the GPU.
 	// Returns a handler the the VAO associated with the vertices / indices.
-	GLuint bufferMeshData(const std::vector<VertexFormat>& vertices, const std::vector<GLuint>& indices);
+	Mesh bufferMeshData(const std::vector<VertexFormat>& vertices, const std::vector<GLuint>& indices, GLenum usageHint = GL_STATIC_DRAW);
 
 	// Loads a texture to GPU memory.
 	// Returns a texture object with GPU handler and texture target.

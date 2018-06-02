@@ -155,11 +155,7 @@ Entity& Prefabs::createTerrain(Scene& scene, const std::string& heightMapFile, f
 	Texture normalMap = Texture::Texture2D(numPixelsX, numPixelsY, GL_RGB, GL_FLOAT, normalMapData.data());
 
 	// Create GPU mesh
-	Mesh mesh{
-		0, // Use the first material on the model
-		GLUtils::bufferMeshData(meshVertices, meshIndices),
-		static_cast<GLsizei>(meshIndices.size())
-	};
+	Mesh mesh = GLUtils::bufferMeshData(meshVertices, meshIndices);
 
 	// Fill model component with mesh data
 	terrain.model.rootNode.meshIDs.push_back(0);

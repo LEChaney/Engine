@@ -25,6 +25,8 @@
 #include <string>
 
 struct Material {
+	Material();
+
 	const Shader* shader;
 	ShaderParams shaderParams;
 	std::vector<Texture> colorMaps;
@@ -36,4 +38,5 @@ struct Material {
 	bool willDrawDepth;
 	glm::vec3 debugColor;
 	float heightMapScale;
+	bool willDrawWireframe;
 };

@@ -156,10 +156,8 @@ Mesh processMesh(const aiMesh* _aiMesh, const aiScene* scene)
 		}
 	}
 
-	Mesh mesh;
+	Mesh mesh = GLUtils::bufferMeshData(vertices, indices);
 	mesh.materialIndex = _aiMesh->mMaterialIndex;
-	mesh.VAO = GLUtils::bufferMeshData(vertices, indices);
-	mesh.numIndices = static_cast<GLsizei>(indices.size());
 
 	// Return a mesh object created from the extracted mesh data
 	return mesh;
