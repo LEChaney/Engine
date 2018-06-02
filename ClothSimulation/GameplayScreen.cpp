@@ -41,7 +41,7 @@ GameplayScreen::GameplayScreen()
 	renderSystem->setIrradianceMap(irradianceMap.id);
 
 	// Setup the camera
-	Entity& cameraEntity = Prefabs::createCamera(m_scene, { 0, 35, 25 }, { 0, 30, 0 }, { 0, 1, 0 });
+	Entity& cameraEntity = Prefabs::createCamera(m_scene, { 0, 0, 3 }, { 0, 0, 0 }, { 0, 1, 0 });
 	renderSystem->setCamera(&cameraEntity);
 	basicCameraMovementSystem->setCameraToControl(&cameraEntity);
 
