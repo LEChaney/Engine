@@ -81,7 +81,7 @@ GameplayScreen::GameplayScreen()
 	//diffuseSphere.simpleWorldSpaceMovement.moveSpeed = 10;
 	//diffuseSphere.terrainFollow.followerHalfHeight = 1.0f;
 
-	Entity& cloth = Prefabs::createCloth(m_scene, 10, 10, 2, 2, 1);
+	Entity& cloth = Prefabs::createCloth(m_scene, 20, 20, 2, 2, 1);
 
 	m_activeSystems.push_back(std::move(basicCameraMovementSystem));
 	m_activeSystems.push_back(std::move(renderSystem));

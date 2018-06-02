@@ -11,7 +11,7 @@
 
 ClothSystem::ClothSystem(Scene& scene)
 	: System(scene)
-	, m_kNumConstraintSolverIterations{ 10 }
+	, m_kNumConstraintSolverIterations{ 3 }
 	, m_kDamping{ 0.01f }
 	, m_kTimeStep{ 1.0f / 60.0f }
 	, m_kTimeStepSq{ m_kTimeStep * m_kTimeStep }
