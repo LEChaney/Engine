@@ -13,6 +13,7 @@
 #include "TerrainFollowSystem.h"
 #include "SimpleWorldSpaceMoveSystem.h"
 #include "ClothSystem.h"
+#include "MousePickingSystem.h"
 #include "CollisionSystem.h"
 
 #include <cmath>
@@ -91,6 +92,7 @@ GameplayScreen::GameplayScreen()
 
 	m_activeSystems.push_back(std::move(basicCameraMovementSystem));
 	m_activeSystems.push_back(std::move(renderSystem));
+	m_activeSystems.push_back(std::make_unique<MousePickingSystem>(m_scene));
 	m_activeSystems.push_back(std::make_unique<ClothSystem>(m_scene));
 	m_activeSystems.push_back(std::make_unique<PhysicsSystem>(m_scene));
 	m_activeSystems.push_back(std::make_unique<CollisionSystem>(m_scene));

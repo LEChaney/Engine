@@ -171,6 +171,9 @@
     <ClCompile Include="ClothComponent.cpp">
       <Filter>Source Files\Physics</Filter>
     </ClCompile>
+    <ClCompile Include="MousePickingSystem.cpp">
+      <Filter>Source Files\Systems</Filter>
+    </ClCompile>
     <ClCompile Include="CollisionSystem.cpp">
       <Filter>Source Files\Physics</Filter>
     </ClCompile>
@@ -340,6 +343,9 @@
     </ClInclude>
     <ClInclude Include="ClothSystem.h">
       <Filter>Header Files\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="MousePickingSystem.h">
+      <Filter>Header Files\Systems</Filter>
     </ClInclude>
     <ClInclude Include="CollisionSystem.h">
       <Filter>Header Files\Physics</Filter>

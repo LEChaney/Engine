@@ -180,6 +180,7 @@ xcopy "$(ProjectDir)ext\assimp\lib_64\assimp-vc140-mt.dll" "$(OutDir)" /dsy</Com
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="ModelUtils.cpp" />
+    <ClCompile Include="MousePickingSystem.cpp" />
     <ClCompile Include="PhysicsSystem.cpp" />
     <ClCompile Include="PointMass.cpp" />
     <ClCompile Include="RenderBuffer.cpp" />
@@ -208,6 +209,7 @@ xcopy "$(ProjectDir)ext\assimp\lib_64\assimp-vc140-mt.dll" "$(OutDir)" /dsy</Com
     <ClInclude Include="CameraComponent.h" />
     <ClInclude Include="ClothComponent.h" />
     <ClInclude Include="ClothSystem.h" />
+    <ClInclude Include="MousePickingSystem.h" />
     <ClInclude Include="CollisionSystem.h" />
     <ClInclude Include="PointMass.h" />
     <ClInclude Include="SphereCollisionComponent.h" />
