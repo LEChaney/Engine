@@ -118,7 +118,7 @@ const std::vector<GLuint>& GLPrimitives::getCylinderIndices()
 
 const std::vector<VertexFormat>& GLPrimitives::getPyramidVertices()
 {
-	static const glm::vec3 top = { -0,  1,  0 };
+	static const glm::vec3 top = { 0,  1,  0 };
 	static const glm::vec3 frontLeft = { -1, -1,  1 };
 	static const glm::vec3 frontRight = { 1, -1,  1 };
 	static const glm::vec3 backLeft = { -1, -1, -1 };

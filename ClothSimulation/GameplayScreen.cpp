@@ -82,6 +82,7 @@ GameplayScreen::GameplayScreen()
 	//diffuseSphere.inputMap.rightBtnMap = GLFW_KEY_RIGHT;
 	//diffuseSphere.simpleWorldSpaceMovement.moveSpeed = 10;
 	//diffuseSphere.terrainFollow.followerHalfHeight = 1.0f;
+
 	TransformComponent sphereTransform;
 	sphereTransform.position.y = -1.2f;
 	sphereTransform.position.x = 2.0f;
@@ -93,6 +94,18 @@ GameplayScreen::GameplayScreen()
 	sphere.inputMap.leftBtnMap = GLFW_KEY_LEFT;
 	sphere.inputMap.rightBtnMap = GLFW_KEY_RIGHT;
 	sphere.simpleWorldSpaceMovement.moveSpeed = 1.0f;
+
+	TransformComponent triangleTransform;
+	triangleTransform.position.y = -1.2f;
+	triangleTransform.position.x = -3.0f;
+	Entity& pyramid = Prefabs::createPyramid(m_scene, triangleTransform);
+	pyramid.addComponents(COMPONENT_PYRAMID_COLLISION | COMPONENT_SIMPLE_WORLD_SPACE_MOVE_COMPONENT | COMPONENT_INPUT | COMPONENT_INPUT_MAP);
+	pyramid.sphereCollision.radius = 1.0f;
+	pyramid.inputMap.backwardBtnMap = GLFW_KEY_DOWN;
+	pyramid.inputMap.forwardBtnMap = GLFW_KEY_UP;
+	pyramid.inputMap.leftBtnMap = GLFW_KEY_LEFT;
+	pyramid.inputMap.rightBtnMap = GLFW_KEY_RIGHT;
+	pyramid.simpleWorldSpaceMovement.moveSpeed = 1.0f;
 
 	Entity& cloth = Prefabs::createCloth(m_scene, 20, 20, 2, 2, 1);
 
