@@ -251,6 +251,7 @@ Mesh GLUtils::bufferMeshData(const std::vector<VertexFormat>& vertices, const st
 		0, // Use the first material on the model
 		VAO,
 		buffers[0],
+		buffers[1],
 		static_cast<GLsizei>(indices.size())
 	};
 }

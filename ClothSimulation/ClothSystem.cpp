@@ -23,72 +23,6 @@ ClothSystem::~ClothSystem()
 {
 }
 
-Entity& ClothSystem::createCloth(Scene& scene, GLuint numPointsX, GLuint numPointsY, GLfloat width, GLfloat height, GLfloat weightPerUnitArea)
-{
-	Entity& clothEntity = scene.createEntity(COMPONENT_CLOTH, COMPONENT_MODEL);
-	ClothComponent& cloth = clothEntity.cloth;
-	cloth.numPointMassesX = numPointsX;
-	cloth.numPointMassesY = numPointsY;
-
-	// Calculate each point mass's individual mass
-	GLuint numPoints = numPointsX * numPointsY;
-	GLfloat separationX = width / (numPointsX - 1);
-	GLfloat separationY = height / (numPointsY - 1);
-	GLfloat patchMass = separationX * separationY * weightPerUnitArea; // Weight for a 2 x 2 patch of point masses
-	GLfloat individualMass = patchMass / 4.0f; // Assuming square patches
-
-	// Create a tessellated quad to build the cloth out of
-	std::vector<VertexFormat> vertices;
-	std::vector<GLuint> indices;
-	GLUtils::createTessellatedQuadData(numPointsX, numPointsY, width, height, vertices, indices);
-
-	// Buffer triangle mesh to GPU for rendering
-	clothEntity.model.rootNode.meshIDs.push_back(0);
-	clothEntity.model.meshes.push_back(GLUtils::bufferMeshData(vertices, indices, GL_STREAM_DRAW));
-
-	// Set Material to use for drawing
-	Material material;
-	material.willDrawWireframe = true;
-	clothEntity.model.materials.push_back(material);
-
-	// Create point masses from cloth vertices
-	cloth.pointMasses.reserve(vertices.size());
-	for (GLuint i = 0; i < vertices.size(); ++i) {
-		PointMass p(vertices[i].position, individualMass, false);
-		
-		// Fix first 4 verts
-		if (i < 4)
-			p.isFixed = true;
-
-		cloth.pointMasses.push_back(p);
-	}
-
-	// Connect point masses with spring constraints
-	for (GLuint r = 0; r < numPointsY - 1; ++r) {
-		for (GLuint c = 0; c < numPointsX - 1; ++c) {
-			// Structural Constraints
-			cloth.springConstraints.emplace_back(cloth.getPointMass(r, c), cloth.getPointMass(r, c + 1), 1);
-			cloth.springConstraints.emplace_back(cloth.getPointMass(r, c), cloth.getPointMass(r + 1, c), 1);
-
-			// Shear Constraints
-			cloth.springConstraints.emplace_back(cloth.getPointMass(r, c), cloth.getPointMass(r + 1, c + 1), 0.5);
-			cloth.springConstraints.emplace_back(cloth.getPointMass(r, c + 1), cloth.getPointMass(r + 1, c), 0.5);
-
-			// Bending Constraints
-			if (c < numPointsX - 2)
-				cloth.springConstraints.emplace_back(cloth.getPointMass(r, c), cloth.getPointMass(r, c + 2), 0.1);
-			if (r < numPointsY - 2)
-				cloth.springConstraints.emplace_back(cloth.getPointMass(r, c), cloth.getPointMass(r + 2, c), 0.1);
-			if (r < numPointsY - 2 && c < numPointsX - 2) {
-				cloth.springConstraints.emplace_back(cloth.getPointMass(r, c), cloth.getPointMass(r + 2, c + 2), 0.01);
-				cloth.springConstraints.emplace_back(cloth.getPointMass(r, c + 2), cloth.getPointMass(r + 2, c), 0.01);
-			}
-		}
-	}
-
-	return clothEntity;
-}
-
 void ClothSystem::update()
 {
 	for (size_t i = 0; i < m_scene.getEntityCount(); ++i) {
@@ -101,8 +35,19 @@ void ClothSystem::update()
 
 			// Solve constraints
 			for (GLuint i = 0; i < m_kNumConstraintSolverIterations; ++i) {
-				for (SpringConstraint& constraint : cloth.springConstraints) {
-					constraint.solveConstraint();
+				for (GLuint j = 0; j < cloth.springConstraints.size(); ++j) {
+					auto constraintIt = cloth.springConstraints[j].begin();
+					while (constraintIt != cloth.springConstraints[j].end()) {
+						// Solve constraint
+						bool broken;
+						constraintIt->solveConstraint(broken);
+
+						// Remove constraint if broken
+						if (broken)
+							constraintIt = cloth.springConstraints[j].erase(constraintIt);
+						else
+							++constraintIt;
+					}
 				}
 			}
 
@@ -117,7 +62,7 @@ void ClothSystem::update()
 				pointMass.force = { 0, 0, 0 };
 			}
 
-			// Update vertices on GPU
+			// Map vertices to update on GPU
 			glBindBuffer(GL_ARRAY_BUFFER, entity.model.meshes.at(0).VBO);
 			auto vertices = static_cast<VertexFormat*>(glMapBufferRange(
 				GL_ARRAY_BUFFER,
@@ -125,14 +70,63 @@ void ClothSystem::update()
 				sizeof(VertexFormat) * cloth.pointMasses.size(),
 				GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT)
 			);
+
+			// Map indices to update on GPU
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, entity.model.meshes.at(0).EBO);
+			auto indices = static_cast<GLuint*>(glMapBufferRange(
+				GL_ELEMENT_ARRAY_BUFFER,
+				0,
+				sizeof(GLuint) * 3 * 2 * (cloth.numPointMassesX - 1) * (cloth.numPointMassesY - 1),
+				GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT)
+			);
+
 			for (GLuint i = 0; i < cloth.pointMasses.size(); ++i) {
+				GLuint ptRow = (i / cloth.numPointMassesX);
+				GLuint ptCol = (i % cloth.numPointMassesX);
+
+				// Update GPU vertices to match cloth points
 				vertices[i].position = cloth.pointMasses[i].getPosition();
 				vertices[i].normal = { 0, 1, 0 };
 				vertices[i].texCoord = { 
-					(i % cloth.numPointMassesX) / static_cast<float>(cloth.numPointMassesX), 
-					(i / cloth.numPointMassesX) / static_cast<float>(cloth.numPointMassesY) 
+					 ptCol / static_cast<float>(cloth.numPointMassesX - 1), 
+					 ptRow / static_cast<float>(cloth.numPointMassesY - 1) 
 				};
+
+				// Update triangle indices
+				if (ptRow < (cloth.numPointMassesY - 1) && ptCol < (cloth.numPointMassesX - 1)) {
+					GLuint eboIdx = (ptRow * (cloth.numPointMassesX - 1) + ptCol) * 6; // 6 Triangles per cloth patch
+
+					GLuint topLeftIdx = i;
+					GLuint topRightIdx = i + 1;
+					GLuint bottomLeftIdx = i + cloth.numPointMassesX;
+					GLuint bottomRightIdx = i + cloth.numPointMassesX + 1;
+
+					if (cloth.hasConstraintBetween(topLeftIdx, bottomLeftIdx) && cloth.hasConstraintBetween(topLeftIdx, bottomRightIdx)) {
+						// Lower patch triangle
+						indices[eboIdx] = topLeftIdx;
+						indices[eboIdx + 1] = bottomLeftIdx;
+						indices[eboIdx + 2] = bottomRightIdx;
+					}
+					else {
+						// Degenerate triangle when link is broken
+						indices[eboIdx] = indices[eboIdx + 1] = indices[eboIdx + 2] = topLeftIdx;
+					}
+
+					if (cloth.hasConstraintBetween(topLeftIdx, bottomRightIdx) && cloth.hasConstraintBetween(topLeftIdx, topRightIdx)) {
+						// Upper patch triangle
+						indices[eboIdx + 3] = topLeftIdx;
+						indices[eboIdx + 4] = bottomRightIdx;
+						indices[eboIdx + 5] = topRightIdx;
+					}
+					else {
+						// Degenerate triangle when link is broken
+						indices[eboIdx + 3] = indices[eboIdx + 4] = indices[eboIdx + 5] = topLeftIdx;
+					}
+				}
 			}
+
+			// Unmap GPU buffers
+			glUnmapBuffer(GL_ELEMENT_ARRAY_BUFFER);
 			glUnmapBuffer(GL_ARRAY_BUFFER);
 		}
 	}
@@ -144,10 +138,4 @@ void ClothSystem::beginFrame()
 
 void ClothSystem::endFrame()
 {
-}
-
-
-Entity& Prefabs::createCloth(Scene& scene, GLuint numPointsX, GLuint numPointsY, GLfloat width, GLfloat height, GLfloat totalWeight)
-{
-	return ClothSystem::createCloth(scene, numPointsX, numPointsY, width, height, totalWeight);
 }

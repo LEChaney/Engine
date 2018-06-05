@@ -22,6 +22,7 @@ struct Mesh {
 	unsigned int materialIndex;
 	GLuint VAO;
 	GLuint VBO;
+	GLuint EBO;
 	GLsizei numIndices;
 };
 

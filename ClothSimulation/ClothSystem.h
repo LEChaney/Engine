@@ -5,8 +5,6 @@
 #include <glad\glad.h>
 
 class Scene;
-struct ClothComponent;
-struct PointMass;
 
 class ClothSystem : public System {
 public:
@@ -14,8 +12,6 @@ public:
 	~ClothSystem() override;
 	ClothSystem(const ClothSystem&) = delete;
 	ClothSystem& operator=(const ClothSystem&) = delete;
-
-	static Entity& createCloth(Scene&, GLuint numPointsX, GLuint numPointsY, GLfloat width, GLfloat height, GLfloat weightPerUnitArea);
 
 	// Inherited via System
 	virtual void update() override;
@@ -28,7 +24,3 @@ private:
 	const GLfloat m_kTimeStep;
 	const GLfloat m_kTimeStepSq;
 };
-
-namespace Prefabs {
-	Entity& createCloth(Scene&, GLuint numPointsX, GLuint numPointsY, GLfloat width, GLfloat height, GLfloat weightPerUnitArea);
-}
