@@ -21,6 +21,7 @@ Entity::Entity(std::vector<EntityEventListener*>& eventListeners)
 	, terrainFollow{}
 	, simpleWorldSpaceMovement{}
 	, cloth{}
+	, sphereCollision{}
 {
 }
 

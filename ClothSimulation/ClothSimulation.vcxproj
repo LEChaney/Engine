@@ -167,6 +167,7 @@ xcopy "$(ProjectDir)ext\assimp\lib_64\assimp-vc140-mt.dll" "$(OutDir)" /dsy</Com
     <ClCompile Include="Clock.cpp" />
     <ClCompile Include="ClothComponent.cpp" />
     <ClCompile Include="ClothSystem.cpp" />
+    <ClCompile Include="CollisionSystem.cpp" />
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="ext\glad\src\glad.c" />
     <ClCompile Include="FrameBuffer.cpp" />
@@ -182,8 +183,11 @@ xcopy "$(ProjectDir)ext\assimp\lib_64\assimp-vc140-mt.dll" "$(OutDir)" /dsy</Com
     <ClCompile Include="MousePickingSystem.cpp" />
     <ClCompile Include="PhysicsSystem.cpp" />
     <ClCompile Include="PointMass.cpp" />
+    <ClCompile Include="PyramidCollisionComponent.cpp" />
     <ClCompile Include="RenderBuffer.cpp" />
+    <ClCompile Include="SimpleWorldSpaceMoveComponent.cpp" />
     <ClCompile Include="SimpleWorldSpaceMoveSystem.cpp" />
+    <ClCompile Include="SphereCollisionComponent.cpp" />
     <ClCompile Include="SpringConstraint.cpp" />
     <ClCompile Include="Terrain.cpp" />
     <ClCompile Include="TerrainFollowSystem.cpp" />
@@ -208,7 +212,10 @@ xcopy "$(ProjectDir)ext\assimp\lib_64\assimp-vc140-mt.dll" "$(OutDir)" /dsy</Com
     <ClInclude Include="ClothComponent.h" />
     <ClInclude Include="ClothSystem.h" />
     <ClInclude Include="MousePickingSystem.h" />
+    <ClInclude Include="CollisionSystem.h" />
     <ClInclude Include="PointMass.h" />
+    <ClInclude Include="PyramidCollisionComponent.h" />
+    <ClInclude Include="SphereCollisionComponent.h" />
     <ClInclude Include="SpringConstraint.h" />
     <ClInclude Include="UBOBlockFormats.h" />
     <ClInclude Include="Clock.h" />

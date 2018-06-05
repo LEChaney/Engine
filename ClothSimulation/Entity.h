@@ -12,6 +12,8 @@
 #include "TerrainFollowComponent.h"
 #include "SimpleWorldSpaceMoveComponent.h"
 #include "ClothComponent.h"
+#include "SphereCollisionComponent.h"
+#include "PyramidCollisionComponent.h"
 
 #include <vector>
 
@@ -28,7 +30,9 @@ enum ComponentType {
 	COMPONENT_TERRAIN = 1 << 11,
 	COMPONENT_TERRAIN_FOLLOW = 1 << 12,
 	COMPONENT_SIMPLE_WORLD_SPACE_MOVE_COMPONENT = 1 << 13,
-	COMPONENT_CLOTH = 1 << 14
+	COMPONENT_CLOTH = 1 << 14,
+	COMPONENT_SPHERE_COLLISION = 1 << 15,
+	COMPONENT_PYRAMID_COLLISION = 1 << 16
 };
 
 class Entity {
@@ -48,6 +52,8 @@ public:
 	TerrainFollowComponent terrainFollow;
 	SimpleWorldSpcaeMoveComponent simpleWorldSpaceMovement;
 	ClothComponent cloth;
+	SphereCollisionComponent sphereCollision;
+	PyramidCollisionComponent pyramidCollision;
 
 	Entity(Entity&&) = default;
 	Entity(const Entity&) = delete;
