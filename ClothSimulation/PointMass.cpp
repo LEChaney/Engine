@@ -14,7 +14,12 @@ const glm::vec3& PointMass::getPosition()
 	return m_position;
 }
 
-void PointMass::addOffset(glm::vec3 offset)
+void PointMass::setPosition(const glm::vec3 & newPosition)
+{
+	m_position = newPosition;
+}
+
+void PointMass::addOffset(const glm::vec3& offset)
 {
 	if (!isFixed)
 		m_position += offset;

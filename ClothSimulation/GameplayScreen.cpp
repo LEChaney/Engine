@@ -13,6 +13,7 @@
 #include "TerrainFollowSystem.h"
 #include "SimpleWorldSpaceMoveSystem.h"
 #include "ClothSystem.h"
+#include "CollisionSystem.h"
 
 #include <cmath>
 #include <list>
@@ -80,6 +81,11 @@ GameplayScreen::GameplayScreen()
 	//diffuseSphere.inputMap.rightBtnMap = GLFW_KEY_RIGHT;
 	//diffuseSphere.simpleWorldSpaceMovement.moveSpeed = 10;
 	//diffuseSphere.terrainFollow.followerHalfHeight = 1.0f;
+	TransformComponent sphereTransform;
+	sphereTransform.position.y = -1.2f;
+	Entity& sphere = Prefabs::createSphere(m_scene, sphereTransform);
+	sphere.addComponents(COMPONENT_SPHERE_COLLISION);
+	sphere.sphereCollision.radius = 1.0f;
 
 	Entity& cloth = Prefabs::createCloth(m_scene, 20, 20, 2, 2, 1);
 
@@ -87,6 +93,7 @@ GameplayScreen::GameplayScreen()
 	m_activeSystems.push_back(std::move(renderSystem));
 	m_activeSystems.push_back(std::make_unique<ClothSystem>(m_scene));
 	m_activeSystems.push_back(std::make_unique<PhysicsSystem>(m_scene));
+	m_activeSystems.push_back(std::make_unique<CollisionSystem>(m_scene));
 }
 
 
