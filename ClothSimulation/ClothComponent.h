@@ -20,6 +20,8 @@ struct ClothComponent {
 	//          |/ \|
 	//          o---o
 	std::vector<std::vector<SpringConstraint>> springConstraints;
+
+	std::vector<GLuint> triIndices;
 	
 	GLuint numPointMassesX;
 	GLuint numPointMassesY;

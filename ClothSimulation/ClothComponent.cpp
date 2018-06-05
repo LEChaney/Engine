@@ -57,12 +57,11 @@ Entity& ClothComponent::createCloth(Scene& scene, GLuint numPointsX, GLuint numP
 
 											   // Create a tessellated quad to build the cloth out of
 	std::vector<VertexFormat> vertices;
-	std::vector<GLuint> indices;
-	GLUtils::createTessellatedQuadData(numPointsX, numPointsY, width, height, vertices, indices);
+	GLUtils::createTessellatedQuadData(numPointsX, numPointsY, width, height, vertices, cloth.triIndices);
 
 	// Buffer triangle mesh to GPU for rendering
 	clothEntity.model.rootNode.meshIDs.push_back(0);
-	clothEntity.model.meshes.push_back(GLUtils::bufferMeshData(vertices, indices, GL_STREAM_DRAW));
+	clothEntity.model.meshes.push_back(GLUtils::bufferMeshData(vertices, cloth.triIndices, GL_STREAM_DRAW));
 
 	// Set Material to use for drawing
 	Material material;

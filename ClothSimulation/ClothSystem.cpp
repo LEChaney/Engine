@@ -103,24 +103,26 @@ void ClothSystem::update()
 
 					if (cloth.hasConstraintBetween(topLeftIdx, bottomLeftIdx) && cloth.hasConstraintBetween(topLeftIdx, bottomRightIdx)) {
 						// Lower patch triangle
-						indices[eboIdx] = topLeftIdx;
-						indices[eboIdx + 1] = bottomLeftIdx;
-						indices[eboIdx + 2] = bottomRightIdx;
+						cloth.triIndices[eboIdx] = indices[eboIdx] = topLeftIdx;
+						cloth.triIndices[eboIdx + 1] = indices[eboIdx + 1] = bottomLeftIdx;
+						cloth.triIndices[eboIdx + 2] = indices[eboIdx + 2] = bottomRightIdx;
 					}
 					else {
 						// Degenerate triangle when link is broken
 						indices[eboIdx] = indices[eboIdx + 1] = indices[eboIdx + 2] = topLeftIdx;
+						cloth.triIndices[eboIdx] = cloth.triIndices[eboIdx + 1] = cloth.triIndices[eboIdx + 2] = topLeftIdx;
 					}
 
 					if (cloth.hasConstraintBetween(topLeftIdx, bottomRightIdx) && cloth.hasConstraintBetween(topLeftIdx, topRightIdx)) {
 						// Upper patch triangle
-						indices[eboIdx + 3] = topLeftIdx;
-						indices[eboIdx + 4] = bottomRightIdx;
-						indices[eboIdx + 5] = topRightIdx;
+						cloth.triIndices[eboIdx + 3] = indices[eboIdx + 3] = topLeftIdx;
+						cloth.triIndices[eboIdx + 4] = indices[eboIdx + 4] = bottomRightIdx;
+						cloth.triIndices[eboIdx + 5] = indices[eboIdx + 5] = topRightIdx;
 					}
 					else {
 						// Degenerate triangle when link is broken
 						indices[eboIdx + 3] = indices[eboIdx + 4] = indices[eboIdx + 5] = topLeftIdx;
+						cloth.triIndices[eboIdx + 3] = cloth.triIndices[eboIdx + 4] = cloth.triIndices[eboIdx + 5] = topLeftIdx;
 					}
 				}
 			}

@@ -86,7 +86,7 @@ GameplayScreen::GameplayScreen()
 
 	m_activeSystems.push_back(std::move(basicCameraMovementSystem));
 	m_activeSystems.push_back(std::move(renderSystem));
-	m_activeSystems.push_back(std::make_unique<MousePickingSystem>(m_scene));
+	m_activeSystems.push_back(std::make_unique<MousePickingSystem>(m_scene, cameraEntity));
 	m_activeSystems.push_back(std::make_unique<ClothSystem>(m_scene));
 	m_activeSystems.push_back(std::make_unique<PhysicsSystem>(m_scene));
 }
