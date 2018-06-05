@@ -20,4 +20,5 @@ public:
 
 private:
 	void SphereCollision(Entity& clothEntity, Entity& sphereEntity);
+	void PyramidCollision(Entity& clothEntity, Entity& pyramidEntity);
 };
