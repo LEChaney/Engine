@@ -22,4 +22,6 @@ private:
 	Entity* m_cameraEntity;
 	int m_prevMouseState;
 	PointMass* m_grabbedPointMass;
+	glm::dvec2 m_mousePos;
+	glm::dvec2 m_prevMousePos;
 };

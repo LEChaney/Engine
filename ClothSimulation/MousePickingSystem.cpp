@@ -15,19 +15,25 @@ MousePickingSystem::MousePickingSystem(Scene& scene, Entity& cameraEntity)
 	: System(scene)
 	, m_cameraEntity{ &cameraEntity }
 {
+	glfwGetCursorPos(glfwGetCurrentContext(), &m_mousePos.x, &m_mousePos.y);
+	m_prevMousePos = m_mousePos;
 }
 
 void MousePickingSystem::update()
 {
 	int mouseState = glfwGetMouseButton(glfwGetCurrentContext(), GLFW_MOUSE_BUTTON_LEFT);
+	glfwGetCursorPos(glfwGetCurrentContext(), &m_mousePos.x, &m_mousePos.y);
 
 	// Grab point mass on mouse button down
 	if (m_prevMouseState == GLFW_RELEASE && mouseState == GLFW_PRESS) {
 		m_grabbedPointMass = mousePick();
+		if (m_grabbedPointMass)
+			m_grabbedPointMass->isFixed = true;
 	}
 
 	// Release point mass on mouse button up
 	if (m_grabbedPointMass && m_prevMouseState == GLFW_PRESS && mouseState == GLFW_RELEASE) {
+		m_grabbedPointMass->isFixed = false;
 		m_grabbedPointMass = nullptr;
 	}
 
@@ -37,6 +43,7 @@ void MousePickingSystem::update()
 	}
 
 	m_prevMouseState = mouseState;
+	m_prevMousePos = m_mousePos;
 }
 
 void MousePickingSystem::beginFrame()
@@ -149,5 +156,15 @@ PointMass* MousePickingSystem::mousePick()
 
 void MousePickingSystem::updateGrabbedPointMass()
 {
+	if (!m_grabbedPointMass)
+		return;
 
+	glm::vec4 viewPos = m_cameraEntity->camera.getView() * glm::vec4{ m_grabbedPointMass->getPosition(), 1.0f };
+	glm::vec2 deltaMouse = m_mousePos - m_prevMousePos;
+
+	viewPos.x += deltaMouse.x * 0.05f;
+	viewPos.y -= deltaMouse.y * 0.05f;
+
+	glm::vec4 newPos = glm::inverse(m_cameraEntity->camera.getView()) * viewPos;
+	m_grabbedPointMass->setPosition(newPos);
 }
