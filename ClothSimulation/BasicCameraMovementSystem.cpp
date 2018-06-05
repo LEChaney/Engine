@@ -48,7 +48,7 @@ void BasicCameraMovementSystem::beginFrame()
 	glm::mat3 coordinateSystem;
 	glm::vec3 pos = cameraComponent.getPosition();
 	glm::vec3& right = coordinateSystem[0] = cameraComponent.getRight();
-	glm::vec3 up = coordinateSystem[1] = cameraComponent.getUp();
+	glm::vec3 up = coordinateSystem[1] = glm::vec3{ 0, 1, 0 };
 	glm::vec3& forward = coordinateSystem[2] = cameraComponent.getForward();
 
 	float moveSpeed = movementVars.moveSpeed;
