@@ -75,7 +75,7 @@ Entity& ClothComponent::createCloth(Scene& scene, GLuint numPointsX, GLuint numP
 		PointMass p(vertices[i].position, individualMass, false);
 
 		// Fix first 4 verts
-		if (i < 4)
+		if (i < numPointsX)
 			p.isFixed = true;
 
 		cloth.pointMasses.push_back(p);

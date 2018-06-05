@@ -46,9 +46,9 @@ void CollisionSystem::SphereCollision(Entity & clothEntity, Entity & sphereEntit
 {
 	for (PointMass& pointMass : clothEntity.cloth.pointMasses) {
 		glm::vec3 displacement = pointMass.getPosition() - sphereEntity.transform.position;
-		if (glm::length(displacement) < sphereEntity.sphereCollision.radius + 0.02f) {
+		if (glm::length(displacement) < sphereEntity.sphereCollision.radius + 0.04f) {
 			glm::vec3 moveDirection = glm::normalize(displacement);
-			pointMass.setPosition(sphereEntity.transform.position + (moveDirection * (sphereEntity.sphereCollision.radius + 0.02f)));
+			pointMass.setPosition(sphereEntity.transform.position + (moveDirection * (sphereEntity.sphereCollision.radius + 0.04f)));
 		}
 	}
 }

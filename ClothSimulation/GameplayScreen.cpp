@@ -84,18 +84,25 @@ GameplayScreen::GameplayScreen()
 	//diffuseSphere.terrainFollow.followerHalfHeight = 1.0f;
 	TransformComponent sphereTransform;
 	sphereTransform.position.y = -1.2f;
+	sphereTransform.position.x = 2.0f;
 	Entity& sphere = Prefabs::createSphere(m_scene, sphereTransform);
-	sphere.addComponents(COMPONENT_SPHERE_COLLISION);
+	sphere.addComponents(COMPONENT_SPHERE_COLLISION | COMPONENT_SIMPLE_WORLD_SPACE_MOVE_COMPONENT | COMPONENT_INPUT | COMPONENT_INPUT_MAP);
 	sphere.sphereCollision.radius = 1.0f;
+	sphere.inputMap.backwardBtnMap = GLFW_KEY_DOWN;
+	sphere.inputMap.forwardBtnMap = GLFW_KEY_UP;
+	sphere.inputMap.leftBtnMap = GLFW_KEY_LEFT;
+	sphere.inputMap.rightBtnMap = GLFW_KEY_RIGHT;
+	sphere.simpleWorldSpaceMovement.moveSpeed = 1.0f;
 
 	Entity& cloth = Prefabs::createCloth(m_scene, 20, 20, 2, 2, 1);
 
 	m_activeSystems.push_back(std::move(basicCameraMovementSystem));
 	m_activeSystems.push_back(std::move(renderSystem));
 	m_activeSystems.push_back(std::make_unique<MousePickingSystem>(m_scene));
-	m_activeSystems.push_back(std::make_unique<ClothSystem>(m_scene));
 	m_activeSystems.push_back(std::make_unique<PhysicsSystem>(m_scene));
+	m_activeSystems.push_back(std::make_unique<SimpleWorldSpaceMoveSystem>(m_scene));
 	m_activeSystems.push_back(std::make_unique<CollisionSystem>(m_scene));
+	m_activeSystems.push_back(std::make_unique<ClothSystem>(m_scene));
 }
 
 

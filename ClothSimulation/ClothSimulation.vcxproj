@@ -183,7 +183,9 @@ xcopy "$(ProjectDir)ext\assimp\lib_64\assimp-vc140-mt.dll" "$(OutDir)" /dsy</Com
     <ClCompile Include="MousePickingSystem.cpp" />
     <ClCompile Include="PhysicsSystem.cpp" />
     <ClCompile Include="PointMass.cpp" />
+    <ClCompile Include="PyramidCollisionComponent.cpp" />
     <ClCompile Include="RenderBuffer.cpp" />
+    <ClCompile Include="SimpleWorldSpaceMoveComponent.cpp" />
     <ClCompile Include="SimpleWorldSpaceMoveSystem.cpp" />
     <ClCompile Include="SphereCollisionComponent.cpp" />
     <ClCompile Include="SpringConstraint.cpp" />
@@ -212,6 +214,7 @@ xcopy "$(ProjectDir)ext\assimp\lib_64\assimp-vc140-mt.dll" "$(OutDir)" /dsy</Com
     <ClInclude Include="MousePickingSystem.h" />
     <ClInclude Include="CollisionSystem.h" />
     <ClInclude Include="PointMass.h" />
+    <ClInclude Include="PyramidCollisionComponent.h" />
     <ClInclude Include="SphereCollisionComponent.h" />
     <ClInclude Include="SpringConstraint.h" />
     <ClInclude Include="UBOBlockFormats.h" />
