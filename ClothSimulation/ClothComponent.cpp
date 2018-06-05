@@ -87,21 +87,21 @@ Entity& ClothComponent::createCloth(Scene& scene, GLuint numPointsX, GLuint numP
 			GLuint i = r * numPointsX + c;
 
 			// Structural Constraints
-			cloth.addSpringConstraint(r, c, r, c + 1, 1, 0.25);
-			cloth.addSpringConstraint(r, c, r + 1, c, 1, 0.25);
+			cloth.addSpringConstraint(r, c, r, c + 1, 1.0f, 0.25f);
+			cloth.addSpringConstraint(r, c, r + 1, c, 1.0f, 0.25f);
 
 			// Shear Constraints
-			cloth.addSpringConstraint(r, c, r + 1, c + 1, 0.5, 0.25);
-			cloth.addSpringConstraint(r, c + 1, r + 1, c, 0.5, 0.25);
+			cloth.addSpringConstraint(r, c, r + 1, c + 1, 0.5f, 0.25f);
+			cloth.addSpringConstraint(r, c + 1, r + 1, c, 0.5f, 0.25f);
 
 			// Bending Constraints
 			if (c < numPointsX - 2)
-				cloth.addSpringConstraint(r, c, r, c + 2, 0.1, 0.25);
+				cloth.addSpringConstraint(r, c, r, c + 2, 0.1f, 0.25f);
 			if (r < numPointsY - 2)
-				cloth.addSpringConstraint(r, c, r + 2, c, 0.1, 0.25);
+				cloth.addSpringConstraint(r, c, r + 2, c, 0.1f, 0.25f);
 			if (r < numPointsY - 2 && c < numPointsX - 2) {
-				cloth.addSpringConstraint(r, c, r + 2, c + 2, 0.1, 0.25);
-				cloth.addSpringConstraint(r, c + 2, r + 2, c, 0.1, 0.25);
+				cloth.addSpringConstraint(r, c, r + 2, c + 2, 0.1f, 0.25f);
+				cloth.addSpringConstraint(r, c + 2, r + 2, c, 0.1f, 0.25f);
 			}
 		}
 	}
