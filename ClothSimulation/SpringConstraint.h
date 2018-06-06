@@ -13,12 +13,14 @@ public:
 
 	// Solves the constraint by moving the pointmasses involved to their desired position.
 	// Should break informs the system whether the constraint is broken and should be removed.
-	void solveConstraint(bool& broken);
+	void solveConstraint();
 
 	PointMass& getPointMass1();
 	const PointMass& getPointMass1() const;
 	PointMass& getPointMass2();
 	const PointMass& getPointMass2() const;
+
+	bool isBroken() const;
 
 private:
 	PointMass* m_p1;
@@ -26,4 +28,5 @@ private:
 	GLfloat m_restLength;
 	GLfloat m_stiffness; // Has range [0, 1], where 0 is completely free and 1 is a completely rigid constraint
 	GLfloat m_breakDistance;
+	bool m_isBroken;
 };

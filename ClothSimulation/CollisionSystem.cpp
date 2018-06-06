@@ -65,19 +65,19 @@ void CollisionSystem::PyramidCollision(Entity & clothEntity, Entity & pyramidEnt
 	glm::vec3 pyramidScale = pyramidEntity.transform.scale;
 	float maxCollisionDistance = glm::max(glm::max(pyramidScale.x, pyramidScale.y), pyramidScale.z);
 
-	for (size_t i = 0; i < pointMasses.size()- clothEntity.cloth.numPointMassesX; ++i) {			// Don't need the last row
+	for (size_t i = 0; i < pointMasses.size()- clothEntity.cloth.m_numPointMassesX; ++i) {			// Don't need the last row
 		PointMass pointMass = clothEntity.cloth.pointMasses.at(i);
 		glm::vec3 displacement = pointMass.getPosition() - pyramidEntity.transform.position;
-		if (glm::length(displacement) < maxCollisionDistance && (i + 1) % clothEntity.cloth.numPointMassesX != 0) {	// Ignore final pointmass in row
+		if (glm::length(displacement) < maxCollisionDistance && (i + 1) % clothEntity.cloth.m_numPointMassesX != 0) {	// Ignore final pointmass in row
 			for (size_t j = 3; j < pyramidPoints.size(); j += 3){	//TODO: Get ask lance about the indicies he added
 				// Triangle 1
 				glm::vec3 clothPoint1 = pointMasses.at(i).getPosition();
 				glm::vec3 clothPoint2 = pointMasses.at(i + 1).getPosition();
-				glm::vec3 clothPoint3 = pointMasses.at(i + clothEntity.cloth.numPointMassesX).getPosition();
+				glm::vec3 clothPoint3 = pointMasses.at(i + clothEntity.cloth.m_numPointMassesX).getPosition();
 				// Triangle 2
 				glm::vec3 clothPoint4 = pointMasses.at(i + 1).getPosition();
-				glm::vec3 clothPoint5 = pointMasses.at(i + clothEntity.cloth.numPointMassesX).getPosition();
-				glm::vec3 clothPoint6 = pointMasses.at(i + clothEntity.cloth.numPointMassesX + 1).getPosition();
+				glm::vec3 clothPoint5 = pointMasses.at(i + clothEntity.cloth.m_numPointMassesX).getPosition();
+				glm::vec3 clothPoint6 = pointMasses.at(i + clothEntity.cloth.m_numPointMassesX + 1).getPosition();
 				// Triangle 3
 				glm::vec3 pyramidPoint1 = pyramidPoints.at(j);
 				glm::vec3 pyramidPoint2 = pyramidPoints.at(j - 1);

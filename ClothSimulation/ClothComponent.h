@@ -4,33 +4,49 @@
 #include "SpringConstraint.h"
 
 #include <glad\glad.h>
+#include <glm\glm.hpp>
 
 #include <vector>
+#include <array>
 
 class Entity;
 class Scene;
 
-struct ClothComponent {
-	std::vector<PointMass> pointMasses;
+enum LinkDirection : size_t {
+	LINK_NORTH,
+	LINK_NORTH_EAST,
+	LINK_EAST,
+	LINK_SOUTH_EAST,
+	LINK_SOUTH,
+	LINK_SOUTH_WEST,
+	LINK_WEST,
+	LINK_NORTH_WEST
+};
 
-	// Spring constraints, bucketed by cloth patches top left pointmass index
-	// Index -> o---o
-	//          |\ /|
-	//          | \ |   <-- Patch
-	//          |/ \|
-	//          o---o
-	std::vector<std::vector<SpringConstraint>> springConstraints;
+struct ClothLink {
+	ClothLink(GLuint node1Id, GLuint node2Id, GLuint springConstraintId);
 
-	std::vector<GLuint> triIndices;
-	
-	GLuint numPointMassesX;
-	GLuint numPointMassesY;
+	GLuint node1Id;
+	GLuint node2Id;
+	GLuint springConstraintId;
+};
 
-	PointMass& getPointMass(GLuint row, GLuint col);
+struct ClothNode {
+	ClothNode(glm::vec3 position, GLfloat mass, GLboolean isFixed);
 
-	// Add sping contraint between two points on the cloth mesh
-	// p1Row and p1Col can be used later to quickly lookup the constraints
-	void addSpringConstraint(GLuint p1Row, GLuint p1Col, GLuint p2Row, GLuint p2Col, GLfloat stiffness, GLfloat breakDistance);
+	PointMass pointMass;
+	// Cloth links bucketed by cardinal direction (north, north east, ... , north west)
+	std::array<std::vector<ClothLink>, 8> linkDirections;
+};
+
+class ClothComponent {
+public:
+
+	// Add sping contraint between two points on the cloth mesh.
+	void addClothLink(GLuint pointMass1Id, GLuint pointMass2Id, GLfloat stiffness, GLfloat breakDistance);
+
+	void breakClothLink(const ClothLink& clothLink);
+	void breakAllLinksInDirection(GLuint nodeId, LinkDirection direction);
 
 	// Check if there is a constraint between the point masses at the given indices.
 	// idx1 is considered to be the index of the top left point mass in a cloth patch.
@@ -38,7 +54,15 @@ struct ClothComponent {
 	// Otherwise no constraint will be found, even if one exists.
 	bool hasConstraintBetween(GLuint idx1, GLuint idx2) const;
 
-	static Entity& createCloth(Scene& scene, GLuint numPointsX, GLuint numPointsY, GLfloat width, GLfloat height, GLfloat weightPerUnitArea);	
+	static Entity& createCloth(Scene& scene, GLuint numPointsX, GLuint numPointsY, GLfloat width, GLfloat height, GLfloat weightPerUnitArea);
+
+private:
+	std::vector<SpringConstraint> m_springConstraints;
+	std::vector<ClothNode> m_clothNodes;
+	std::vector<GLuint> m_triIndices;
+
+	GLuint m_numPointMassesX;
+	GLuint m_numPointMassesY;
 };
 
 namespace Prefabs {

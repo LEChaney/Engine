@@ -9,20 +9,23 @@ SpringConstraint::SpringConstraint(PointMass& p1, PointMass& p2, GLfloat stiffne
 	, m_p2{ &p2 }
 	, m_stiffness{ stiffness }
 	, m_breakDistance{ breakDistance }
+	, m_isBroken{ false }
 {
 	m_restLength = glm::length(p2.getPosition() - p1.getPosition());
 }
 
-void SpringConstraint::solveConstraint(bool& broken)
+void SpringConstraint::solveConstraint()
 {
-	broken = false;
+	if (m_isBroken) {
+		return;
+	}
 
 	vec3 p1ToP2 = m_p2->getPosition() - m_p1->getPosition();
 	float currentLength = glm::length(p1ToP2);
 	vec3 correctionVector = p1ToP2 * (1 - m_restLength / currentLength);
 
 	if (glm::length(correctionVector) >= m_breakDistance) {
-		broken = true;
+		m_isBroken = true;
 		return;
 	}
 
@@ -54,4 +57,9 @@ PointMass& SpringConstraint::getPointMass2()
 const PointMass& SpringConstraint::getPointMass2() const
 {
 	return *m_p2;
+}
+
+bool SpringConstraint::isBroken() const
+{
+	return m_isBroken;
 }
