@@ -16,6 +16,8 @@
 #include "MousePickingSystem.h"
 #include "CollisionSystem.h"
 
+#include <nanogui/nanogui.h>
+
 #include <cmath>
 #include <list>
 

@@ -69,36 +69,37 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>$(ProjectDir)ext\glm;$(ProjectDir)ext\gli-0.8.2.0;$(ProjectDir)ext\assimp\include;$(ProjectDir)ext\glad\include;$(ProjectDir)ext\freetype2;$(ProjectDir)ext\FMOD;$(ProjectDir)ext\glfw-3.2.1.bin.WIN32\include;$(IncludePath);$(ProjectDir)ext\freetype2</IncludePath>
-    <LibraryPath>$(ProjectDir)ext/freetype2;$(ProjectDir)ext/freetype;$(ProjectDir)ext\FMOD;$(ProjectDir)ext\assimp\lib_64_debug;$(ProjectDir)ext\glfw-3.2.1.bin.WIN32\lib-vc2015;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(ProjectDir)ext\glm;$(ProjectDir)ext\gli-0.8.2.0;$(ProjectDir)ext\assimp\include;$(ProjectDir)ext\glad\include;$(ProjectDir)ext\freetype2;$(ProjectDir)ext\FMOD;$(ProjectDir)ext\nanogui\include;$(ProjectDir)ext\Eigen;$(ProjectDir)ext\nanovg;$(ProjectDir)ext\glfw-3.2.1.bin.WIN32\include;$(IncludePath);$(ProjectDir)ext\freetype2</IncludePath>
+    <LibraryPath>$(ProjectDir)ext/freetype2;$(ProjectDir)ext/freetype;$(ProjectDir)ext\FMOD;$(ProjectDir)ext\nanogui\lib;$(ProjectDir)ext\assimp\lib_64_debug;$(ProjectDir)ext\glfw-3.2.1.bin.WIN32\lib-vc2015;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>$(ProjectDir)ext\glm;$(ProjectDir)ext\gli-0.8.2.0;$(ProjectDir)ext\assimp\include;$(ProjectDir)ext\glad\include;$(ProjectDir)ext\freetype2;$(ProjectDir)ext\FMOD;$(ProjectDir)ext\glfw-3.2.1.bin.WIN32\include;$(IncludePath);$(ProjectDir)ext\freetype2</IncludePath>
-    <LibraryPath>$(ProjectDir)ext/freetype2;$(ProjectDir)ext/freetype;$(ProjectDir)ext\FMOD;$(ProjectDir)ext\assimp\lib_64;$(ProjectDir)ext\glfw-3.2.1.bin.WIN32\lib-vc2015;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(ProjectDir)ext\glm;$(ProjectDir)ext\gli-0.8.2.0;$(ProjectDir)ext\assimp\include;$(ProjectDir)ext\glad\include;$(ProjectDir)ext\freetype2;$(ProjectDir)ext\FMOD;$(ProjectDir)ext\nanogui\include;$(ProjectDir)ext\Eigen;$(ProjectDir)ext\nanovg;$(ProjectDir)ext\glfw-3.2.1.bin.WIN32\include;$(IncludePath);$(ProjectDir)ext\freetype2</IncludePath>
+    <LibraryPath>$(ProjectDir)ext/freetype2;$(ProjectDir)ext/freetype;$(ProjectDir)ext\FMOD;$(ProjectDir)ext\nanogui\lib;$(ProjectDir)ext\assimp\lib_64;$(ProjectDir)ext\glfw-3.2.1.bin.WIN32\lib-vc2015;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(ProjectDir)ext\glm;$(ProjectDir)ext\gli-0.8.2.0;$(ProjectDir)ext\assimp\include;$(ProjectDir)ext\glad\include;$(ProjectDir)ext\freetype2;$(ProjectDir)ext\FMOD;$(ProjectDir)ext\glfw-3.2.1.bin.WIN64\include;$(IncludePath);$(ProjectDir)ext\freetype2</IncludePath>
-    <LibraryPath>$(ProjectDir)ext/freetype2;$(ProjectDir)ext/freetype;$(ProjectDir)ext\FMOD;$(ProjectDir)ext\assimp\lib_64_debug;$(ProjectDir)ext\glfw-3.2.1.bin.WIN64\lib-vc2015;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(ProjectDir)ext\glm;$(ProjectDir)ext\gli-0.8.2.0;$(ProjectDir)ext\assimp\include;$(ProjectDir)ext\glad\include;$(ProjectDir)ext\freetype2;$(ProjectDir)ext\FMOD;$(ProjectDir)ext\nanogui\include;$(ProjectDir)ext\Eigen;$(ProjectDir)ext\nanovg;$(ProjectDir)ext\glfw-3.2.1.bin.WIN64\include;$(IncludePath);$(ProjectDir)ext\freetype2</IncludePath>
+    <LibraryPath>$(ProjectDir)ext/freetype2;$(ProjectDir)ext/freetype;$(ProjectDir)ext\FMOD;$(ProjectDir)ext\nanogui\lib;$(ProjectDir)ext\assimp\lib_64_debug;$(ProjectDir)ext\glfw-3.2.1.bin.WIN64\lib-vc2015;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(ProjectDir)ext\glm;$(ProjectDir)ext\gli-0.8.2.0;$(ProjectDir)ext\assimp\include;$(ProjectDir)ext\glad\include;$(ProjectDir)ext\freetype2;$(ProjectDir)ext\FMOD;$(ProjectDir)ext\glfw-3.2.1.bin.WIN64\include;$(IncludePath);$(ProjectDir)ext\freetype2</IncludePath>
-    <LibraryPath>$(ProjectDir)ext/freetype2;$(ProjectDir)ext/freetype;$(ProjectDir)ext\FMOD;$(ProjectDir)ext\assimp\lib_64;$(ProjectDir)ext\glfw-3.2.1.bin.WIN64\lib-vc2015;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(ProjectDir)ext\glm;$(ProjectDir)ext\gli-0.8.2.0;$(ProjectDir)ext\assimp\include;$(ProjectDir)ext\glad\include;$(ProjectDir)ext\freetype2;$(ProjectDir)ext\FMOD;$(ProjectDir)ext\nanogui\include;$(ProjectDir)ext\Eigen;$(ProjectDir)ext\nanovg;$(ProjectDir)ext\glfw-3.2.1.bin.WIN64\include;$(IncludePath);$(ProjectDir)ext\freetype2</IncludePath>
+    <LibraryPath>$(ProjectDir)ext/freetype2;$(ProjectDir)ext/freetype;$(ProjectDir)ext\FMOD;$(ProjectDir)ext\nanogui\lib;$(ProjectDir)ext\assimp\lib_64;$(ProjectDir)ext\glfw-3.2.1.bin.WIN64\lib-vc2015;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>GLFW_INCLUDE_NONE;NOMINMAX;WIN32_LEAN_AND_MEAN;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>GLFW_INCLUDE_NONE;NOMINMAX;WIN32_LEAN_AND_MEAN;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>glfw3.lib;Ws2_32.lib;assimp-vc140-mt.lib;freetype281d.lib;legacy_stdio_definitions.lib;fmod_vc.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>glfw3.lib;Ws2_32.lib;assimp-vc140-mt.lib;freetype281d.lib;legacy_stdio_definitions.lib;nanogui_d.lib;fmod_vc.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>xcopy "$(ProjectDir)ext\FMOD\*.dll" "$(OutDir)" /dsy
 xcopy "$(ProjectDir)ext\freetype2\zlib1.dll" "$(OutDir)" /dsy
 xcopy "$(ProjectDir)Assets" "$(OutDir)Assets\" /dsy
-xcopy "$(ProjectDir)ext\assimp\lib_64_debug\assimp-vc140-mt.dll" "$(OutDir)" /dsy</Command>
+xcopy "$(ProjectDir)ext\assimp\lib_64_debug\assimp-vc140-mt.dll" "$(OutDir)" /dsy
+copy /y "$(ProjectDir)ext\nanogui\lib\nanogui_d.dll" "$(OutDir)nanogui.dll"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -106,16 +107,17 @@ xcopy "$(ProjectDir)ext\assimp\lib_64_debug\assimp-vc140-mt.dll" "$(OutDir)" /ds
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>GLFW_INCLUDE_NONE;NOMINMAX;WIN32_LEAN_AND_MEAN;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>GLFW_INCLUDE_NONE;NOMINMAX;WIN32_LEAN_AND_MEAN;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>glfw3.lib;Ws2_32.lib;assimp-vc140-mt.lib;freetype281d.lib;legacy_stdio_definitions.lib;fmod64_vc.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>glfw3.lib;Ws2_32.lib;assimp-vc140-mt.lib;freetype281d.lib;legacy_stdio_definitions.lib;nanogui_d.lib;fmod64_vc.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>xcopy "$(ProjectDir)ext\FMOD\*.dll" "$(OutDir)" /dsy
 xcopy "$(ProjectDir)ext\freetype2\zlib1.dll" "$(OutDir)" /dsy
 xcopy "$(ProjectDir)Assets" "$(OutDir)Assets\" /dsy
-xcopy "$(ProjectDir)ext\assimp\lib_64_debug\assimp-vc140-mt.dll" "$(OutDir)" /dsy</Command>
+xcopy "$(ProjectDir)ext\assimp\lib_64_debug\assimp-vc140-mt.dll" "$(OutDir)" /dsy
+copy /y "$(ProjectDir)ext\nanogui\lib\nanogui_d.dll" "$(OutDir)nanogui.dll"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -125,18 +127,19 @@ xcopy "$(ProjectDir)ext\assimp\lib_64_debug\assimp-vc140-mt.dll" "$(OutDir)" /ds
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>GLFW_INCLUDE_NONE;NOMINMAX;WIN32_LEAN_AND_MEAN;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>GLFW_INCLUDE_NONE;NOMINMAX;WIN32_LEAN_AND_MEAN;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>glfw3.lib;Ws2_32.lib;assimp-vc140-mt.lib;freetype281d.lib;legacy_stdio_definitions.lib;fmod_vc.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>glfw3.lib;Ws2_32.lib;assimp-vc140-mt.lib;freetype281d.lib;legacy_stdio_definitions.lib;nanogui.lib;fmod_vc.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>xcopy "$(ProjectDir)ext\FMOD\*.dll" "$(OutDir)" /dsy
 xcopy "$(ProjectDir)ext\freetype2\zlib1.dll" "$(OutDir)" /dsy
 xcopy "$(ProjectDir)Assets" "$(OutDir)Assets\" /dsy
-xcopy "$(ProjectDir)ext\assimp\lib_64\assimp-vc140-mt.dll" "$(OutDir)" /dsy</Command>
+xcopy "$(ProjectDir)ext\assimp\lib_64\assimp-vc140-mt.dll" "$(OutDir)" /dsy
+copy /y "$(ProjectDir)ext\nanogui\lib\nanogui.dll" "$(OutDir)nanogui.dll"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -146,18 +149,19 @@ xcopy "$(ProjectDir)ext\assimp\lib_64\assimp-vc140-mt.dll" "$(OutDir)" /dsy</Com
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>GLFW_INCLUDE_NONE;NOMINMAX;WIN32_LEAN_AND_MEAN;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>GLFW_INCLUDE_NONE;NOMINMAX;WIN32_LEAN_AND_MEAN;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>glfw3.lib;Ws2_32.lib;assimp-vc140-mt.lib;freetype281d.lib;legacy_stdio_definitions.lib;fmod64_vc.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>glfw3.lib;Ws2_32.lib;assimp-vc140-mt.lib;freetype281d.lib;legacy_stdio_definitions.lib;nanogui.lib;fmod64_vc.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>xcopy "$(ProjectDir)ext\FMOD\*.dll" "$(OutDir)" /dsy
 xcopy "$(ProjectDir)ext\freetype2\zlib1.dll" "$(OutDir)" /dsy
 xcopy "$(ProjectDir)Assets" "$(OutDir)Assets\" /dsy
-xcopy "$(ProjectDir)ext\assimp\lib_64\assimp-vc140-mt.dll" "$(OutDir)" /dsy</Command>
+xcopy "$(ProjectDir)ext\assimp\lib_64\assimp-vc140-mt.dll" "$(OutDir)" /dsy
+copy /y "$(ProjectDir)ext\nanogui\lib\nanogui.dll" "$(OutDir)nanogui.dll"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
