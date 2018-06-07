@@ -21,4 +21,6 @@ public:
 private:
 	void SphereCollision(Entity& clothEntity, Entity& sphereEntity);
 	void PyramidCollision(Entity& clothEntity, Entity& pyramidEntity);
+	int TriangleTriangleIntersection(std::vector<glm::vec3>& T1, std::vector<glm::vec3>& T2, int& coplanar, 
+		glm::vec3& isectpt1, glm::vec3& isectpt2);
 };
