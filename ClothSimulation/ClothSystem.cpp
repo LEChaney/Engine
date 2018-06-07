@@ -43,8 +43,11 @@ void ClothSystem::update()
 						constraintIt->solveConstraint(broken);
 
 						// Remove constraint if broken
-						if (broken)
-							constraintIt = cloth.springConstraints[j].erase(constraintIt);
+						if (broken) {
+							// constraintIt = cloth.springConstraints[j].erase(constraintIt);
+							cloth.springConstraints[j].clear();
+							break;
+						}
 						else
 							++constraintIt;
 					}

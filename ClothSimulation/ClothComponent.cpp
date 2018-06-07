@@ -81,27 +81,31 @@ Entity& ClothComponent::createCloth(Scene& scene, GLuint numPointsX, GLuint numP
 	}
 
 	// Connect point masses with spring constraints
-	for (GLuint r = 0; r < numPointsY - 1; ++r) {
-		for (GLuint c = 0; c < numPointsX - 1; ++c) {
+	for (GLuint r = 0; r < numPointsY; ++r) {
+		for (GLuint c = 0; c < numPointsX; ++c) {
 			GLuint i = r * numPointsX + c;
 
 			// Structural Constraints
-			cloth.addSpringConstraint(r, c, r, c + 1, 1.0f, 0.25f);
-			cloth.addSpringConstraint(r, c, r + 1, c, 1.0f, 0.25f);
+			if (c < numPointsX - 1)
+				cloth.addSpringConstraint(r, c, r, c + 1, 1.0f, 0.25f);
+			if (r < numPointsY - 1)
+				cloth.addSpringConstraint(r, c, r + 1, c, 1.0f, 0.25f);
 
 			// Shear Constraints
-			cloth.addSpringConstraint(r, c, r + 1, c + 1, 0.5f, 0.25f);
-			cloth.addSpringConstraint(r, c + 1, r + 1, c, 0.5f, 0.25f);
+			if (r < numPointsY - 1 && c < numPointsX - 1) {
+				cloth.addSpringConstraint(r, c, r + 1, c + 1, 0.5f, 0.25f);
+				cloth.addSpringConstraint(r, c + 1, r + 1, c, 0.5f, 0.25f);
+			}
 
 			// Bending Constraints
-			if (c < numPointsX - 2)
-				cloth.addSpringConstraint(r, c, r, c + 2, 0.1f, 0.25f);
-			if (r < numPointsY - 2)
-				cloth.addSpringConstraint(r, c, r + 2, c, 0.1f, 0.25f);
-			if (r < numPointsY - 2 && c < numPointsX - 2) {
-				cloth.addSpringConstraint(r, c, r + 2, c + 2, 0.1f, 0.25f);
-				cloth.addSpringConstraint(r, c + 2, r + 2, c, 0.1f, 0.25f);
-			}
+			//if (c < numPointsX - 2)
+			//	cloth.addSpringConstraint(r, c, r, c + 2, 0.1f, 0.25f);
+			//if (r < numPointsY - 2)
+			//	cloth.addSpringConstraint(r, c, r + 2, c, 0.1f, 0.25f);
+			//if (r < numPointsY - 2 && c < numPointsX - 2) {
+			//	cloth.addSpringConstraint(r, c, r + 2, c + 2, 0.1f, 0.25f);
+			//	cloth.addSpringConstraint(r, c + 2, r + 2, c, 0.1f, 0.25f);
+			//}
 		}
 	}
 
