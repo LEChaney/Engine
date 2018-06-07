@@ -16,13 +16,57 @@
 #include "MousePickingSystem.h"
 #include "CollisionSystem.h"
 
-#include <nanogui/nanogui.h>
-
 #include <cmath>
 #include <list>
 
+enum test_enum {
+	Item1 = 0,
+	Item2,
+	Item3
+};
+
 GameplayScreen::GameplayScreen()
+	: Screen()
 {
+	bool bvar = true;
+	int ivar = 12345678;
+	double dvar = 3.1415926;
+	float fvar = (float)dvar;
+	std::string strval = "A string";
+	test_enum enumval = Item2;
+	nanogui::Color colval(0.5f, 0.5f, 0.7f, 1.f);
+
+	// Create nanogui gui
+	bool enabled = true;
+	nanogui::FormHelper *gui = new nanogui::FormHelper(m_uiScreen);
+	nanogui::ref<nanogui::Window> nanoguiWindow = gui->addWindow(Eigen::Vector2i(10, 10), "Form helper example");
+	gui->addGroup("Basic types");
+	gui->addVariable("bool", bvar)->setTooltip("Test tooltip.");
+	gui->addVariable("string", strval);
+
+	gui->addGroup("Validating fields");
+	gui->addVariable("int", ivar)->setSpinnable(true);
+	gui->addVariable("float", fvar)->setTooltip("Test.");
+	gui->addVariable("double", dvar)->setSpinnable(true);
+
+	gui->addGroup("Complex types");
+	gui->addVariable("Enumeration", enumval, enabled)->setItems({ "Item 1", "Item 2", "Item 3" });
+	gui->addVariable("Color", colval)->setCallback([](const nanogui::Color &c) {
+		std::cout << "ColorPicker Final Callback: ["
+			<< c.r() << ", "
+			<< c.g() << ", "
+			<< c.b() << ", "
+			<< c.w() << "]" << std::endl;
+	});
+
+	gui->addGroup("Other widgets");
+	gui->addButton("A button", []() { std::cout << "Button pressed." << std::endl; })->setTooltip("Testing a much longer tooltip, that will wrap around to new lines multiple times.");;
+
+	m_uiScreen->setVisible(true);
+	m_uiScreen->performLayout();
+	nanoguiWindow->center();
+
+
 	// Init systems
 	m_activeSystems.push_back(std::make_unique<InputSystem>(m_scene));
 	m_activeSystems.push_back(std::make_unique<TerrainFollowSystem>(m_scene));
