@@ -28,17 +28,17 @@ void CameraComponent::setPerspective(float fov, float aspectRatio, float nearPla
 	m_farClipDistance = farPlane;
 }
 
-const glm::vec3& CameraComponent::getForward() const
+glm::vec3 CameraComponent::getForward() const
 {
 	return glm::vec4{ 0, 0, -1, 0 } * m_viewMat;
 }
 
-const glm::vec3& CameraComponent::getRight() const
+glm::vec3 CameraComponent::getRight() const
 {
 	return glm::vec4{ 1, 0, 0, 0 } * m_viewMat;
 }
 
-const glm::vec3& CameraComponent::getUp() const
+glm::vec3 CameraComponent::getUp() const
 {
 	return glm::vec4{ 0, 1, 0, 0 } * m_viewMat;
 }

@@ -27,7 +27,11 @@ void SpringConstraint::solveConstraint(bool& broken)
 	}
 
 	float invMass1 = 1 / m_p1->mass;
+	if (m_p1->isFixed)
+		invMass1 = 0;
 	float invMass2 = 1 / m_p2->mass;
+	if (m_p2->isFixed)
+		invMass2 = 0;
 	//                        vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv = 0.5 when masses are equal
 	float correctionWeight1 = (invMass1 / (invMass1 + invMass2)) * m_stiffness;
 	float correctionWeight2 = m_stiffness - correctionWeight1;
