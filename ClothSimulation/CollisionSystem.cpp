@@ -88,40 +88,40 @@ void CollisionSystem::PyramidCollision(Entity & clothEntity, Entity & pyramidEnt
 				int intersecting = TriangleTriangleIntersection(triangle1, triangle2, coplanar, intersect1, intersect2);
 
 				if (intersecting && ! coplanar) {
-					glm::vec3 penetratingPoint1;
+					glm::vec3 penetratingPoint;
 					glm::vec3 pyramidPosition = pyramidEntity.transform.position;
 					float point0dist = glm::distance(pyramidPosition, triangle1.at(0));
 					float point1dist = glm::distance(pyramidPosition, triangle1.at(1));
 					float point2dist = glm::distance(pyramidPosition, triangle1.at(2));
 
-					clothEntity.cloth.pointMasses.at(triIndices.at(i)).addOffset((((intersect1 + intersect2) / 2.0f) - pyramidPosition) * 0.01f);
+					/*clothEntity.cloth.pointMasses.at(triIndices.at(i)).addOffset((((intersect1 + intersect2) / 2.0f) - pyramidPosition) * 0.01f);
 					clothEntity.cloth.pointMasses.at(triIndices.at(i + 1)).addOffset((((intersect1 + intersect2) / 2.0f) - pyramidPosition) * 0.01f);
-					clothEntity.cloth.pointMasses.at(triIndices.at(i + 2)).addOffset((((intersect1 + intersect2) / 2.0f) - pyramidPosition) * 0.01f);
+					clothEntity.cloth.pointMasses.at(triIndices.at(i + 2)).addOffset((((intersect1 + intersect2) / 2.0f) - pyramidPosition) * 0.01f);*/
 
 					// Gets the closest and 2nd closest point to the centre of the triangle
-					/*if (point0dist < (glm::min(point1dist, point2dist))){
-						penetratingPoint1 = triangle1.at(0);
+					if (point0dist < (glm::min(point1dist, point2dist))){
+						penetratingPoint = triangle1.at(0);
 					}
 					else if (point1dist < point2dist) {
-						penetratingPoint1 = triangle1.at(1);
+						penetratingPoint = triangle1.at(1);
 					}
 					else {
-						penetratingPoint1 = triangle1.at(2);
+						penetratingPoint = triangle1.at(2);
 					}
 
 					float distance;
 					glm::vec3 pointOnLine;
 					glm::vec3 triangleOffset;
 
-					PointLineDistance(penetratingPoint1, intersect1, intersect2, distance, pointOnLine);
-					triangleOffset = glm::normalize(pointOnLine - penetratingPoint1) * distance;
+					PointLineDistance(penetratingPoint, intersect1, intersect2, distance, pointOnLine);
+					triangleOffset = glm::normalize(pointOnLine - penetratingPoint) * distance;
 
-					clothEntity.cloth.pointMasses.at(triIndices.at(i)).setPosition(clothEntity.cloth.pointMasses.at(triIndices.at(i)).getPosition() + triangleOffset);
+					/*clothEntity.cloth.pointMasses.at(triIndices.at(i)).setPosition(clothEntity.cloth.pointMasses.at(triIndices.at(i)).getPosition() + triangleOffset);
 					clothEntity.cloth.pointMasses.at(triIndices.at(i + 1)).setPosition(clothEntity.cloth.pointMasses.at(triIndices.at(i + 1)).getPosition() + triangleOffset);
 					clothEntity.cloth.pointMasses.at(triIndices.at(i + 2)).setPosition(clothEntity.cloth.pointMasses.at(triIndices.at(i + 2)).getPosition() + triangleOffset);*/
-					/*clothEntity.cloth.pointMasses.at(triIndices.at(i)).addOffset(triangleOffset);
+					clothEntity.cloth.pointMasses.at(triIndices.at(i)).addOffset(triangleOffset);
 					clothEntity.cloth.pointMasses.at(triIndices.at(i + 1)).addOffset(triangleOffset);
-					clothEntity.cloth.pointMasses.at(triIndices.at(i + 2)).addOffset(triangleOffset);*/
+					clothEntity.cloth.pointMasses.at(triIndices.at(i + 2)).addOffset(triangleOffset);
 				}
 			}
 		}
@@ -130,7 +130,7 @@ void CollisionSystem::PyramidCollision(Entity & clothEntity, Entity & pyramidEnt
 
 void CollisionSystem::PointLineDistance(glm::vec3 point, glm::vec3 lineSeg1, glm::vec3 lineSeg2, float & distance, glm::vec3 & pointOnLine)
 {
-	float t = -(glm::dot((lineSeg1 - point), (lineSeg2 - lineSeg1))) / glm::pow(glm::length(lineSeg2 - lineSeg1), 2);
+	float t = -((glm::dot((lineSeg1 - point), (lineSeg2 - lineSeg1))) / glm::pow(glm::length(lineSeg2 - lineSeg1), 2));
 	pointOnLine = lineSeg1 + (lineSeg2 - lineSeg1) * t;
 	distance = glm::length(pointOnLine - point);
 }
