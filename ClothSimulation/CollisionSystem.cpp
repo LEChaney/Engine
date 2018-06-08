@@ -63,47 +63,89 @@ void CollisionSystem::PyramidCollision(Entity & clothEntity, Entity & pyramidEnt
 	auto pyramidIndicies = GLPrimitives::getPyramidIndices();
 	auto pointMasses = clothEntity.cloth.pointMasses;
 	glm::vec3 pyramidScale = pyramidEntity.transform.scale;
-	float maxCollisionDistance = glm::max(glm::max(pyramidScale.x, pyramidScale.y), pyramidScale.z);
 	auto& triIndices = clothEntity.cloth.triIndices;
 
+	// Loop through cloth
 	for (size_t i = 0; i < triIndices.size(); i += 3){
-		for (size_t j = 0; j < pyramidIndicies.size(); j += 3) {
-			// Triangle 1
-			std::vector<glm::vec3> triangle1 = {};
-			triangle1.push_back(pointMasses.at(triIndices.at(i)).getPosition());
-			triangle1.push_back(pointMasses.at(triIndices.at(i + 1)).getPosition());
-			triangle1.push_back(pointMasses.at(triIndices.at(i + 2)).getPosition());
-			// Triangle 2
-			std::vector<glm::vec3> triangle2 = {};
-			triangle2.push_back(pyramidPoints.at(pyramidIndicies.at(j)));
-			triangle2.push_back(pyramidPoints.at(pyramidIndicies.at(j + 1)));
-			triangle2.push_back(pyramidPoints.at(pyramidIndicies.at(j + 2)));
+		float pointTriangleDistance = glm::length(pointMasses.at(triIndices.at(i)).getPosition() - pyramidEntity.transform.position);
+		if (pointTriangleDistance < glm::length(pyramidEntity.transform.scale)) {															// Works due to the triangle being 1 unit size
+			// Loop through pyramid
+			for (size_t j = 0; j < pyramidIndicies.size(); j += 3) {
+				// Triangle 1
+				std::vector<glm::vec3> triangle1 = {};
+				triangle1.push_back(pointMasses.at(triIndices.at(i)).getPosition());
+				triangle1.push_back(pointMasses.at(triIndices.at(i + 1)).getPosition());
+				triangle1.push_back(pointMasses.at(triIndices.at(i + 2)).getPosition());
+				// Triangle 2
+				std::vector<glm::vec3> triangle2 = {};
+				triangle2.push_back(pyramidPoints.at(pyramidIndicies.at(j)));
+				triangle2.push_back(pyramidPoints.at(pyramidIndicies.at(j + 1)));
+				triangle2.push_back(pyramidPoints.at(pyramidIndicies.at(j + 2)));
 
-			/*int coplanar;
-			glm::vec3 intersect1;
-			glm::vec3 intersect2;
-			int intersecting = TriangleTriangleIntersection(triangle1, triangle2, coplanar, intersect1, intersect2);
+				int coplanar = 0;
+				glm::vec3 intersect1;
+				glm::vec3 intersect2;
+				int intersecting = TriangleTriangleIntersection(triangle1, triangle2, coplanar, intersect1, intersect2);
 
-			if (intersecting) {
-				clothEntity.cloth.pointMasses.at(triIndices.at(i)).setPosition({ 10.0f,10.0f,10.0f });
-				clothEntity.cloth.pointMasses.at(triIndices.at(i + 1)).setPosition({ 10.0f,10.0f,10.0f });
-				clothEntity.cloth.pointMasses.at(triIndices.at(i + 2)).setPosition({ 10.0f,10.0f,10.0f });
-			}*/
+				if (intersecting && ! coplanar) {
+					glm::vec3 penetratingPoint1;
+					glm::vec3 pyramidPosition = pyramidEntity.transform.position;
+					float point0dist = glm::distance(pyramidPosition, triangle1.at(0));
+					float point1dist = glm::distance(pyramidPosition, triangle1.at(1));
+					float point2dist = glm::distance(pyramidPosition, triangle1.at(2));
+
+					clothEntity.cloth.pointMasses.at(triIndices.at(i)).addOffset((((intersect1 + intersect2) / 2.0f) - pyramidPosition) * 0.01f);
+					clothEntity.cloth.pointMasses.at(triIndices.at(i + 1)).addOffset((((intersect1 + intersect2) / 2.0f) - pyramidPosition) * 0.01f);
+					clothEntity.cloth.pointMasses.at(triIndices.at(i + 2)).addOffset((((intersect1 + intersect2) / 2.0f) - pyramidPosition) * 0.01f);
+
+					// Gets the closest and 2nd closest point to the centre of the triangle
+					/*if (point0dist < (glm::min(point1dist, point2dist))){
+						penetratingPoint1 = triangle1.at(0);
+					}
+					else if (point1dist < point2dist) {
+						penetratingPoint1 = triangle1.at(1);
+					}
+					else {
+						penetratingPoint1 = triangle1.at(2);
+					}
+
+					float distance;
+					glm::vec3 pointOnLine;
+					glm::vec3 triangleOffset;
+
+					PointLineDistance(penetratingPoint1, intersect1, intersect2, distance, pointOnLine);
+					triangleOffset = glm::normalize(pointOnLine - penetratingPoint1) * distance;
+
+					clothEntity.cloth.pointMasses.at(triIndices.at(i)).setPosition(clothEntity.cloth.pointMasses.at(triIndices.at(i)).getPosition() + triangleOffset);
+					clothEntity.cloth.pointMasses.at(triIndices.at(i + 1)).setPosition(clothEntity.cloth.pointMasses.at(triIndices.at(i + 1)).getPosition() + triangleOffset);
+					clothEntity.cloth.pointMasses.at(triIndices.at(i + 2)).setPosition(clothEntity.cloth.pointMasses.at(triIndices.at(i + 2)).getPosition() + triangleOffset);*/
+					/*clothEntity.cloth.pointMasses.at(triIndices.at(i)).addOffset(triangleOffset);
+					clothEntity.cloth.pointMasses.at(triIndices.at(i + 1)).addOffset(triangleOffset);
+					clothEntity.cloth.pointMasses.at(triIndices.at(i + 2)).addOffset(triangleOffset);*/
+				}
+			}
 		}
 	}
 }
 
+void CollisionSystem::PointLineDistance(glm::vec3 point, glm::vec3 lineSeg1, glm::vec3 lineSeg2, float & distance, glm::vec3 & pointOnLine)
+{
+	float t = -(glm::dot((lineSeg1 - point), (lineSeg2 - lineSeg1))) / glm::pow(glm::length(lineSeg2 - lineSeg1), 2);
+	pointOnLine = lineSeg1 + (lineSeg2 - lineSeg1) * t;
+	distance = glm::length(pointOnLine - point);
+}
+
 void isect2(glm::vec3 VTX0, glm::vec3 VTX1, glm::vec3 VTX2, float VV0, float VV1, float VV2,
-	float D0, float D1, float D2, float *isect0, float *isect1, glm::vec3 isectpoint0, glm::vec3 isectpoint1)
+	float D0, float D1, float D2, float& isect0, float& isect1, glm::vec3& isectpoint0, glm::vec3& isectpoint1)
 {
 	float tmp = D0 / (D0 - D1);
 	glm::vec3 diff;
-	*isect0 = VV0 + (VV1 - VV0)*tmp;
+	isect0 = VV0 + (VV1 - VV0)*tmp;
 	diff =VTX1 - VTX0;
 	diff = diff * tmp;
 	isectpoint0 = diff + VTX0;
 	tmp = D0 / (D0 - D2);
-	*isect1 = VV0 + (VV2 - VV0)*tmp;
+	isect1 = VV0 + (VV2 - VV0)*tmp;
 	diff = VTX2 - VTX0;
 	diff = diff * tmp;
 	isectpoint1 = VTX0 + diff;
@@ -111,8 +153,8 @@ void isect2(glm::vec3 VTX0, glm::vec3 VTX1, glm::vec3 VTX2, float VV0, float VV1
 
 int compute_intervals_isectline(glm::vec3 VERT0, glm::vec3 VERT1, glm::vec3 VERT2,
 	float VV0, float VV1, float VV2, float D0, float D1, float D2,
-	float D0D1, float D0D2, float *isect0, float *isect1,
-	glm::vec3 isectpoint0, glm::vec3 isectpoint1)
+	float D0D1, float D0D2, float& isect0, float& isect1,
+	glm::vec3& isectpoint0, glm::vec3& isectpoint1)
 {
 	if (D0D1>0.0f)
 	{
@@ -307,9 +349,9 @@ int CollisionSystem::TriangleTriangleIntersection(std::vector<glm::vec3>& T1, st
 	d2 = -glm::dot(N2, T2[0]);
 
 	// Put triangle 1 into plane equationg to compute signed distance to plane
-	du0 = glm::dot(N2, T1[0]) + d2;
-	du1 = glm::dot(N2, T1[1]) + d2;
-	du2 = glm::dot(N2, T1[2]) + d2;
+	dv0 = glm::dot(N2, T1[0]) + d2;
+	dv1 = glm::dot(N2, T1[1]) + d2;
+	dv2 = glm::dot(N2, T1[2]) + d2;
 
 	if (glm::abs(dv0)<epsilon) dv0 = 0.0;
 	if (glm::abs(dv1)<epsilon) dv1 = 0.0;
@@ -343,13 +385,13 @@ int CollisionSystem::TriangleTriangleIntersection(std::vector<glm::vec3>& T1, st
 
 	// Compute interval for triangle 1
 	coplanar = compute_intervals_isectline(T1[0], T1[1], T1[2], vp0, vp1, vp2, dv0, dv1, dv2,
-		dv0dv1, dv0dv2, &isect1[0], &isect1[1], isectpointA1, isectpointA2);
+		dv0dv1, dv0dv2, isect1[0], isect1[1], isectpointA1, isectpointA2);
 
 	if (coplanar) return coplanar_tri_tri(N1, T1[0], T1[1], T1[2], T2[0], T2[1], T2[2]);
 
 	// Compute interval for triangle 2
 	compute_intervals_isectline(T2[0], T2[1], T2[2], up0, up1, up2, du0, du1, du2,
-		du0du1, du0du2, &isect2[0], &isect2[1], isectpointB1, isectpointB2);
+		du0du1, du0du2, isect2[0], isect2[1], isectpointB1, isectpointB2);
 
 	SORT2(isect1[0], isect1[1], smallest1);
 	SORT2(isect2[0], isect2[1], smallest2);

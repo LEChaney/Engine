@@ -98,7 +98,7 @@ GameplayScreen::GameplayScreen()
 	sphere.simpleWorldSpaceMovement.moveSpeed = 1.0f;
 
 	TransformComponent triangleTransform;
-	triangleTransform.position.y = -1.2f;
+	triangleTransform.position.y = -1.4f;
 	triangleTransform.position.x = -3.0f;
 	Entity& pyramid = Prefabs::createPyramid(m_scene, triangleTransform);
 	pyramid.addComponents(COMPONENT_PYRAMID_COLLISION | COMPONENT_SIMPLE_WORLD_SPACE_MOVE_COMPONENT | COMPONENT_INPUT | COMPONENT_INPUT_MAP);
@@ -109,7 +109,7 @@ GameplayScreen::GameplayScreen()
 	pyramid.inputMap.rightBtnMap = GLFW_KEY_RIGHT;
 	pyramid.simpleWorldSpaceMovement.moveSpeed = 1.0f;
 
-	Entity& cloth = Prefabs::createCloth(m_scene, 20, 20, 2, 2, 1);
+	Entity& cloth = Prefabs::createCloth(m_scene, 10, 10, 2, 2, 1);
 
 	m_activeSystems.push_back(std::move(basicCameraMovementSystem));
 	m_activeSystems.push_back(std::move(renderSystem));
