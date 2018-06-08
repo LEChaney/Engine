@@ -1,9 +1,11 @@
 #include "Screen.h"
 
+#include "Game.h"
+
 Screen::Screen()
 	: m_uiScreen{ new nanogui::Screen() }
 {
-	m_uiScreen->initialize(glfwGetCurrentContext(), true);
+	m_uiScreen->initialize(Game::getWindowContext(), true);
 }
 
 void Screen::update()
