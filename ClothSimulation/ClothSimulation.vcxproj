@@ -70,19 +70,19 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <IncludePath>$(ProjectDir)ext\glm;$(ProjectDir)ext\gli-0.8.2.0;$(ProjectDir)ext\assimp\include;$(ProjectDir)ext\glad\include;$(ProjectDir)ext\freetype2;$(ProjectDir)ext\FMOD;$(ProjectDir)ext\nanogui\include;$(ProjectDir)ext\Eigen;$(ProjectDir)ext\nanovg;$(ProjectDir)ext\glfw-3.2.1.bin.WIN32\include;$(IncludePath);$(ProjectDir)ext\freetype2</IncludePath>
-    <LibraryPath>$(ProjectDir)ext/freetype2;$(ProjectDir)ext/freetype;$(ProjectDir)ext\FMOD;$(ProjectDir)ext\nanogui\lib\debug;$(ProjectDir)ext\assimp\lib_64_debug;$(ProjectDir)ext\glfw-3.2.1.bin.WIN32\lib-vc2015;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(ProjectDir)ext/freetype2;$(ProjectDir)ext/freetype;$(ProjectDir)ext\FMOD;$(ProjectDir)ext\nanogui\lib\debug_libs;$(ProjectDir)ext\assimp\lib_64_debug;$(ProjectDir)ext\glfw-3.2.1.bin.WIN32\lib-vc2015;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <IncludePath>$(ProjectDir)ext\glm;$(ProjectDir)ext\gli-0.8.2.0;$(ProjectDir)ext\assimp\include;$(ProjectDir)ext\glad\include;$(ProjectDir)ext\freetype2;$(ProjectDir)ext\FMOD;$(ProjectDir)ext\nanogui\include;$(ProjectDir)ext\Eigen;$(ProjectDir)ext\nanovg;$(ProjectDir)ext\glfw-3.2.1.bin.WIN32\include;$(IncludePath);$(ProjectDir)ext\freetype2</IncludePath>
-    <LibraryPath>$(ProjectDir)ext/freetype2;$(ProjectDir)ext/freetype;$(ProjectDir)ext\FMOD;$(ProjectDir)ext\nanogui\lib\release;$(ProjectDir)ext\assimp\lib_64;$(ProjectDir)ext\glfw-3.2.1.bin.WIN32\lib-vc2015;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(ProjectDir)ext/freetype2;$(ProjectDir)ext/freetype;$(ProjectDir)ext\FMOD;$(ProjectDir)ext\nanogui\lib\release_libs;$(ProjectDir)ext\assimp\lib_64;$(ProjectDir)ext\glfw-3.2.1.bin.WIN32\lib-vc2015;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <IncludePath>$(ProjectDir)ext\glm;$(ProjectDir)ext\gli-0.8.2.0;$(ProjectDir)ext\assimp\include;$(ProjectDir)ext\glad\include;$(ProjectDir)ext\freetype2;$(ProjectDir)ext\FMOD;$(ProjectDir)ext\nanogui\include;$(ProjectDir)ext\Eigen;$(ProjectDir)ext\nanovg;$(ProjectDir)ext\glfw-3.2.1.bin.WIN64\include;$(IncludePath);$(ProjectDir)ext\freetype2</IncludePath>
-    <LibraryPath>$(ProjectDir)ext/freetype2;$(ProjectDir)ext/freetype;$(ProjectDir)ext\FMOD;$(ProjectDir)ext\nanogui\lib\debug;$(ProjectDir)ext\assimp\lib_64_debug;$(ProjectDir)ext\glfw-3.2.1.bin.WIN64\lib-vc2015;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(ProjectDir)ext/freetype2;$(ProjectDir)ext/freetype;$(ProjectDir)ext\FMOD;$(ProjectDir)ext\nanogui\lib\debug_libs;$(ProjectDir)ext\assimp\lib_64_debug;$(ProjectDir)ext\glfw-3.2.1.bin.WIN64\lib-vc2015;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IncludePath>$(ProjectDir)ext\glm;$(ProjectDir)ext\gli-0.8.2.0;$(ProjectDir)ext\assimp\include;$(ProjectDir)ext\glad\include;$(ProjectDir)ext\freetype2;$(ProjectDir)ext\FMOD;$(ProjectDir)ext\nanogui\include;$(ProjectDir)ext\Eigen;$(ProjectDir)ext\nanovg;$(ProjectDir)ext\glfw-3.2.1.bin.WIN64\include;$(IncludePath);$(ProjectDir)ext\freetype2</IncludePath>
-    <LibraryPath>$(ProjectDir)ext/freetype2;$(ProjectDir)ext/freetype;$(ProjectDir)ext\FMOD;$(ProjectDir)ext\nanogui\lib\release;$(ProjectDir)ext\assimp\lib_64;$(ProjectDir)ext\glfw-3.2.1.bin.WIN64\lib-vc2015;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(ProjectDir)ext/freetype2;$(ProjectDir)ext/freetype;$(ProjectDir)ext\FMOD;$(ProjectDir)ext\nanogui\lib\release_libs;$(ProjectDir)ext\assimp\lib_64;$(ProjectDir)ext\glfw-3.2.1.bin.WIN64\lib-vc2015;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -99,7 +99,7 @@
 xcopy "$(ProjectDir)ext\freetype2\zlib1.dll" "$(OutDir)" /dsy
 xcopy "$(ProjectDir)Assets" "$(OutDir)Assets\" /dsy
 xcopy "$(ProjectDir)ext\assimp\lib_64_debug\assimp-vc140-mt.dll" "$(OutDir)" /dsy
-xcopy "$(ProjectDir)ext\nanogui\lib\debug\nanogui.dll" "$(OutDir)" /dsy</Command>
+xcopy "$(ProjectDir)ext\nanogui\lib\debug_libs\nanogui.dll" "$(OutDir)" /dsy</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -117,7 +117,7 @@ xcopy "$(ProjectDir)ext\nanogui\lib\debug\nanogui.dll" "$(OutDir)" /dsy</Command
 xcopy "$(ProjectDir)ext\freetype2\zlib1.dll" "$(OutDir)" /dsy
 xcopy "$(ProjectDir)Assets" "$(OutDir)Assets\" /dsy
 xcopy "$(ProjectDir)ext\assimp\lib_64_debug\assimp-vc140-mt.dll" "$(OutDir)" /dsy
-xcopy "$(ProjectDir)ext\nanogui\lib\debug\nanogui.dll" "$(OutDir)" /dsy</Command>
+xcopy "$(ProjectDir)ext\nanogui\lib\debug_libs\nanogui.dll" "$(OutDir)" /dsy</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -139,7 +139,7 @@ xcopy "$(ProjectDir)ext\nanogui\lib\debug\nanogui.dll" "$(OutDir)" /dsy</Command
 xcopy "$(ProjectDir)ext\freetype2\zlib1.dll" "$(OutDir)" /dsy
 xcopy "$(ProjectDir)Assets" "$(OutDir)Assets\" /dsy
 xcopy "$(ProjectDir)ext\assimp\lib_64\assimp-vc140-mt.dll" "$(OutDir)" /dsy
-xcopy "$(ProjectDir)ext\nanogui\lib\release\nanogui.dll" "$(OutDir)" /dsy</Command>
+xcopy "$(ProjectDir)ext\nanogui\lib\release_libs\nanogui.dll" "$(OutDir)" /dsy</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -161,7 +161,7 @@ xcopy "$(ProjectDir)ext\nanogui\lib\release\nanogui.dll" "$(OutDir)" /dsy</Comma
 xcopy "$(ProjectDir)ext\freetype2\zlib1.dll" "$(OutDir)" /dsy
 xcopy "$(ProjectDir)Assets" "$(OutDir)Assets\" /dsy
 xcopy "$(ProjectDir)ext\assimp\lib_64\assimp-vc140-mt.dll" "$(OutDir)" /dsy
-xcopy "$(ProjectDir)ext\nanogui\lib\release\nanogui.dll" "$(OutDir)" /dsy</Command>
+xcopy "$(ProjectDir)ext\nanogui\lib\release_libs\nanogui.dll" "$(OutDir)" /dsy</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
