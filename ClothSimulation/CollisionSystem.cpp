@@ -88,7 +88,7 @@ void CollisionSystem::PyramidCollision(Entity & clothEntity, Entity & pyramidEnt
 				int intersecting = TriangleTriangleIntersection(triangle1, triangle2, coplanar, intersect1, intersect2);
 
 				if (intersecting && ! coplanar) {
-					glm::vec3 penetratingPoint;
+					glm::vec3 furthestInPoint;
 					glm::vec3 pyramidPosition = pyramidEntity.transform.position;
 					float point0dist = glm::distance(pyramidPosition, triangle1.at(0));
 					float point1dist = glm::distance(pyramidPosition, triangle1.at(1));
@@ -98,8 +98,8 @@ void CollisionSystem::PyramidCollision(Entity & clothEntity, Entity & pyramidEnt
 					clothEntity.cloth.pointMasses.at(triIndices.at(i + 1)).addOffset((((intersect1 + intersect2) / 2.0f) - pyramidPosition) * 0.01f);
 					clothEntity.cloth.pointMasses.at(triIndices.at(i + 2)).addOffset((((intersect1 + intersect2) / 2.0f) - pyramidPosition) * 0.01f);*/
 
-					// Gets the closest and 2nd closest point to the centre of the triangle
-					if (point0dist < (glm::min(point1dist, point2dist))){
+					//WRONG: Gets the closest and 2nd closest point to the centre of the triangle
+					/*if (point0dist < (glm::min(point1dist, point2dist))){
 						penetratingPoint = triangle1.at(0);
 					}
 					else if (point1dist < point2dist) {
@@ -107,25 +107,66 @@ void CollisionSystem::PyramidCollision(Entity & clothEntity, Entity & pyramidEnt
 					}
 					else {
 						penetratingPoint = triangle1.at(2);
-					}
+					}*/
 
+					std::vector<glm::vec3> penetratingPoints = PenetratingPoints(triangle1, triangle2);
+
+					float longestDistance = 0;
 					float distance;
+					glm::vec3 passInPointOnLine;
 					glm::vec3 pointOnLine;
 					glm::vec3 triangleOffset;
+					
+					for (size_t k = 0; k < penetratingPoints.size(); ++k)
+					{
+						PointLineDistance(penetratingPoints.at(k), intersect1, intersect2, distance, passInPointOnLine);
+						if (distance > longestDistance)
+						{
+							longestDistance = distance;
+							pointOnLine = passInPointOnLine;
+							furthestInPoint = penetratingPoints.at(k);
+						}
 
-					PointLineDistance(penetratingPoint, intersect1, intersect2, distance, pointOnLine);
-					triangleOffset = glm::normalize(pointOnLine - penetratingPoint) * distance;
+					}
 
-					/*clothEntity.cloth.pointMasses.at(triIndices.at(i)).setPosition(clothEntity.cloth.pointMasses.at(triIndices.at(i)).getPosition() + triangleOffset);
+
+					triangleOffset = glm::normalize(pointOnLine - furthestInPoint) * longestDistance;
+
+					clothEntity.cloth.pointMasses.at(triIndices.at(i)).setPosition(clothEntity.cloth.pointMasses.at(triIndices.at(i)).getPosition() + triangleOffset);
 					clothEntity.cloth.pointMasses.at(triIndices.at(i + 1)).setPosition(clothEntity.cloth.pointMasses.at(triIndices.at(i + 1)).getPosition() + triangleOffset);
-					clothEntity.cloth.pointMasses.at(triIndices.at(i + 2)).setPosition(clothEntity.cloth.pointMasses.at(triIndices.at(i + 2)).getPosition() + triangleOffset);*/
-					clothEntity.cloth.pointMasses.at(triIndices.at(i)).addOffset(triangleOffset);
+					clothEntity.cloth.pointMasses.at(triIndices.at(i + 2)).setPosition(clothEntity.cloth.pointMasses.at(triIndices.at(i + 2)).getPosition() + triangleOffset);
+					/*clothEntity.cloth.pointMasses.at(triIndices.at(i)).addOffset(triangleOffset);
 					clothEntity.cloth.pointMasses.at(triIndices.at(i + 1)).addOffset(triangleOffset);
-					clothEntity.cloth.pointMasses.at(triIndices.at(i + 2)).addOffset(triangleOffset);
+					clothEntity.cloth.pointMasses.at(triIndices.at(i + 2)).addOffset(triangleOffset);*/
 				}
 			}
 		}
 	}
+}
+
+std::vector<glm::vec3> CollisionSystem::PenetratingPoints(std::vector<glm::vec3> penetratingTriangle, std::vector<glm::vec3> triangle)
+{
+	std::vector<glm::vec3> validPoints = {};
+	glm::vec3 side1 = triangle[1] - triangle[0];
+	side1 = glm::normalize(side1);
+	glm::vec3 side2 = triangle[2] - triangle[0];
+	side2 = glm::normalize(side2);
+	glm::vec3 normal = glm::cross(side1, side2);
+
+	float shortestDistance = glm::dot(normal, triangle[0]);
+
+	for (size_t i = 0; i < penetratingTriangle.size(); ++i)
+	{
+		float pointDistance = glm::dot(normal, penetratingTriangle[i]) - shortestDistance;
+
+		// Checks if the point is behind the "plane"
+		if (pointDistance < 0)
+		{
+			validPoints.push_back(penetratingTriangle[i]);
+		}
+	}
+
+	return validPoints;
 }
 
 void CollisionSystem::PointLineDistance(glm::vec3 point, glm::vec3 lineSeg1, glm::vec3 lineSeg2, float & distance, glm::vec3 & pointOnLine)
@@ -133,6 +174,10 @@ void CollisionSystem::PointLineDistance(glm::vec3 point, glm::vec3 lineSeg1, glm
 	float t = -((glm::dot((lineSeg1 - point), (lineSeg2 - lineSeg1))) / glm::pow(glm::length(lineSeg2 - lineSeg1), 2));
 	pointOnLine = lineSeg1 + (lineSeg2 - lineSeg1) * t;
 	distance = glm::length(pointOnLine - point);
+
+	glm::vec3 ap = point - lineSeg1;
+	glm::vec3 ab = lineSeg2 - lineSeg1;
+
 }
 
 void isect2(glm::vec3 VTX0, glm::vec3 VTX1, glm::vec3 VTX2, float VV0, float VV1, float VV2,

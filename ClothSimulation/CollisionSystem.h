@@ -21,6 +21,7 @@ public:
 private:
 	void SphereCollision(Entity& clothEntity, Entity& sphereEntity);
 	void PyramidCollision(Entity& clothEntity, Entity& pyramidEntity);
+	std::vector<glm::vec3> PenetratingPoints(std::vector<glm::vec3> penetratingTriangle, std::vector<glm::vec3> triangle);
 	void PointLineDistance(glm::vec3 point, glm::vec3 lineSeg1, glm::vec3 lineSeg2, float& distance, glm::vec3& pointOnLine);
 	int TriangleTriangleIntersection(std::vector<glm::vec3>& T1, std::vector<glm::vec3>& T2, int& coplanar, 
 		glm::vec3& isectpt1, glm::vec3& isectpt2);
