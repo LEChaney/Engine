@@ -7,6 +7,8 @@
 #include "GLUtils.h"
 #include "VertexFormat.h"
 
+#include <algorithm>
+
 ClothLink::ClothLink(GLuint node1Id, GLuint node2Id, GLint linkDirection, const SpringConstraint& springConstraint)
 	: node1Id{ node1Id }
 	, node2Id{ node2Id }
@@ -22,8 +24,9 @@ ClothNode::ClothNode(glm::vec3 position, GLfloat mass, GLboolean isFixed)
 
 void ClothComponent::addClothLink(GLuint node1Id, GLuint node2Id, GLfloat stiffness, GLfloat breakDistance)
 {
-	GLuint clothLinkId = clothLinks.size();
-	
+	// Add the new constraint to the constraint list
+	SpringConstraint springConstraint(clothNodes[node1Id].pointMass, clothNodes[node2Id].pointMass, stiffness, breakDistance);
+
 	// Calculate cardinal direction of link
 	GLint linkDir;
 	glm::vec3 pos1 = clothNodes[node1Id].pointMass.getPosition();
@@ -32,63 +35,67 @@ void ClothComponent::addClothLink(GLuint node1Id, GLuint node2Id, GLfloat stiffn
 	if (offsetFromP1ToP2.x == 0 && offsetFromP1ToP2.z < 0) {
 		// North link from 1 to 2
 		linkDir = 0;
-		clothNodes[node1Id].linkDirections[0].push_back(clothLinkId);
+		clothLinks.emplace_back(node1Id, node2Id, linkDir, springConstraint);
+		clothNodes[node1Id].linkDirections[0].push_back(std::prev(clothLinks.end()));
 		// South link from 2 to 1
-		clothNodes[node2Id].linkDirections[4].push_back(clothLinkId);
+		clothNodes[node2Id].linkDirections[4].push_back(std::prev(clothLinks.end()));
 	}
 	else if (offsetFromP1ToP2.x > 0 && offsetFromP1ToP2.z < 0) {
 		// North East link from 1 to 2
 		linkDir = 1;
-		clothNodes[node1Id].linkDirections[1].push_back(clothLinkId);
+		clothLinks.emplace_back(node1Id, node2Id, linkDir, springConstraint);
+		clothNodes[node1Id].linkDirections[1].push_back(std::prev(clothLinks.end()));
 		// South West link from 2 to 1
-		clothNodes[node2Id].linkDirections[5].push_back(clothLinkId);
+		clothNodes[node2Id].linkDirections[5].push_back(std::prev(clothLinks.end()));
 	}
 	else if (offsetFromP1ToP2.x > 0 && offsetFromP1ToP2.z == 0) {
 		// East link from 1 to 2
 		linkDir = 2;
-		clothNodes[node1Id].linkDirections[2].push_back(clothLinkId);
+		clothLinks.emplace_back(node1Id, node2Id, linkDir, springConstraint);
+		clothNodes[node1Id].linkDirections[2].push_back(std::prev(clothLinks.end()));
 		// West link from 2 to 1
-		clothNodes[node2Id].linkDirections[6].push_back(clothLinkId);
+		clothNodes[node2Id].linkDirections[6].push_back(std::prev(clothLinks.end()));
 	}
 	else if (offsetFromP1ToP2.x > 0 && offsetFromP1ToP2.z > 0) {
 		// South East link from 1 to 2
 		linkDir = 3;
-		clothNodes[node1Id].linkDirections[3].push_back(clothLinkId);
+		clothLinks.emplace_back(node1Id, node2Id, linkDir, springConstraint);
+		clothNodes[node1Id].linkDirections[3].push_back(std::prev(clothLinks.end()));
 		// North West link from 2 to 1
-		clothNodes[node2Id].linkDirections[7].push_back(clothLinkId);
+		clothNodes[node2Id].linkDirections[7].push_back(std::prev(clothLinks.end()));
 	}
 	else if (offsetFromP1ToP2.x == 0 && offsetFromP1ToP2.z > 0) {
 		// South link from 1 to 2
 		linkDir = 4;
-		clothNodes[node1Id].linkDirections[4].push_back(clothLinkId);
+		clothLinks.emplace_back(node1Id, node2Id, linkDir, springConstraint);
+		clothNodes[node1Id].linkDirections[4].push_back(std::prev(clothLinks.end()));
 		// North link from 2 to 1
-		clothNodes[node2Id].linkDirections[0].push_back(clothLinkId);
+		clothNodes[node2Id].linkDirections[0].push_back(std::prev(clothLinks.end()));
 	}
 	else if (offsetFromP1ToP2.x < 0 && offsetFromP1ToP2.z > 0) {
 		// South West link from 1 to 2
 		linkDir = 5;
-		clothNodes[node1Id].linkDirections[5].push_back(clothLinkId);
+		clothLinks.emplace_back(node1Id, node2Id, linkDir, springConstraint);
+		clothNodes[node1Id].linkDirections[5].push_back(std::prev(clothLinks.end()));
 		// North East link from 2 to 1
-		clothNodes[node2Id].linkDirections[1].push_back(clothLinkId);
+		clothNodes[node2Id].linkDirections[1].push_back(std::prev(clothLinks.end()));
 	}
 	else if (offsetFromP1ToP2.x < 0 && offsetFromP1ToP2.z == 0) {
 		// West link from 1 to 2
 		linkDir = 6;
-		clothNodes[node1Id].linkDirections[6].push_back(clothLinkId);
+		clothLinks.emplace_back(node1Id, node2Id, linkDir, springConstraint);
+		clothNodes[node1Id].linkDirections[6].push_back(std::prev(clothLinks.end()));
 		// East link from 2 to 1
-		clothNodes[node2Id].linkDirections[2].push_back(clothLinkId);
+		clothNodes[node2Id].linkDirections[2].push_back(std::prev(clothLinks.end()));
 	}
 	else if (offsetFromP1ToP2.x < 0 && offsetFromP1ToP2.z < 0) {
 		// North West link from 1 to 2
 		linkDir = 7;
-		clothNodes[node1Id].linkDirections[7].push_back(clothLinkId);
+		clothLinks.emplace_back(node1Id, node2Id, linkDir, springConstraint);
+		clothNodes[node1Id].linkDirections[7].push_back(std::prev(clothLinks.end()));
 		// South East link from 2 to 1
-		clothNodes[node2Id].linkDirections[3].push_back(clothLinkId);
+		clothNodes[node2Id].linkDirections[3].push_back(std::prev(clothLinks.end()));
 	}
-
-	// Add the new constraint to the constraint list
-	SpringConstraint springConstraint(clothNodes[node1Id].pointMass, clothNodes[node2Id].pointMass, stiffness, breakDistance);
-	clothLinks.emplace_back(node1Id, node2Id, linkDir, springConstraint);
 }
 
 ClothNode& ClothComponent::getNode(GLuint id)
@@ -99,11 +106,6 @@ ClothNode& ClothComponent::getNode(GLuint id)
 GLuint ClothComponent::getNumClothNodes() const
 {
 	return clothNodes.size();
-}
-
-ClothLink& ClothComponent::getClothLink(GLuint clothLinkId)
-{
-	return clothLinks.at(clothLinkId);
 }
 
 GLuint ClothComponent::getNumClothLinks() const
@@ -121,39 +123,40 @@ GLuint ClothComponent::getNumPointMassesY() const
 	return m_numPointMassesY;
 }
 
-void ClothComponent::breakStructualLink(GLuint clothLinkId)
+void ClothComponent::breakStructualLink(ClothLinkIterator clothLink)
 {
-	ClothLink& clothLink = clothLinks[clothLinkId];
+	breakAllLinksFromNodeInDirection(clothLink->node1Id, wrapDirection(clothLink->direction - 1));
+	breakAllLinksFromNodeInDirection(clothLink->node1Id, clothLink->direction);
+	breakAllLinksFromNodeInDirection(clothLink->node1Id, wrapDirection(clothLink->direction  + 1));
 
-	breakAllLinksFromNodeInDirection(clothLink.node1Id, wrapDirection(clothLink.direction - 1));
-	breakAllLinksFromNodeInDirection(clothLink.node1Id, clothLink.direction);
-	breakAllLinksFromNodeInDirection(clothLink.node1Id, wrapDirection(clothLink.direction  + 1));
-
-	breakAllLinksFromNodeInDirection(clothLink.node2Id, getReverseDirection(wrapDirection(clothLink.direction - 1)));
-	breakAllLinksFromNodeInDirection(clothLink.node2Id, getReverseDirection(clothLink.direction));
-	breakAllLinksFromNodeInDirection(clothLink.node2Id, getReverseDirection(wrapDirection(clothLink.direction + 1)));
+	breakAllLinksFromNodeInDirection(clothLink->node2Id, getReverseDirection(wrapDirection(clothLink->direction - 1)));
+	breakAllLinksFromNodeInDirection(clothLink->node2Id, getReverseDirection(clothLink->direction));
+	breakAllLinksFromNodeInDirection(clothLink->node2Id, getReverseDirection(wrapDirection(clothLink->direction + 1)));
 }
 
 void ClothComponent::breakAllLinksFromNodeInDirection(GLuint nodeId, GLint direction)
 {
-	std::vector<GLuint>& linkIdsInDir = clothNodes[nodeId].linkDirections[direction];
-	while (linkIdsInDir.size() > 0) {
-		GLuint clothLinkId = linkIdsInDir[linkIdsInDir.size() - 1];
+	auto& linksInDir = clothNodes[nodeId].linkDirections[direction];
+	while (linksInDir.size() > 0) {
+		auto& clothLink = linksInDir[linksInDir.size() - 1];
 		
 		// Solver should handle cleanup of broken links
-		clothLinks[clothLinkId].springConstraint.isBroken = true;
+		clothLink->springConstraint.isBroken = true;
 
-		// TODO: Remove reverse link to prevent potential dangling references
+		// Remove reverse link to prevent potential dangling references
+		GLuint nodeIdAtOtherEndOfLink = clothLink->node1Id == nodeId ? clothLink->node2Id : clothLink->node1Id;
+		std::vector<ClothLinkIterator>& candidateReverseLinks = clothNodes[nodeIdAtOtherEndOfLink].linkDirections[getReverseDirection(direction)];
+		candidateReverseLinks.erase(std::remove(candidateReverseLinks.begin(), candidateReverseLinks.end(), clothLink));
 
-		linkIdsInDir.pop_back();
+		linksInDir.pop_back();
 	}
 }
 
 bool ClothComponent::hasConstraintBetween(GLuint idx1, GLuint idx2) const
 {
 	for (auto& linkDirs : clothNodes[idx1].linkDirections) {
-		for (auto& clothLinkId : linkDirs) {
-			if (clothLinks[clothLinkId].node2Id == idx2 || clothLinks[clothLinkId].node1Id == idx2)
+		for (auto& clothLink : linkDirs) {
+			if (clothLink->node2Id == idx2 || clothLink->node1Id == idx2)
 				return true;
 		}
 	}
@@ -220,8 +223,10 @@ Entity& ClothComponent::createCloth(Scene& scene, GLuint numPointsX, GLuint numP
 			cloth.addClothLink(topLeftIdx, bottomLeftIdx, 1.0f, 0.25f);
 
 		// Shear Constraints
-		//cloth.addSpringConstraint(r, c, r + 1, c + 1, 0.5f, 0.25f);
-		//cloth.addSpringConstraint(r, c + 1, r + 1, c, 0.5f, 0.25f);
+		if (bottomRightRow < cloth.m_numPointMassesY && bottomRightCol < cloth.m_numPointMassesX)
+			cloth.addClothLink(topLeftIdx, bottomRightIdx, 0.5f, 0);
+		if (bottomLeftRow < cloth.m_numPointMassesY && topRightCol < cloth.m_numPointMassesX)
+			cloth.addClothLink(bottomLeftIdx, topRightIdx, 0.5f, 0);
 
 		// Bending Constraints
 		//if (c < numPointsX - 2)
@@ -247,7 +252,7 @@ GLint ClothComponent::getReverseDirection(GLint direction)
 	return wrapDirection(direction + 4);
 }
 
-Entity& Prefabs::createCloth(Scene& scene, GLuint numPointsX, GLuint numPointsY, GLfloat width, GLfloat height, GLfloat totalWeight)
+Entity& Prefabs::createCloth(Scene& scene, GLuint numPointsX, GLuint numPointsY, GLfloat width, GLfloat height, GLfloat weightPerUnitArea)
 {
-	return ClothComponent::createCloth(scene, numPointsX, numPointsY, width, height, totalWeight);
+	return ClothComponent::createCloth(scene, numPointsX, numPointsY, width, height, weightPerUnitArea);
 }

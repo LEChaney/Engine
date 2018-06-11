@@ -36,17 +36,15 @@ void ClothSystem::update()
 
 			// Solve constraints
 			for (GLuint i = 0; i < m_kNumConstraintSolverIterations; ++i) {
-				for (GLuint j = 0; j < cloth.getNumClothLinks(); ++j) {
-					ClothLink& clothLink = cloth.getClothLink(j);
-					clothLink.springConstraint.solve();
+				for (ClothLinkIterator clothLink = cloth.clothLinks.begin(); clothLink != cloth.clothLinks.end(); ++clothLink) {
+					clothLink->springConstraint.solve();
 				}
 			}
 
 			// Break constraints
-			for (GLuint j = 0; j < cloth.getNumClothLinks(); ++j) {
-				ClothLink& clothLink = cloth.getClothLink(j);
-				if ((clothLink.springConstraint.getCurrentLength() - clothLink.springConstraint.getRestLength()) >= clothLink.springConstraint.getBreakDistance()) {
-					cloth.breakStructualLink(j);
+			for (ClothLinkIterator clothLink = cloth.clothLinks.begin(); clothLink != cloth.clothLinks.end(); ++clothLink) {
+				if ((clothLink->springConstraint.getCurrentLength() - clothLink->springConstraint.getRestLength()) >= clothLink->springConstraint.getBreakDistance()) {
+					cloth.breakStructualLink(clothLink);
 				}
 			}
 
@@ -113,7 +111,7 @@ void ClothSystem::update()
 					GLuint bottomLeftIdx = i + cloth.getNumPointMassesX();
 					GLuint bottomRightIdx = i + cloth.getNumPointMassesX() + 1;
 
-					if (cloth.hasConstraintBetween(topLeftIdx, bottomLeftIdx)) {
+					if (cloth.hasConstraintBetween(topLeftIdx, bottomLeftIdx) && cloth.hasConstraintBetween(bottomLeftIdx, bottomRightIdx)) {
 						// Lower patch triangle
 						cloth.triIndices[eboIdx] = indices[eboIdx] = topLeftIdx;
 						cloth.triIndices[eboIdx + 1] = indices[eboIdx + 1] = bottomLeftIdx;
@@ -125,7 +123,7 @@ void ClothSystem::update()
 						cloth.triIndices[eboIdx] = cloth.triIndices[eboIdx + 1] = cloth.triIndices[eboIdx + 2] = topLeftIdx;
 					}
 
-					if (cloth.hasConstraintBetween(topLeftIdx, topRightIdx)) {
+					if (cloth.hasConstraintBetween(topLeftIdx, topRightIdx) && cloth.hasConstraintBetween(topRightIdx, bottomRightIdx)) {
 						// Upper patch triangle
 						cloth.triIndices[eboIdx + 3] = indices[eboIdx + 3] = topLeftIdx;
 						cloth.triIndices[eboIdx + 4] = indices[eboIdx + 4] = bottomRightIdx;

@@ -8,6 +8,7 @@
 
 #include <vector>
 #include <array>
+#include <list>
 
 class Entity;
 class Scene;
@@ -32,12 +33,14 @@ struct ClothLink {
 	SpringConstraint springConstraint;
 };
 
+using ClothLinkIterator = std::list<ClothLink>::iterator;
+
 struct ClothNode {
 	ClothNode(glm::vec3 position, GLfloat mass, GLboolean isFixed);
 
 	PointMass pointMass;
 	// Cloth links bucketed by cardinal direction (north, north east, ... , north west)
-	std::array<std::vector<GLuint>, 8> linkDirections;
+	std::array<std::vector<ClothLinkIterator>, 8> linkDirections;
 };
 
 class ClothComponent {
@@ -48,14 +51,12 @@ public:
 
 	ClothNode& getNode(GLuint id);
 	GLuint getNumClothNodes() const;
-
-	ClothLink& getClothLink(GLuint clothLinkId);
 	GLuint getNumClothLinks() const;
 
 	GLuint getNumPointMassesX() const;
 	GLuint getNumPointMassesY() const;
 
-	void breakStructualLink(GLuint ClothLinkId);
+	void breakStructualLink(ClothLinkIterator clothLink);
 	void breakAllLinksFromNodeInDirection(GLuint nodeId, GLint direction);
 
 	// Check if there is a constraint between the point masses at the given indices.
@@ -68,7 +69,7 @@ public:
 
 	std::vector<ClothNode> clothNodes;
 	std::vector<GLuint> triIndices;
-	std::vector<ClothLink> clothLinks;
+	std::list<ClothLink> clothLinks;
 
 private:
 	GLuint m_numPointMassesX;
