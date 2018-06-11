@@ -16,10 +16,12 @@
 #include "MousePickingSystem.h"
 #include "CollisionSystem.h"
 
-#include <nanogui/nanogui.h>
+#include <glm\gtc\constants.hpp>
+#include <nanogui\nanogui.h>
 
 #include <cmath>
 #include <list>
+
 
 GameplayScreen::GameplayScreen()
 {
@@ -108,6 +110,14 @@ GameplayScreen::GameplayScreen()
 	pyramid.inputMap.leftBtnMap = GLFW_KEY_LEFT;
 	pyramid.inputMap.rightBtnMap = GLFW_KEY_RIGHT;
 	pyramid.simpleWorldSpaceMovement.moveSpeed = 1.0f;
+
+	TransformComponent groundTransform;
+	groundTransform.position.y = -3.0f;
+	groundTransform.position.x = 0.0f;
+	groundTransform.eulerAngles = {-glm::half_pi<float>(), 0.0f, 0.0f};
+	groundTransform.scale = { 100.0f, 100.0f, 1.0f };
+	Entity& ground = Prefabs::createQuad(m_scene, groundTransform);
+	ground.addComponents(COMPONENT_GROUND_COLLISION);
 
 	Entity& cloth = Prefabs::createCloth(m_scene, 10, 10, 2, 2, 1);
 

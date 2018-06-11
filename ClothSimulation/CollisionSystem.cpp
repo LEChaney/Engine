@@ -33,6 +33,9 @@ void CollisionSystem::update()
 				else if (shapeEntity.hasComponents(COMPONENT_PYRAMID_COLLISION)) {
 					PyramidCollision(clothEntity, shapeEntity);
 				}
+				else if (shapeEntity.hasComponents(COMPONENT_GROUND_COLLISION)){
+					GroundCollision(clothEntity, shapeEntity);
+				}
 			}
 		}
 	}
@@ -53,6 +56,17 @@ void CollisionSystem::SphereCollision(Entity & clothEntity, Entity & sphereEntit
 		if (glm::length(displacement) < sphereEntity.sphereCollision.radius + 0.04f) {
 			glm::vec3 moveDirection = glm::normalize(displacement);
 			pointMass.setPosition(sphereEntity.transform.position + (moveDirection * (sphereEntity.sphereCollision.radius + 0.04f)));
+		}
+	}
+}
+
+void CollisionSystem::GroundCollision(Entity & clothEntity, Entity & groundEntity)
+{
+	for (PointMass& pointMass : clothEntity.cloth.pointMasses) {
+		glm::vec3 pointPosition = pointMass.getPosition();
+		glm::vec3 groundPosition = groundEntity.transform.position;
+		if (pointPosition.y < groundPosition.y + 0.04f) {
+			pointMass.setPosition({ pointPosition.x, groundPosition.y + 0.04f,pointPosition.z });
 		}
 	}
 }
