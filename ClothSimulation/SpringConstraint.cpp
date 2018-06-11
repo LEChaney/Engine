@@ -2,6 +2,8 @@
 
 #include <glm/glm.hpp>
 
+#include <limits>
+
 using namespace glm;
 
 SpringConstraint::SpringConstraint(PointMass& p1, PointMass& p2, GLfloat stiffness, GLfloat breakDistance)
@@ -9,25 +11,19 @@ SpringConstraint::SpringConstraint(PointMass& p1, PointMass& p2, GLfloat stiffne
 	, m_p2{ &p2 }
 	, m_stiffness{ stiffness }
 	, m_breakDistance{ breakDistance }
-	, m_isBroken{ false }
+	, isBroken{ false }
 {
 	m_restLength = glm::length(p2.getPosition() - p1.getPosition());
 }
 
-void SpringConstraint::solveConstraint()
+void SpringConstraint::solve()
 {
-	if (m_isBroken) {
+	if (isBroken)
 		return;
-	}
 
 	vec3 p1ToP2 = m_p2->getPosition() - m_p1->getPosition();
 	float currentLength = glm::length(p1ToP2);
 	vec3 correctionVector = p1ToP2 * (1 - m_restLength / currentLength);
-
-	if (glm::length(correctionVector) >= m_breakDistance) {
-		m_isBroken = true;
-		return;
-	}
 
 	float invMass1 = 1 / m_p1->mass;
 	float invMass2 = 1 / m_p2->mass;
@@ -59,7 +55,23 @@ const PointMass& SpringConstraint::getPointMass2() const
 	return *m_p2;
 }
 
-bool SpringConstraint::isBroken() const
+GLfloat SpringConstraint::getBreakDistance() const
 {
-	return m_isBroken;
+	if (m_breakDistance == 0) {
+		return std::numeric_limits<GLfloat>::max();
+	}
+	else {
+		return m_breakDistance;
+	}
+}
+
+GLfloat SpringConstraint::getCurrentLength() const
+{
+	vec3 p1ToP2 = m_p2->getPosition() - m_p1->getPosition();
+	return glm::length(p1ToP2);
+}
+
+GLfloat SpringConstraint::getRestLength() const
+{
+	return m_restLength;
 }

@@ -8,6 +8,7 @@
 #include "VertexFormat.h"
 #include "Mesh.h"
 #include "Clock.h"
+#include "RenderSystem.h"
 
 ClothSystem::ClothSystem(Scene& scene)
 	: System(scene)
@@ -35,26 +36,34 @@ void ClothSystem::update()
 
 			// Solve constraints
 			for (GLuint i = 0; i < m_kNumConstraintSolverIterations; ++i) {
-				for (GLuint j = 0; j < cloth.springConstraints.size(); ++j) {
-					auto constraintIt = cloth.springConstraints[j].begin();
-					while (constraintIt != cloth.springConstraints[j].end()) {
-						// Solve constraint
-						bool broken;
-						constraintIt->solveConstraint(broken);
-
-						// Remove constraint if broken
-						if (broken) {
-							//constraintIt = cloth.springConstraints[j].erase(constraintIt);
-							cloth.springConstraints[j].clear();
-							break;
-						}
-						else
-							++constraintIt;
-					}
+				for (GLuint j = 0; j < cloth.getNumClothLinks(); ++j) {
+					ClothLink& clothLink = cloth.getClothLink(j);
+					clothLink.springConstraint.solve();
 				}
 			}
 
-			for (PointMass& pointMass : cloth.pointMasses) {
+			// Break constraints
+			for (GLuint j = 0; j < cloth.getNumClothLinks(); ++j) {
+				ClothLink& clothLink = cloth.getClothLink(j);
+				if ((clothLink.springConstraint.getCurrentLength() - clothLink.springConstraint.getRestLength()) >= clothLink.springConstraint.getBreakDistance()) {
+					cloth.breakStructualLink(j);
+				}
+			}
+
+			// Cleanup broken links
+			auto clothLinksIt = cloth.clothLinks.begin();
+			while (clothLinksIt != cloth.clothLinks.end()) {
+				if (clothLinksIt->springConstraint.isBroken) {
+					clothLinksIt = cloth.clothLinks.erase(clothLinksIt);
+				}
+				else 
+					++clothLinksIt;
+			}
+
+			for (GLuint i = 0; i < cloth.getNumClothNodes(); ++i) {
+				ClothNode& clothNode = cloth.getNode(i);
+				PointMass& pointMass = clothNode.pointMass;
+
 				pointMass.force += pointMass.mass * glm::vec3{ 0, -9.81f, 0 };
 
 				// Integrate pointmasses
@@ -70,7 +79,7 @@ void ClothSystem::update()
 			auto vertices = static_cast<VertexFormat*>(glMapBufferRange(
 				GL_ARRAY_BUFFER,
 				0, 
-				sizeof(VertexFormat) * cloth.pointMasses.size(),
+				sizeof(VertexFormat) * cloth.getNumClothNodes(),
 				GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT)
 			);
 
@@ -79,30 +88,30 @@ void ClothSystem::update()
 			auto indices = static_cast<GLuint*>(glMapBufferRange(
 				GL_ELEMENT_ARRAY_BUFFER,
 				0,
-				sizeof(GLuint) * 3 * 2 * (cloth.m_numPointMassesX - 1) * (cloth.m_numPointMassesY - 1),
+				sizeof(GLuint) * 3 * 2 * (cloth.getNumPointMassesX() - 1) * (cloth.getNumPointMassesY() - 1),
 				GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT)
 			);
 
-			for (GLuint i = 0; i < cloth.pointMasses.size(); ++i) {
-				GLuint ptRow = (i / cloth.m_numPointMassesX);
-				GLuint ptCol = (i % cloth.m_numPointMassesX);
+			for (GLuint i = 0; i < cloth.getNumClothNodes(); ++i) {
+				GLuint ptRow = (i / cloth.getNumPointMassesX());
+				GLuint ptCol = (i % cloth.getNumPointMassesX());
 
 				// Update GPU vertices to match cloth points
-				vertices[i].position = cloth.pointMasses[i].getPosition();
+				vertices[i].position = cloth.getNode(i).pointMass.getPosition();
 				vertices[i].normal = { 0, 1, 0 };
 				vertices[i].texCoord = { 
-					 ptCol / static_cast<float>(cloth.m_numPointMassesX - 1), 
-					 ptRow / static_cast<float>(cloth.m_numPointMassesY - 1) 
+					 ptCol / static_cast<float>(cloth.getNumPointMassesX() - 1), 
+					 ptRow / static_cast<float>(cloth.getNumPointMassesY() - 1) 
 				};
 
 				// Update triangle indices
-				if (ptRow < (cloth.m_numPointMassesY - 1) && ptCol < (cloth.m_numPointMassesX - 1)) {
-					GLuint eboIdx = (ptRow * (cloth.m_numPointMassesX - 1) + ptCol) * 6; // 6 Triangles per cloth patch
+				if (ptRow < (cloth.getNumPointMassesY() - 1) && ptCol < (cloth.getNumPointMassesX() - 1)) {
+					GLuint eboIdx = (ptRow * (cloth.getNumPointMassesX() - 1) + ptCol) * 6; // 6 Triangles per cloth patch
 
 					GLuint topLeftIdx = i;
 					GLuint topRightIdx = i + 1;
-					GLuint bottomLeftIdx = i + cloth.m_numPointMassesX;
-					GLuint bottomRightIdx = i + cloth.m_numPointMassesX + 1;
+					GLuint bottomLeftIdx = i + cloth.getNumPointMassesX();
+					GLuint bottomRightIdx = i + cloth.getNumPointMassesX() + 1;
 
 					if (cloth.hasConstraintBetween(topLeftIdx, bottomLeftIdx)) {
 						// Lower patch triangle

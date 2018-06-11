@@ -105,13 +105,12 @@ PointMass* MousePickingSystem::mousePick()
 
 		ClothComponent& cloth = clothEntity.cloth;
 		auto& triIndices = cloth.triIndices;
-		auto& pointMasses = cloth.pointMasses;
 		
 		for (size_t i = 0; i < cloth.triIndices.size(); i += 3) {
 			const float EPSILON = 0.0000001;
-			PointMass& p0 = pointMasses[triIndices[i]];
-			PointMass& p1 = pointMasses[triIndices[i + 1]];
-			PointMass& p2 = pointMasses[triIndices[i + 2]];
+			PointMass& p0 = cloth.getNode(triIndices[i]).pointMass;
+			PointMass& p1 = cloth.getNode(triIndices[i + 1]).pointMass;
+			PointMass& p2 = cloth.getNode(triIndices[i + 2]).pointMass;
 			vec3 edge1, edge2, h, s, q;
 			float a, f, u, v;
 			edge1 = p1.getPosition() - p0.getPosition();

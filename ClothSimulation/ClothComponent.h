@@ -12,7 +12,7 @@
 class Entity;
 class Scene;
 
-enum LinkDirection : size_t {
+enum LinkDirection : GLint {
 	LINK_NORTH,
 	LINK_NORTH_EAST,
 	LINK_EAST,
@@ -24,11 +24,12 @@ enum LinkDirection : size_t {
 };
 
 struct ClothLink {
-	ClothLink(GLuint node1Id, GLuint node2Id, GLuint springConstraintId);
-
+	ClothLink(GLuint node1Id, GLuint node2Id, GLint linkDirection, const SpringConstraint& springConstraint);
+	
 	GLuint node1Id;
 	GLuint node2Id;
-	GLuint springConstraintId;
+	GLint direction;
+	SpringConstraint springConstraint;
 };
 
 struct ClothNode {
@@ -36,17 +37,26 @@ struct ClothNode {
 
 	PointMass pointMass;
 	// Cloth links bucketed by cardinal direction (north, north east, ... , north west)
-	std::array<std::vector<ClothLink>, 8> linkDirections;
+	std::array<std::vector<GLuint>, 8> linkDirections;
 };
 
 class ClothComponent {
 public:
 
 	// Add sping contraint between two points on the cloth mesh.
-	void addClothLink(GLuint pointMass1Id, GLuint pointMass2Id, GLfloat stiffness, GLfloat breakDistance);
+	void addClothLink(GLuint node1Id, GLuint node2Id, GLfloat stiffness, GLfloat breakDistance);
 
-	void breakClothLink(const ClothLink& clothLink);
-	void breakAllLinksInDirection(GLuint nodeId, LinkDirection direction);
+	ClothNode& getNode(GLuint id);
+	GLuint getNumClothNodes() const;
+
+	ClothLink& getClothLink(GLuint clothLinkId);
+	GLuint getNumClothLinks() const;
+
+	GLuint getNumPointMassesX() const;
+	GLuint getNumPointMassesY() const;
+
+	void breakStructualLink(GLuint ClothLinkId);
+	void breakAllLinksFromNodeInDirection(GLuint nodeId, GLint direction);
 
 	// Check if there is a constraint between the point masses at the given indices.
 	// idx1 is considered to be the index of the top left point mass in a cloth patch.
@@ -56,13 +66,16 @@ public:
 
 	static Entity& createCloth(Scene& scene, GLuint numPointsX, GLuint numPointsY, GLfloat width, GLfloat height, GLfloat weightPerUnitArea);
 
-private:
-	std::vector<SpringConstraint> m_springConstraints;
-	std::vector<ClothNode> m_clothNodes;
-	std::vector<GLuint> m_triIndices;
+	std::vector<ClothNode> clothNodes;
+	std::vector<GLuint> triIndices;
+	std::vector<ClothLink> clothLinks;
 
+private:
 	GLuint m_numPointMassesX;
 	GLuint m_numPointMassesY;
+
+	GLint wrapDirection(GLint direction);
+	GLint getReverseDirection(GLint direction);
 };
 
 namespace Prefabs {
