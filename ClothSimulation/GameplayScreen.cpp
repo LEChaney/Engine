@@ -32,6 +32,7 @@ GameplayScreen::GameplayScreen()
 	: Screen()
 	, m_clothPointsX(10)
 	, m_clothPointsY(10)
+	, m_hookDistance(1)
 {
 	setupGui();
 
@@ -129,7 +130,7 @@ GameplayScreen::GameplayScreen()
 	Entity& ground = Prefabs::createQuad(m_scene, groundTransform);
 	ground.addComponents(COMPONENT_GROUND_COLLISION);
 
-	Entity& cloth = Prefabs::createCloth(m_scene, m_clothPointsX, m_clothPointsY, 2, 2, 1);
+	Entity& cloth = Prefabs::createCloth(m_scene, m_clothPointsX, m_clothPointsY, 2, 2, 1, m_hookDistance);
 
 	//m_activeSystems.push_back(std::move(basicCameraMovementSystem));
 	m_activeSystems.push_back(std::move(renderSystem));
@@ -137,7 +138,9 @@ GameplayScreen::GameplayScreen()
 	m_activeSystems.push_back(std::make_unique<PhysicsSystem>(m_scene));
 	m_activeSystems.push_back(std::make_unique<SimpleWorldSpaceMoveSystem>(m_scene));
 	m_activeSystems.push_back(std::make_unique<CollisionSystem>(m_scene));
-	m_activeSystems.push_back(std::make_unique<ClothSystem>(m_scene));
+	auto clothSystem = std::make_unique<ClothSystem>(m_scene);
+	m_clothSystem = clothSystem.get();
+	m_activeSystems.push_back(std::move(clothSystem));
 }
 
 
@@ -148,58 +151,154 @@ GameplayScreen::~GameplayScreen()
 void GameplayScreen::setupGui()
 {
 	window = new nanogui::Window(m_uiScreen, "Options");
-	window->setPosition(nanogui::Vector2i(200, 15));
+	window->setPosition(nanogui::Vector2i(15, 15));
 	window->setLayout(new nanogui::GroupLayout());
 
-	nanogui::Button *b = new nanogui::Button(window, "Reset");
+	nanogui::Button *button = new nanogui::Button(window, "Reset");
 	// On button press
-	b->setCallback([&] {
+	button->setCallback([&] {
 		std::cout << "pushed!" << std::endl;
 		for (size_t i = 0; i < m_scene.getEntityCount(); ++i) {
 			Entity& clothEntity = m_scene.getEntity(i);
 			if (clothEntity.hasComponents(COMPONENT_CLOTH)) {
 				m_scene.destroyEntity(clothEntity);
-				Entity& newCloth = Prefabs::createCloth(m_scene, m_clothPointsX, m_clothPointsY, 2, 2, 1);
+				Entity& newCloth = Prefabs::createCloth(m_scene, m_clothPointsX, m_clothPointsY, 2, 2, 1, m_hookDistance);
 			}
 		}
 	});
-	b->setTooltip("resets cloth");
+	button->setTooltip("resets cloth");
 
-	new nanogui::Label(window, "Hinges", "sans-bold");
+	// Detail slider
+	new nanogui::Label(window, "Detail", "sans-bold");
 
-	nanogui::Widget *panel = new nanogui::Widget(window);
-	panel->setLayout(new nanogui::BoxLayout(
+	nanogui::Widget *detailPanel = new nanogui::Widget(window);
+	detailPanel->setLayout(new nanogui::BoxLayout(
 		nanogui::Orientation::Horizontal,
 		nanogui::Alignment::Middle, 0, 20));
 
-	nanogui::Slider *slider = new nanogui::Slider(panel);
-	slider->setValue(0.0f);
-	slider->setFixedWidth(180);
+	nanogui::Slider *detailSlider = new nanogui::Slider(detailPanel);
+	detailSlider->setValue(0.0f);
+	detailSlider->setFixedWidth(180);
 
-	nanogui::TextBox *textBox = new nanogui::TextBox(panel);
-	textBox->setFixedSize(nanogui::Vector2i(60, 25));
-	textBox->setValue("10");
-	textBox->setUnits("%");
+	nanogui::TextBox *detailTextBox = new nanogui::TextBox(detailPanel);
+	detailTextBox->setFixedSize(nanogui::Vector2i(60, 25));
+	detailTextBox->setValue("10");
+	detailTextBox->setUnits("pts");
 	// On slider move
-	slider->setCallback([&, textBox](float value) {
-		textBox->setValue(std::to_string((int)(value * 10) + 10));
+	detailSlider->setCallback([&, detailTextBox](float value) {
+		detailTextBox->setValue(std::to_string((int)(value * 10) + 10));
 		m_clothPointsX = (int)(value * 10) + 10;
 		m_clothPointsY = (int)(value * 10) + 10;
 		for (size_t i = 0; i < m_scene.getEntityCount(); ++i) {
 			Entity& clothEntity = m_scene.getEntity(i);
 			if (clothEntity.hasComponents(COMPONENT_CLOTH)) {
 				m_scene.destroyEntity(clothEntity);
-				Entity& newCloth = Prefabs::createCloth(m_scene, m_clothPointsX, m_clothPointsY, 2, 2, 1);
+				Entity& newCloth = Prefabs::createCloth(m_scene, m_clothPointsX, m_clothPointsY, 2, 2, 1, m_hookDistance);
 			}
 		}
 	});
 	// On slider release
-	slider->setFinalCallback([&](float value) {
+	detailSlider->setFinalCallback([&](float value) {
 		std::cout << "Final slider value: " << (int)(value * 10) + 10 << std::endl;
 	});
-	textBox->setFixedSize(nanogui::Vector2i(60, 25));
-	textBox->setFontSize(20);
-	textBox->setAlignment(nanogui::TextBox::Alignment::Right);
+	detailTextBox->setFontSize(20);
+	detailTextBox->setAlignment(nanogui::TextBox::Alignment::Right);
+
+	// Hook slider
+	new nanogui::Label(window, "Hook distance", "sans-bold");
+
+	nanogui::Widget *hookPanel = new nanogui::Widget(window);
+	hookPanel->setLayout(new nanogui::BoxLayout(
+		nanogui::Orientation::Horizontal,
+		nanogui::Alignment::Middle, 0, 20));
+
+	nanogui::Slider *hookSlider = new nanogui::Slider(hookPanel);
+	hookSlider->setValue(0.0f);
+	hookSlider->setFixedWidth(180);
+
+	nanogui::TextBox *hookTextBox = new nanogui::TextBox(hookPanel);
+	hookTextBox->setValue("1");
+	hookTextBox->setUnits("");
+	// On slider move
+	hookSlider->setCallback([&, hookTextBox](float value) {
+		hookTextBox->setValue(std::to_string((int)(value * 9) + 1));
+		m_hookDistance = (int)(value * 9) + 1;
+		for (size_t i = 0; i < m_scene.getEntityCount(); ++i) {
+			Entity& clothEntity = m_scene.getEntity(i);
+			if (clothEntity.hasComponents(COMPONENT_CLOTH)) {
+				m_scene.destroyEntity(clothEntity);
+				Entity& newCloth = Prefabs::createCloth(m_scene, m_clothPointsX, m_clothPointsY, 2, 2, 1, m_hookDistance);
+			}
+		}
+	});
+	// On slider release
+	hookSlider->setFinalCallback([&](float value) {
+		std::cout << "Final slider value: " << (int)(value * 9) + 1 << std::endl;
+	});
+	hookTextBox->setFixedSize(nanogui::Vector2i(60, 25));
+	hookTextBox->setFontSize(20);
+	hookTextBox->setAlignment(nanogui::TextBox::Alignment::Right);
+
+	// Wind direction slider
+	new nanogui::Label(window, "Wind angle", "sans-bold");
+
+	nanogui::Widget *windAnglePanel = new nanogui::Widget(window);
+	windAnglePanel->setLayout(new nanogui::BoxLayout(
+		nanogui::Orientation::Horizontal,
+		nanogui::Alignment::Middle, 0, 20));
+
+	nanogui::Slider *windAngleSlider = new nanogui::Slider(windAnglePanel);
+	windAngleSlider->setValue(0.0f);
+	windAngleSlider->setFixedWidth(180);
+
+	nanogui::TextBox *windDirectionTextBox = new nanogui::TextBox(windAnglePanel);
+	windDirectionTextBox->setValue("0");
+	windDirectionTextBox->setUnits("deg");
+	
+	// On slider move
+	windAngleSlider->setCallback([&, windDirectionTextBox](float value) {
+		windDirectionTextBox->setValue(std::to_string((int)(value * 360)));
+		float angle = glm::radians(value * 360.0f);
+		m_clothSystem->windDirection.x = glm::cos(angle);
+		m_clothSystem->windDirection.z = -glm::sin(angle);
+	});
+	// On slider release
+	windAngleSlider->setFinalCallback([&](float value) {
+		std::cout << "Final slider value: " << (int)(value * 360) << std::endl;
+	});
+	windDirectionTextBox->setFixedSize(nanogui::Vector2i(70, 25));
+	windDirectionTextBox->setFontSize(20);
+	windDirectionTextBox->setAlignment(nanogui::TextBox::Alignment::Right);
+
+	// Hook slider
+	new nanogui::Label(window, "Wind strength", "sans-bold");
+
+	nanogui::Widget *windStrengthPanel = new nanogui::Widget(window);
+	windStrengthPanel->setLayout(new nanogui::BoxLayout(
+		nanogui::Orientation::Horizontal,
+		nanogui::Alignment::Middle, 0, 20));
+
+	// Wind strength slider
+	nanogui::Slider *windStrengthSlider = new nanogui::Slider(windStrengthPanel);
+	windStrengthSlider->setValue(0.0f);
+	windStrengthSlider->setFixedWidth(180);
+
+	nanogui::TextBox *windStrengthTextBox = new nanogui::TextBox(windStrengthPanel);
+	windStrengthTextBox->setValue("0");
+	windStrengthTextBox->setUnits("");
+	// On slider move
+	windStrengthSlider->setCallback([&, windStrengthTextBox](float value) {
+		windStrengthTextBox->setValue(std::to_string(value));
+		m_clothSystem->windForce = value;
+		
+	});
+	// On slider release
+	windStrengthSlider->setFinalCallback([&](float value) {
+		std::cout << "Final slider value: " << value << std::endl;
+	});
+	windStrengthTextBox->setFixedSize(nanogui::Vector2i(80, 25));
+	windStrengthTextBox->setFontSize(20);
+	windStrengthTextBox->setAlignment(nanogui::TextBox::Alignment::Right);
 
 	m_uiScreen->setVisible(true);
 	m_uiScreen->performLayout();

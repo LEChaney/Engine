@@ -41,7 +41,7 @@ bool ClothComponent::hasConstraintBetween(GLuint idx1, GLuint idx2) const
 	return false;
 }
 
-Entity& ClothComponent::createCloth(Scene& scene, GLuint numPointsX, GLuint numPointsY, GLfloat width, GLfloat height, GLfloat weightPerUnitArea)
+Entity& ClothComponent::createCloth(Scene& scene, GLuint numPointsX, GLuint numPointsY, GLfloat width, GLfloat height, GLfloat weightPerUnitArea, GLint linkDistance)
 {
 	Entity& clothEntity = scene.createEntity(COMPONENT_CLOTH, COMPONENT_MODEL);
 	ClothComponent& cloth = clothEntity.cloth;
@@ -73,8 +73,8 @@ Entity& ClothComponent::createCloth(Scene& scene, GLuint numPointsX, GLuint numP
 	for (GLuint i = 0; i < vertices.size(); ++i) {
 		PointMass p(vertices[i].position, individualMass, false);
 
-		// Fix first 4 verts
-		if (i < numPointsX)
+		// Fix verts
+		if (i < numPointsX && i % linkDistance == 0)
 			p.isFixed = true;
 
 		cloth.pointMasses.push_back(p);
@@ -112,7 +112,7 @@ Entity& ClothComponent::createCloth(Scene& scene, GLuint numPointsX, GLuint numP
 	return clothEntity;
 }
 
-Entity& Prefabs::createCloth(Scene& scene, GLuint numPointsX, GLuint numPointsY, GLfloat width, GLfloat height, GLfloat totalWeight)
+Entity& Prefabs::createCloth(Scene& scene, GLuint numPointsX, GLuint numPointsY, GLfloat width, GLfloat height, GLfloat totalWeight, GLint linkDistance)
 {
-	return ClothComponent::createCloth(scene, numPointsX, numPointsY, width, height, totalWeight);
+	return ClothComponent::createCloth(scene, numPointsX, numPointsY, width, height, totalWeight, linkDistance);
 }

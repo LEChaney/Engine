@@ -15,6 +15,8 @@ ClothSystem::ClothSystem(Scene& scene)
 	, m_kDamping{ 0.01f }
 	, m_kTimeStep{ 1.0f / 60.0f }
 	, m_kTimeStepSq{ m_kTimeStep * m_kTimeStep }
+	, windDirection{1.0f, 0.0f, 0.0f}
+	, windForce(0.03)
 {
 }
 
@@ -52,6 +54,24 @@ void ClothSystem::update()
 							++constraintIt;
 					}
 				}
+			}
+
+			// Add wind per triangle
+			for (size_t i = 0; i < cloth.triIndices.size(); i += 3) {
+				PointMass& point0 = cloth.pointMasses.at(cloth.triIndices.at(i));
+				PointMass& point1 = cloth.pointMasses.at(cloth.triIndices.at(i + 1));
+				PointMass& point2 = cloth.pointMasses.at(cloth.triIndices.at(i + 2));
+				glm::vec3 side1 = point1.getPosition() - point0.getPosition();
+				side1 = glm::normalize(side1);
+				glm::vec3 side2 = point2.getPosition() - point0.getPosition();
+				side2 = glm::normalize(side2);
+				glm::vec3 normal = glm::cross(side1, side2);
+
+				glm::vec3 force = normal * glm::dot(normal, windDirection * windForce);
+
+				point0.force += force;
+				point1.force += force;
+				point2.force += force;
 			}
 
 			for (PointMass& pointMass : cloth.pointMasses) {

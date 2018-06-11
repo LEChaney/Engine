@@ -18,6 +18,9 @@ public:
 	virtual void beginFrame() override;
 	virtual void endFrame() override;
 
+	glm::vec3 windDirection;
+	float windForce;
+
 private:
 	const GLuint m_kNumConstraintSolverIterations;
 	const GLfloat m_kDamping;

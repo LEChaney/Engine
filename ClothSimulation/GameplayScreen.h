@@ -5,6 +5,7 @@
 #include <vector>
 
 class Entity;
+class ClothSystem;
 
 class GameplayScreen : public Screen
 {
@@ -17,5 +18,7 @@ private:
 	nanogui::Window* window;
 	int m_clothPointsX;
 	int m_clothPointsY;
+	int m_hookDistance;
+	ClothSystem* m_clothSystem;
 };
 

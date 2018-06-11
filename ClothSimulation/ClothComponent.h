@@ -38,9 +38,9 @@ struct ClothComponent {
 	// Otherwise no constraint will be found, even if one exists.
 	bool hasConstraintBetween(GLuint idx1, GLuint idx2) const;
 
-	static Entity& createCloth(Scene& scene, GLuint numPointsX, GLuint numPointsY, GLfloat width, GLfloat height, GLfloat weightPerUnitArea);	
+	static Entity& createCloth(Scene& scene, GLuint numPointsX, GLuint numPointsY, GLfloat width, GLfloat height, GLfloat weightPerUnitArea, GLint linkDistance);	
 };
 
 namespace Prefabs {
-	Entity& createCloth(Scene& scene, GLuint numPointsX, GLuint numPointsY, GLfloat width, GLfloat height, GLfloat totalWeight);
+	Entity& createCloth(Scene& scene, GLuint numPointsX, GLuint numPointsY, GLfloat width, GLfloat height, GLfloat totalWeight, GLint linkDistance);
 }
