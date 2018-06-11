@@ -168,6 +168,7 @@ xcopy "$(ProjectDir)ext\nanogui\lib\release_libs\nanogui.dll" "$(OutDir)" /dsy</
     <ClCompile Include="Audio.cpp" />
     <ClCompile Include="BasicCameraMovementSystem.cpp" />
     <ClCompile Include="CameraComponent.cpp" />
+    <ClCompile Include="CapsuleCollisionComponent.cpp" />
     <ClCompile Include="Clock.cpp" />
     <ClCompile Include="ClothComponent.cpp" />
     <ClCompile Include="ClothSystem.cpp" />
@@ -213,6 +214,7 @@ xcopy "$(ProjectDir)ext\nanogui\lib\release_libs\nanogui.dll" "$(OutDir)" /dsy</
     <ClInclude Include="BasicCameraMovementComponent.h" />
     <ClInclude Include="BasicCameraMovementSystem.h" />
     <ClInclude Include="CameraComponent.h" />
+    <ClInclude Include="CapsuleCollisionComponent.h" />
     <ClInclude Include="ClothComponent.h" />
     <ClInclude Include="ClothSystem.h" />
     <ClInclude Include="MousePickingSystem.h" />

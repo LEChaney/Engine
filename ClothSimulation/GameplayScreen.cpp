@@ -15,6 +15,7 @@
 #include "ClothSystem.h"
 #include "MousePickingSystem.h"
 #include "CollisionSystem.h"
+#include "ModelUtils.h"
 
 #include <glm\gtc\constants.hpp>
 #include <nanogui\nanogui.h>
@@ -122,6 +123,20 @@ GameplayScreen::GameplayScreen()
 	pyramid.inputMap.leftBtnMap = GLFW_KEY_LEFT;
 	pyramid.inputMap.rightBtnMap = GLFW_KEY_RIGHT;
 	pyramid.simpleWorldSpaceMovement.moveSpeed = 1.0f;
+
+	TransformComponent capsuleTransform;
+	capsuleTransform.position.y = -1.8f;
+	capsuleTransform.position.x = 7.0f;
+	capsuleTransform.eulerAngles = { 0.0f, 0.0f, -glm::quarter_pi<float>() };
+	Entity& capsule = m_scene.createEntity(COMPONENT_MODEL | COMPONENT_TRANSFORM);
+	capsule.transform = capsuleTransform;
+	capsule.model = ModelUtils::loadModel("Assets/Models/capsule/Capsule.obj");
+	capsule.addComponents(COMPONENT_CAPSULE_COLLISION | COMPONENT_SIMPLE_WORLD_SPACE_MOVE_COMPONENT | COMPONENT_INPUT | COMPONENT_INPUT_MAP);
+	capsule.inputMap.backwardBtnMap = GLFW_KEY_DOWN;
+	capsule.inputMap.forwardBtnMap = GLFW_KEY_UP;
+	capsule.inputMap.leftBtnMap = GLFW_KEY_LEFT;
+	capsule.inputMap.rightBtnMap = GLFW_KEY_RIGHT;
+	capsule.simpleWorldSpaceMovement.moveSpeed = 1.0f;
 
 	TransformComponent groundTransform;
 	groundTransform.position.y = -3.0f;

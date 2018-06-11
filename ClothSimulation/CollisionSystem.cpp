@@ -36,6 +36,9 @@ void CollisionSystem::update()
 				else if (shapeEntity.hasComponents(COMPONENT_GROUND_COLLISION)){
 					GroundCollision(clothEntity, shapeEntity);
 				}
+				else if (shapeEntity.hasComponents(COMPONENT_CAPSULE_COLLISION)) {
+					CapsuleCollision(clothEntity, shapeEntity);
+				}
 			}
 		}
 	}
@@ -56,6 +59,26 @@ void CollisionSystem::SphereCollision(Entity & clothEntity, Entity & sphereEntit
 		if (glm::length(displacement) < sphereEntity.sphereCollision.radius + 0.04f) {
 			glm::vec3 moveDirection = glm::normalize(displacement);
 			pointMass.setPosition(sphereEntity.transform.position + (moveDirection * (sphereEntity.sphereCollision.radius + 0.04f)));
+		}
+	}
+}
+
+void CollisionSystem::CapsuleCollision(Entity & clothEntity, Entity & capsuleEntity)
+{
+	glm::vec3 capsuleStart = capsuleEntity.transform.position;
+	glm::vec3 capsuleEnd = capsuleEntity.capsuleCollision.getCapsuleEnd(capsuleEntity.transform);
+	float capsuleRadius = capsuleEntity.capsuleCollision.getRadius(capsuleEntity.transform);
+	for (PointMass& pointMass : clothEntity.cloth.pointMasses) {
+		float distance;
+		glm::vec3 closestPointOnLine;
+
+		PointLineDistance(pointMass.getPosition(), capsuleStart, capsuleEnd, distance, closestPointOnLine);
+
+		if (distance < capsuleRadius + 0.04f)
+		{
+			glm::vec3 pushValue = pointMass.getPosition() - closestPointOnLine;
+			pushValue = glm::normalize(pushValue) * (capsuleRadius + 0.04f);
+			pointMass.setPosition(closestPointOnLine + pushValue);
 		}
 	}
 }
@@ -183,15 +206,15 @@ std::vector<glm::vec3> CollisionSystem::PenetratingPoints(std::vector<glm::vec3>
 	return validPoints;
 }
 
-void CollisionSystem::PointLineDistance(glm::vec3 point, glm::vec3 lineSeg1, glm::vec3 lineSeg2, float & distance, glm::vec3 & pointOnLine)
+void CollisionSystem::PointLineDistance(glm::vec3 point, glm::vec3 lineSeg1, glm::vec3 lineSeg2, float & distance, glm::vec3 & shortestPointOnLine)
 {
 	float t = -((glm::dot((lineSeg1 - point), (lineSeg2 - lineSeg1))) / glm::pow(glm::length(lineSeg2 - lineSeg1), 2));
-	pointOnLine = lineSeg1 + (lineSeg2 - lineSeg1) * t;
-	distance = glm::length(pointOnLine - point);
+	t = glm::clamp(t, 0.0f, 1.0f);
+	shortestPointOnLine = lineSeg1 + (lineSeg2 - lineSeg1) * t;
+	distance = glm::length(shortestPointOnLine - point);
 
 	glm::vec3 ap = point - lineSeg1;
 	glm::vec3 ab = lineSeg2 - lineSeg1;
-
 }
 
 void isect2(glm::vec3 VTX0, glm::vec3 VTX1, glm::vec3 VTX2, float VV0, float VV1, float VV2,

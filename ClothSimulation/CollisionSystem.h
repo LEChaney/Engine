@@ -20,6 +20,7 @@ public:
 
 private:
 	void SphereCollision(Entity& clothEntity, Entity& sphereEntity);
+	void CapsuleCollision(Entity& clothEntity, Entity& capsuleEntity);
 	void GroundCollision(Entity& clothEntity, Entity& groundEntity);
 	void PyramidCollision(Entity& clothEntity, Entity& pyramidEntity);
 	std::vector<glm::vec3> PenetratingPoints(std::vector<glm::vec3> penetratingTriangle, std::vector<glm::vec3> triangle);
