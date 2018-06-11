@@ -1,8 +1,11 @@
 #pragma once
 
 #include "Screen.h"
+
 #include <vector>
+
 class Entity;
+
 class GameplayScreen : public Screen
 {
 public:

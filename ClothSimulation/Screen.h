@@ -3,6 +3,8 @@
 #include "Scene.h"
 #include "System.h"
 
+#include <nanogui/nanogui.h>
+
 #include <vector>
 #include <memory>
 
@@ -16,9 +18,10 @@ public:
 	void update();
 
 protected:
-	Screen() {};
+	Screen();
 
 	Scene m_scene;
 	std::vector<std::unique_ptr<System>> m_activeSystems;
+	nanogui::ref<nanogui::Screen> m_uiScreen;
 };
 
