@@ -28,8 +28,22 @@ Entity::Entity(std::vector<EntityEventListener*>& eventListeners)
 void Entity::destroy()
 {
 	triggerPreRemoveComponentsEvent(m_componentMask);
-
 	m_componentMask = 0;
+
+	m_componentMask = { 0 };
+	transform = {};
+	physics = {};
+	model = {};
+	vehicleMovement = {};
+	input = {};
+	inputMap = {};
+	camera = {};
+	basicCameraMovement = {};
+	terrain = {};
+	terrainFollow = {};
+	simpleWorldSpaceMovement = {};
+	cloth = {};
+	sphereCollision = {};
 }
 
 bool Entity::operator==(const Entity& rhs) const

@@ -30,45 +30,10 @@ enum test_enum {
 
 GameplayScreen::GameplayScreen()
 	: Screen()
+	, m_clothPointsX(10)
+	, m_clothPointsY(10)
 {
-	bool bvar = true;
-	int ivar = 12345678;
-	double dvar = 3.1415926;
-	float fvar = (float)dvar;
-	std::string strval = "A string";
-	test_enum enumval = Item2;
-	nanogui::Color colval(0.5f, 0.5f, 0.7f, 1.f);
-
-	// Create nanogui gui
-	bool enabled = true;
-	nanogui::FormHelper *gui = new nanogui::FormHelper(m_uiScreen);
-	nanogui::ref<nanogui::Window> nanoguiWindow = gui->addWindow(Eigen::Vector2i(10, 10), "Form helper example");
-	gui->addGroup("Basic types");
-	gui->addVariable("bool", bvar)->setTooltip("Test tooltip.");
-	gui->addVariable("string", strval);
-
-	gui->addGroup("Validating fields");
-	gui->addVariable("int", ivar)->setSpinnable(true);
-	gui->addVariable("float", fvar)->setTooltip("Test.");
-	gui->addVariable("double", dvar)->setSpinnable(true);
-
-	gui->addGroup("Complex types");
-	gui->addVariable("Enumeration", enumval, enabled)->setItems({ "Item 1", "Item 2", "Item 3" });
-	gui->addVariable("Color", colval)->setCallback([](const nanogui::Color &c) {
-		std::cout << "ColorPicker Final Callback: ["
-			<< c.r() << ", "
-			<< c.g() << ", "
-			<< c.b() << ", "
-			<< c.w() << "]" << std::endl;
-	});
-
-	gui->addGroup("Other widgets");
-	gui->addButton("A button", []() { std::cout << "Button pressed." << std::endl; })->setTooltip("Testing a much longer tooltip, that will wrap around to new lines multiple times.");;
-
-	m_uiScreen->setVisible(true);
-	m_uiScreen->performLayout();
-	nanoguiWindow->center();
-
+	setupGui();
 
 	// Init systems
 	m_activeSystems.push_back(std::make_unique<InputSystem>(m_scene));
@@ -92,7 +57,7 @@ GameplayScreen::GameplayScreen()
 	renderSystem->setIrradianceMap(irradianceMap.id);
 
 	// Setup the camera
-	Entity& cameraEntity = Prefabs::createCamera(m_scene, { 0, 0, 3 }, { 0, 0, 0 }, { 0, 1, 0 });
+	Entity& cameraEntity = Prefabs::createCamera(m_scene, { 0, 0, 3 }, { 0, -1, 0 }, { 0, 1, 0 });
 	renderSystem->setCamera(&cameraEntity);
 	basicCameraMovementSystem->setCameraToControl(&cameraEntity);
 
@@ -164,9 +129,9 @@ GameplayScreen::GameplayScreen()
 	Entity& ground = Prefabs::createQuad(m_scene, groundTransform);
 	ground.addComponents(COMPONENT_GROUND_COLLISION);
 
-	Entity& cloth = Prefabs::createCloth(m_scene, 10, 10, 2, 2, 1);
+	Entity& cloth = Prefabs::createCloth(m_scene, m_clothPointsX, m_clothPointsY, 2, 2, 1);
 
-	m_activeSystems.push_back(std::move(basicCameraMovementSystem));
+	//m_activeSystems.push_back(std::move(basicCameraMovementSystem));
 	m_activeSystems.push_back(std::move(renderSystem));
 	m_activeSystems.push_back(std::make_unique<MousePickingSystem>(m_scene, cameraEntity));
 	m_activeSystems.push_back(std::make_unique<PhysicsSystem>(m_scene));
@@ -178,4 +143,64 @@ GameplayScreen::GameplayScreen()
 
 GameplayScreen::~GameplayScreen()
 {
+}
+
+void GameplayScreen::setupGui()
+{
+	window = new nanogui::Window(m_uiScreen, "Options");
+	window->setPosition(nanogui::Vector2i(200, 15));
+	window->setLayout(new nanogui::GroupLayout());
+
+	nanogui::Button *b = new nanogui::Button(window, "Reset");
+	// On button press
+	b->setCallback([&] {
+		std::cout << "pushed!" << std::endl;
+		for (size_t i = 0; i < m_scene.getEntityCount(); ++i) {
+			Entity& clothEntity = m_scene.getEntity(i);
+			if (clothEntity.hasComponents(COMPONENT_CLOTH)) {
+				m_scene.destroyEntity(clothEntity);
+				Entity& newCloth = Prefabs::createCloth(m_scene, m_clothPointsX, m_clothPointsY, 2, 2, 1);
+			}
+		}
+	});
+	b->setTooltip("resets cloth");
+
+	new nanogui::Label(window, "Hinges", "sans-bold");
+
+	nanogui::Widget *panel = new nanogui::Widget(window);
+	panel->setLayout(new nanogui::BoxLayout(
+		nanogui::Orientation::Horizontal,
+		nanogui::Alignment::Middle, 0, 20));
+
+	nanogui::Slider *slider = new nanogui::Slider(panel);
+	slider->setValue(0.0f);
+	slider->setFixedWidth(180);
+
+	nanogui::TextBox *textBox = new nanogui::TextBox(panel);
+	textBox->setFixedSize(nanogui::Vector2i(60, 25));
+	textBox->setValue("10");
+	textBox->setUnits("%");
+	// On slider move
+	slider->setCallback([&, textBox](float value) {
+		textBox->setValue(std::to_string((int)(value * 10) + 10));
+		m_clothPointsX = (int)(value * 10) + 10;
+		m_clothPointsY = (int)(value * 10) + 10;
+		for (size_t i = 0; i < m_scene.getEntityCount(); ++i) {
+			Entity& clothEntity = m_scene.getEntity(i);
+			if (clothEntity.hasComponents(COMPONENT_CLOTH)) {
+				m_scene.destroyEntity(clothEntity);
+				Entity& newCloth = Prefabs::createCloth(m_scene, m_clothPointsX, m_clothPointsY, 2, 2, 1);
+			}
+		}
+	});
+	// On slider release
+	slider->setFinalCallback([&](float value) {
+		std::cout << "Final slider value: " << (int)(value * 10) + 10 << std::endl;
+	});
+	textBox->setFixedSize(nanogui::Vector2i(60, 25));
+	textBox->setFontSize(20);
+	textBox->setAlignment(nanogui::TextBox::Alignment::Right);
+
+	m_uiScreen->setVisible(true);
+	m_uiScreen->performLayout();
 }
