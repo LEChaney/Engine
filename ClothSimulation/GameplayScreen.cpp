@@ -158,9 +158,9 @@ void GameplayScreen::setupGui()
 	window->setPosition(nanogui::Vector2i(15, 15));
 	window->setLayout(new nanogui::GroupLayout());
 
-	nanogui::Button *button = new nanogui::Button(window, "Reset");
+	nanogui::Button *resetButton = new nanogui::Button(window, "Reset");
 	// On button press
-	button->setCallback([&] {
+	resetButton->setCallback([&] {
 		std::cout << "pushed!" << std::endl;
 		for (size_t i = 0; i < m_scene.getEntityCount(); ++i) {
 			Entity& clothEntity = m_scene.getEntity(i);
@@ -172,7 +172,7 @@ void GameplayScreen::setupGui()
 			}
 		}
 	});
-	button->setTooltip("resets cloth");
+	resetButton->setTooltip("resets cloth");
 
 	// Detail slider
 	new nanogui::Label(window, "Detail", "sans-bold");
@@ -354,6 +354,23 @@ void GameplayScreen::setupGui()
 	m_foldTextBox->setFixedSize(nanogui::Vector2i(80, 25));
 	m_foldTextBox->setFontSize(20);
 	m_foldTextBox->setAlignment(nanogui::TextBox::Alignment::Right);
+
+	nanogui::Button *releaseButton = new nanogui::Button(window, "Release");
+	// On button press
+	releaseButton->setCallback([&] {
+		std::cout << "pushed!" << std::endl;
+		for (size_t i = 0; i < m_scene.getEntityCount(); ++i) {
+			Entity& clothEntity = m_scene.getEntity(i);
+			if (clothEntity.hasComponents(COMPONENT_CLOTH)) {
+				for (size_t i = 0; i < m_clothPointsX; i++)
+				{
+					PointMass& pointMass = clothEntity.cloth.getPointMass(0, i);
+					pointMass.isFixed = false;
+				}
+			}
+		}
+	});
+	releaseButton->setTooltip("releases the hooks");
 
 	m_uiScreen->setVisible(true);
 	m_uiScreen->performLayout();
