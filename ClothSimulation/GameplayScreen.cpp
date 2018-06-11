@@ -33,6 +33,7 @@ GameplayScreen::GameplayScreen()
 	, m_clothPointsX(10)
 	, m_clothPointsY(10)
 	, m_hookDistance(1)
+	, m_clothSize(2.0f)
 {
 	setupGui();
 
@@ -130,7 +131,7 @@ GameplayScreen::GameplayScreen()
 	Entity& ground = Prefabs::createQuad(m_scene, groundTransform);
 	ground.addComponents(COMPONENT_GROUND_COLLISION);
 
-	Entity& cloth = Prefabs::createCloth(m_scene, m_clothPointsX, m_clothPointsY, 2, 2, 1, m_hookDistance);
+	Entity& cloth = Prefabs::createCloth(m_scene, m_clothPointsX, m_clothPointsY, m_clothSize, m_clothSize, 1, m_hookDistance);
 
 	//m_activeSystems.push_back(std::move(basicCameraMovementSystem));
 	m_activeSystems.push_back(std::move(renderSystem));
@@ -148,8 +149,11 @@ GameplayScreen::~GameplayScreen()
 {
 }
 
+// TODO: divide this into functions
 void GameplayScreen::setupGui()
 {
+	
+
 	window = new nanogui::Window(m_uiScreen, "Options");
 	window->setPosition(nanogui::Vector2i(15, 15));
 	window->setLayout(new nanogui::GroupLayout());
@@ -162,7 +166,9 @@ void GameplayScreen::setupGui()
 			Entity& clothEntity = m_scene.getEntity(i);
 			if (clothEntity.hasComponents(COMPONENT_CLOTH)) {
 				m_scene.destroyEntity(clothEntity);
-				Entity& newCloth = Prefabs::createCloth(m_scene, m_clothPointsX, m_clothPointsY, 2, 2, 1, m_hookDistance);
+				Entity& newCloth = Prefabs::createCloth(m_scene, m_clothPointsX, m_clothPointsY, m_clothSize, m_clothSize, 1, m_hookDistance);
+				m_foldSlider->setValue(1.0f);
+				m_foldTextBox->setValue("2");
 			}
 		}
 	});
@@ -193,7 +199,9 @@ void GameplayScreen::setupGui()
 			Entity& clothEntity = m_scene.getEntity(i);
 			if (clothEntity.hasComponents(COMPONENT_CLOTH)) {
 				m_scene.destroyEntity(clothEntity);
-				Entity& newCloth = Prefabs::createCloth(m_scene, m_clothPointsX, m_clothPointsY, 2, 2, 1, m_hookDistance);
+				Entity& newCloth = Prefabs::createCloth(m_scene, m_clothPointsX, m_clothPointsY, m_clothSize, m_clothSize, 1, m_hookDistance);
+				m_foldSlider->setValue(1.0f);
+				m_foldTextBox->setValue("2");
 			}
 		}
 	});
@@ -227,7 +235,9 @@ void GameplayScreen::setupGui()
 			Entity& clothEntity = m_scene.getEntity(i);
 			if (clothEntity.hasComponents(COMPONENT_CLOTH)) {
 				m_scene.destroyEntity(clothEntity);
-				Entity& newCloth = Prefabs::createCloth(m_scene, m_clothPointsX, m_clothPointsY, 2, 2, 1, m_hookDistance);
+				Entity& newCloth = Prefabs::createCloth(m_scene, m_clothPointsX, m_clothPointsY, m_clothSize, m_clothSize, 1, m_hookDistance);
+				m_foldSlider->setValue(1.0f);
+				m_foldTextBox->setValue("2");
 			}
 		}
 	});
@@ -299,6 +309,51 @@ void GameplayScreen::setupGui()
 	windStrengthTextBox->setFixedSize(nanogui::Vector2i(80, 25));
 	windStrengthTextBox->setFontSize(20);
 	windStrengthTextBox->setAlignment(nanogui::TextBox::Alignment::Right);
+
+	// Fold slider
+	new nanogui::Label(window, "Corner distance", "sans-bold");
+
+	nanogui::Widget *foldPanel = new nanogui::Widget(window);
+	foldPanel->setLayout(new nanogui::BoxLayout(
+		nanogui::Orientation::Horizontal,
+		nanogui::Alignment::Middle, 0, 20));
+
+	// Wind strength slider
+	m_foldSlider = new nanogui::Slider(foldPanel);
+	m_foldSlider->setValue(1.0f);
+	m_foldSlider->setFixedWidth(180);
+
+	m_foldTextBox = new nanogui::TextBox(foldPanel);
+	m_foldTextBox->setValue("2");
+	m_foldTextBox->setUnits("");
+	// On slider move
+	m_foldSlider->setCallback([&](float value) {
+		m_foldTextBox->setValue(std::to_string((value + 0.001) * 2));
+		for (size_t i = 0; i < m_scene.getEntityCount(); ++i) {
+			Entity& clothEntity = m_scene.getEntity(i);
+			if (clothEntity.hasComponents(COMPONENT_CLOTH)) {
+				for (size_t i = 0; i < m_clothPointsX; i++)
+				{
+					PointMass& pointMass = clothEntity.cloth.getPointMass(0, i);
+					if (pointMass.isFixed) {
+						glm::vec3 pointPos = pointMass.getPosition();
+						glm::vec3 leftCornerPos = clothEntity.cloth.getPointMass(0, 0).getPosition();
+						glm::vec3 rightCornerPos = leftCornerPos + glm::vec3{m_clothSize, 0.0f, 0.0f};
+						float alpha = static_cast<float>(i) / (m_clothPointsX - 1);
+						float interpolatedX = lerp(leftCornerPos.x, rightCornerPos.x, alpha * (value + 0.001));
+						pointMass.setPosition({ interpolatedX, pointPos.y, pointPos.z});
+					}
+				}
+			}
+		}
+	});
+	// On slider release
+	m_foldSlider->setFinalCallback([&](float value) {
+		std::cout << "Final slider value: " << (value + 0.001) * 2 << std::endl;
+	});
+	m_foldTextBox->setFixedSize(nanogui::Vector2i(80, 25));
+	m_foldTextBox->setFontSize(20);
+	m_foldTextBox->setAlignment(nanogui::TextBox::Alignment::Right);
 
 	m_uiScreen->setVisible(true);
 	m_uiScreen->performLayout();

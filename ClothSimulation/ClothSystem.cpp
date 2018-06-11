@@ -16,7 +16,7 @@ ClothSystem::ClothSystem(Scene& scene)
 	, m_kTimeStep{ 1.0f / 60.0f }
 	, m_kTimeStepSq{ m_kTimeStep * m_kTimeStep }
 	, windDirection{1.0f, 0.0f, 0.0f}
-	, windForce(0.03)
+	, windForce(0.0f)
 {
 }
 
