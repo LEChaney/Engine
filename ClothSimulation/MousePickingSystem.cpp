@@ -162,12 +162,33 @@ void MousePickingSystem::updateGrabbedPointMass()
 	if (!m_grabbedPointMass)
 		return;
 
-	glm::vec4 viewPos = m_cameraEntity->camera.getView() * glm::vec4{ m_grabbedPointMass->getPosition(), 1.0f };
-	glm::vec2 deltaMouse = m_mousePos - m_prevMousePos;
+	int width;
+	int height;
+	glfwGetFramebufferSize(glfwGetCurrentContext(), &width, &height);
+	float aspectRatio = static_cast<float>(width) / height;
 
-	viewPos.x += deltaMouse.x * 0.05f;
-	viewPos.y -= deltaMouse.y * 0.05f;
+	// Grabbed point position in ndc space
+	glm::vec4 grabbedPointVewPos = m_cameraEntity->camera.getView() * glm::vec4{ m_grabbedPointMass->getPosition(), 1.0f };
+	glm::vec4 grabbedPointClipPos = m_cameraEntity->camera.getProjection() * grabbedPointVewPos;
+	grabbedPointClipPos /= grabbedPointClipPos.w;
 
-	glm::vec4 newPos = glm::inverse(m_cameraEntity->camera.getView()) * viewPos;
+	// Get mouse position in NDC space
+	glm::vec2 mousePosNDC;
+	mousePosNDC.x = 2 * static_cast<float>(m_mousePos.x) / width - 1;
+	mousePosNDC.y = 1 - 2 * static_cast<float>(m_mousePos.y) / height;
+
+	// NDC space mouse position using the grabbed points NDC space depth
+	glm::vec4 clipCoords = glm::vec4(mousePosNDC.x, mousePosNDC.y, grabbedPointClipPos.z, 1);
+
+	// New View space position
+	mat4 inverseProj = glm::inverse(m_cameraEntity->camera.getProjection());
+	glm::vec4 eyeCoords = inverseProj * clipCoords;
+	eyeCoords /= eyeCoords.w;
+
+	// New world space position
+	const mat4& inverseView = glm::inverse(m_cameraEntity->camera.getView());
+	glm::vec4 newPos4 = inverseView * eyeCoords;
+	glm::vec3 newPos = newPos4;
+
 	m_grabbedPointMass->setPosition(newPos);
 }
