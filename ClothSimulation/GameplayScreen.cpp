@@ -33,6 +33,7 @@ GameplayScreen::GameplayScreen()
 	: Screen()
 	, m_clothPointsX(10)
 	, m_clothPointsY(10)
+	, m_maxClothPoints(20)
 	, m_hookDistance(1)
 	, m_clothSize(2.0f)
 {
@@ -150,6 +151,8 @@ GameplayScreen::GameplayScreen()
 	ground.addComponents(COMPONENT_GROUND_COLLISION);
 
 	Entity& cloth = Prefabs::createCloth(m_scene, m_clothPointsX, m_clothPointsY, m_clothSize, m_clothSize, 1, m_hookDistance);
+	cloth.cloth.clothPoints = m_clothPointsX;
+	cloth.cloth.maxClothPoints = m_maxClothPoints;
 
 	//m_activeSystems.push_back(std::move(basicCameraMovementSystem));
 	m_activeSystems.push_back(std::move(renderSystem));
@@ -185,6 +188,8 @@ void GameplayScreen::setupGui()
 			if (clothEntity.hasComponents(COMPONENT_CLOTH)) {
 				m_scene.destroyEntity(clothEntity);
 				Entity& newCloth = Prefabs::createCloth(m_scene, m_clothPointsX, m_clothPointsY, m_clothSize, m_clothSize, 1, m_hookDistance);
+				newCloth.cloth.clothPoints = m_clothPointsX;
+				newCloth.cloth.maxClothPoints = m_maxClothPoints;
 				m_foldSlider->setValue(1.0f);
 				m_foldTextBox->setValue("2");
 			}
@@ -210,14 +215,16 @@ void GameplayScreen::setupGui()
 	detailTextBox->setUnits("pts");
 	// On slider move
 	detailSlider->setCallback([&, detailTextBox](float value) {
-		detailTextBox->setValue(std::to_string((int)(value * 10) + 10));
-		m_clothPointsX = (int)(value * 10) + 10;
-		m_clothPointsY = (int)(value * 10) + 10;
+		detailTextBox->setValue(std::to_string((int)(value * 6) + 10));
+		m_clothPointsX = (int)(value * 6) + 10;
+		m_clothPointsY = (int)(value * 6) + 10;
 		for (size_t i = 0; i < m_scene.getEntityCount(); ++i) {
 			Entity& clothEntity = m_scene.getEntity(i);
 			if (clothEntity.hasComponents(COMPONENT_CLOTH)) {
 				m_scene.destroyEntity(clothEntity);
 				Entity& newCloth = Prefabs::createCloth(m_scene, m_clothPointsX, m_clothPointsY, m_clothSize, m_clothSize, 1, m_hookDistance);
+				newCloth.cloth.clothPoints = m_clothPointsX;
+				newCloth.cloth.maxClothPoints = m_maxClothPoints;
 				m_foldSlider->setValue(1.0f);
 				m_foldTextBox->setValue("2");
 			}
@@ -225,7 +232,7 @@ void GameplayScreen::setupGui()
 	});
 	// On slider release
 	detailSlider->setFinalCallback([&](float value) {
-		std::cout << "Final slider value: " << (int)(value * 10) + 10 << std::endl;
+		std::cout << "Final slider value: " << (int)(value * 6) + 10 << std::endl;
 	});
 	detailTextBox->setFontSize(20);
 	detailTextBox->setAlignment(nanogui::TextBox::Alignment::Right);
@@ -254,6 +261,8 @@ void GameplayScreen::setupGui()
 			if (clothEntity.hasComponents(COMPONENT_CLOTH)) {
 				m_scene.destroyEntity(clothEntity);
 				Entity& newCloth = Prefabs::createCloth(m_scene, m_clothPointsX, m_clothPointsY, m_clothSize, m_clothSize, 1, m_hookDistance);
+				newCloth.cloth.clothPoints = m_clothPointsX;
+				newCloth.cloth.maxClothPoints = m_maxClothPoints;
 				m_foldSlider->setValue(1.0f);
 				m_foldTextBox->setValue("2");
 			}

@@ -25,6 +25,7 @@ void CollisionSystem::update()
 	for (size_t i = 0; i < m_scene.getEntityCount(); ++i) {
 		Entity& clothEntity = m_scene.getEntity(i);
 		if (clothEntity.hasComponents(COMPONENT_CLOTH)) {
+			SelfCollision(clothEntity);
 			for (size_t j = 0; j < m_scene.getEntityCount(); ++j) {
 				Entity& shapeEntity = m_scene.getEntity(j);
 				if (shapeEntity.hasComponents(COMPONENT_SPHERE_COLLISION)) {
@@ -50,6 +51,46 @@ void CollisionSystem::beginFrame()
 
 void CollisionSystem::endFrame()
 {
+}
+
+void CollisionSystem::SelfCollision(Entity & clothEntity)
+{
+	auto& clothNodes = clothEntity.cloth.clothNodes;
+	float minDistance = 0.15f * (static_cast<float>(clothEntity.cloth.maxClothPoints)/ clothEntity.cloth.clothPoints);
+	for (size_t i = 0; i < clothNodes.size(); ++i)
+	{
+		for (size_t j = i + 1; j < clothNodes.size(); ++j)
+		{
+			std::vector<PointMass*> neighborNodes;
+			bool checkCollision = true;
+			for (size_t k = 0; k < clothNodes.at(i).linkDirections.size(); ++k)
+			{
+				if (clothNodes.at(i).linkDirections.at(k).size() > 0) {
+					ClothLinkIterator clothLink = clothNodes.at(i).linkDirections.at(k).at(0);
+					GLuint nodeId = i == clothLink->node1Id ? clothLink->node2Id : clothLink->node1Id;
+					neighborNodes.push_back(&clothEntity.cloth.getNode(nodeId).pointMass);
+				}
+			}
+			for (size_t k = 0; k < neighborNodes.size(); ++k)
+			{
+				if (&clothNodes.at(j).pointMass == neighborNodes.at(k)) {
+					checkCollision = false;
+				}
+			}
+			if (checkCollision) {
+				glm::vec3 position1 = clothNodes.at(i).pointMass.getPosition();
+				glm::vec3 position2 = clothNodes.at(j).pointMass.getPosition();
+				float distance = glm::distance(position1, position2);
+				if (distance < minDistance) {
+					glm::vec3 displacement = position1 - position2;
+					displacement = glm::normalize(displacement);
+
+					clothNodes.at(i).pointMass.addOffset(displacement * ((minDistance - distance)/2.0f));
+					clothNodes.at(j).pointMass.addOffset(-displacement * ((minDistance - distance) / 2.0f));
+				}
+			}
+		}
+	}
 }
 
 void CollisionSystem::SphereCollision(Entity& clothEntity, Entity& sphereEntity)

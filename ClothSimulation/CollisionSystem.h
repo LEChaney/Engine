@@ -19,6 +19,7 @@ public:
 	virtual void endFrame() override;
 
 private:
+	void SelfCollision(Entity& clothEntity);
 	void SphereCollision(Entity& clothEntity, Entity& sphereEntity);
 	void CapsuleCollision(Entity& clothEntity, Entity& capsuleEntity);
 	void GroundCollision(Entity& clothEntity, Entity& groundEntity);
