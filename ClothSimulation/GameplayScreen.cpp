@@ -102,7 +102,8 @@ GameplayScreen::GameplayScreen()
 
 	TransformComponent sphereTransform;
 	sphereTransform.position.y = -1.2f;
-	sphereTransform.position.x = 2.0f;
+	sphereTransform.position.x = 0.0f;
+	sphereTransform.position.z = -2.0f;
 	Entity& sphere = Prefabs::createSphere(m_scene, sphereTransform);
 	sphere.addComponents(COMPONENT_SPHERE_COLLISION | COMPONENT_SIMPLE_WORLD_SPACE_MOVE_COMPONENT | COMPONENT_INPUT | COMPONENT_INPUT_MAP);
 	sphere.sphereCollision.radius = 1.0f;
@@ -114,7 +115,8 @@ GameplayScreen::GameplayScreen()
 
 	TransformComponent triangleTransform;
 	triangleTransform.position.y = -1.4f;
-	triangleTransform.position.x = -3.0f;
+	triangleTransform.position.x = -5.0f;
+	triangleTransform.position.z = -2.0f;
 	Entity& pyramid = Prefabs::createPyramid(m_scene, triangleTransform);
 	pyramid.addComponents(COMPONENT_PYRAMID_COLLISION | COMPONENT_SIMPLE_WORLD_SPACE_MOVE_COMPONENT | COMPONENT_INPUT | COMPONENT_INPUT_MAP);
 	pyramid.sphereCollision.radius = 1.0f;
@@ -126,7 +128,8 @@ GameplayScreen::GameplayScreen()
 
 	TransformComponent capsuleTransform;
 	capsuleTransform.position.y = -1.8f;
-	capsuleTransform.position.x = 7.0f;
+	capsuleTransform.position.x = 5.0f;
+	capsuleTransform.position.z = -2.0f;
 	capsuleTransform.eulerAngles = { 0.0f, 0.0f, -glm::quarter_pi<float>() };
 	Entity& capsule = m_scene.createEntity(COMPONENT_MODEL | COMPONENT_TRANSFORM);
 	capsule.transform = capsuleTransform;

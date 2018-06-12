@@ -146,7 +146,8 @@ void CollisionSystem::PyramidCollision(Entity & clothEntity, Entity & pyramidEnt
 						penetratingPoint = triangle1.at(2);
 					}*/
 
-					std::vector<glm::vec3> penetratingPoints = PenetratingPoints(triangle1, triangle2);
+					std::vector<int> indexes;
+					std::vector<glm::vec3> penetratingPoints = PenetratingPoints(triangle1, triangle2, indexes);
 
 					float longestDistance = 0;
 					float distance;
@@ -157,21 +158,28 @@ void CollisionSystem::PyramidCollision(Entity & clothEntity, Entity & pyramidEnt
 					for (size_t k = 0; k < penetratingPoints.size(); ++k)
 					{
 						PointLineDistance(penetratingPoints.at(k), intersect1, intersect2, distance, passInPointOnLine);
-						if (distance > longestDistance)
+						PointMass& pointToMove = clothEntity.cloth.pointMasses.at(triIndices.at(i + indexes.at(k)));
+
+						/*triangleOffset = glm::normalize(passInPointOnLine - pointToMove.getPosition());
+						triangleOffset *= distance;*/
+
+						pointToMove.setPosition(passInPointOnLine);
+
+						/*if (distance > longestDistance)
 						{
 							longestDistance = distance;
 							pointOnLine = passInPointOnLine;
 							furthestInPoint = penetratingPoints.at(k);
-						}
+						}*/
 
 					}
 
 
-					triangleOffset = glm::normalize(pointOnLine - furthestInPoint) * longestDistance;
+					/*triangleOffset = glm::normalize(pointOnLine - furthestInPoint) * longestDistance;
 
 					clothEntity.cloth.pointMasses.at(triIndices.at(i)).setPosition(clothEntity.cloth.pointMasses.at(triIndices.at(i)).getPosition() + triangleOffset);
 					clothEntity.cloth.pointMasses.at(triIndices.at(i + 1)).setPosition(clothEntity.cloth.pointMasses.at(triIndices.at(i + 1)).getPosition() + triangleOffset);
-					clothEntity.cloth.pointMasses.at(triIndices.at(i + 2)).setPosition(clothEntity.cloth.pointMasses.at(triIndices.at(i + 2)).getPosition() + triangleOffset);
+					clothEntity.cloth.pointMasses.at(triIndices.at(i + 2)).setPosition(clothEntity.cloth.pointMasses.at(triIndices.at(i + 2)).getPosition() + triangleOffset);*/
 					/*clothEntity.cloth.pointMasses.at(triIndices.at(i)).addOffset(triangleOffset);
 					clothEntity.cloth.pointMasses.at(triIndices.at(i + 1)).addOffset(triangleOffset);
 					clothEntity.cloth.pointMasses.at(triIndices.at(i + 2)).addOffset(triangleOffset);*/
@@ -181,7 +189,7 @@ void CollisionSystem::PyramidCollision(Entity & clothEntity, Entity & pyramidEnt
 	}
 }
 
-std::vector<glm::vec3> CollisionSystem::PenetratingPoints(std::vector<glm::vec3> penetratingTriangle, std::vector<glm::vec3> triangle)
+std::vector<glm::vec3> CollisionSystem::PenetratingPoints(std::vector<glm::vec3> penetratingTriangle, std::vector<glm::vec3> triangle, std::vector<int>& indexes)
 {
 	std::vector<glm::vec3> validPoints = {};
 	glm::vec3 side1 = triangle[1] - triangle[0];
@@ -200,6 +208,7 @@ std::vector<glm::vec3> CollisionSystem::PenetratingPoints(std::vector<glm::vec3>
 		if (pointDistance < 0)
 		{
 			validPoints.push_back(penetratingTriangle[i]);
+			indexes.push_back(i);
 		}
 	}
 
