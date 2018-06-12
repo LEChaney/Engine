@@ -119,11 +119,16 @@ void ClothSystem::update()
 
 				// Update GPU vertices to match cloth points
 				vertices[i].position = cloth.getNode(i).pointMass.getPosition();
-				vertices[i].normal = { 0, 1, 0 };
-				vertices[i].texCoord = { 
-					 ptCol / static_cast<float>(cloth.getNumPointMassesX() - 1), 
-					 ptRow / static_cast<float>(cloth.getNumPointMassesY() - 1) 
+				vertices[i].normal = { 0, 0, 0 };
+				vertices[i].texCoord = {
+					 ptCol / static_cast<float>(cloth.getNumPointMassesX() - 1),
+					 ptRow / static_cast<float>(cloth.getNumPointMassesY() - 1)
 				};
+			}
+
+			for (GLuint i = 0; i < cloth.getNumClothNodes(); ++i) {
+				GLuint ptRow = (i / cloth.getNumPointMassesX());
+				GLuint ptCol = (i % cloth.getNumPointMassesX());
 
 				// Update triangle indices
 				if (ptRow < (cloth.getNumPointMassesY() - 1) && ptCol < (cloth.getNumPointMassesX() - 1)) {
@@ -139,6 +144,17 @@ void ClothSystem::update()
 						cloth.triIndices[eboIdx] = indices[eboIdx] = topLeftIdx;
 						cloth.triIndices[eboIdx + 1] = indices[eboIdx + 1] = bottomLeftIdx;
 						cloth.triIndices[eboIdx + 2] = indices[eboIdx + 2] = bottomRightIdx;
+						
+						// Accumulate normals
+						const glm::vec3& p0 = cloth.getNode(topLeftIdx).pointMass.getPosition();
+						const glm::vec3& p1 = cloth.getNode(bottomLeftIdx).pointMass.getPosition();
+						const glm::vec3& p2 = cloth.getNode(bottomRightIdx).pointMass.getPosition();
+						glm::vec3 edge1 = p1 - p0;
+						glm::vec3 edge2 = p2 - p0;
+						glm::vec3 normal = glm::cross(edge1, edge2);
+						vertices[topLeftIdx].normal += normal;
+						vertices[bottomLeftIdx].normal += normal;
+						vertices[bottomRightIdx].normal += normal;
 					}
 					else {
 						// Degenerate triangle when link is broken
@@ -151,6 +167,17 @@ void ClothSystem::update()
 						cloth.triIndices[eboIdx + 3] = indices[eboIdx + 3] = topLeftIdx;
 						cloth.triIndices[eboIdx + 4] = indices[eboIdx + 4] = bottomRightIdx;
 						cloth.triIndices[eboIdx + 5] = indices[eboIdx + 5] = topRightIdx;
+
+						// Accumulate normals
+						const glm::vec3& p0 = cloth.getNode(topLeftIdx).pointMass.getPosition();
+						const glm::vec3& p1 = cloth.getNode(bottomRightIdx).pointMass.getPosition();
+						const glm::vec3& p2 = cloth.getNode(topRightIdx).pointMass.getPosition();
+						glm::vec3 edge1 = p1 - p0;
+						glm::vec3 edge2 = p2 - p0;
+						glm::vec3 normal = glm::cross(edge1, edge2);
+						vertices[topLeftIdx].normal += normal;
+						vertices[bottomRightIdx].normal += normal;
+						vertices[topRightIdx].normal += normal;
 					}
 					else {
 						// Degenerate triangle when link is broken

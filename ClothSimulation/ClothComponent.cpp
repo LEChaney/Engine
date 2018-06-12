@@ -188,7 +188,7 @@ Entity& ClothComponent::createCloth(Scene& scene, GLuint numPointsX, GLuint numP
 
 	// Set Material to use for drawing
 	Material material;
-	material.willDrawWireframe = true;
+	//material.willDrawWireframe = true;
 	clothEntity.model.materials.push_back(material);
 
 	// Create point masses from cloth vertices 
