@@ -65,10 +65,11 @@ void CollisionSystem::SelfCollision(Entity & clothEntity)
 			bool checkCollision = true;
 			for (size_t k = 0; k < clothNodes.at(i).linkDirections.size(); ++k)
 			{
-				if (clothNodes.at(i).linkDirections.at(k).size() > 0) {
-					ClothLinkIterator clothLink = clothNodes.at(i).linkDirections.at(k).at(0);
-					GLuint nodeId = i == clothLink->node1Id ? clothLink->node2Id : clothLink->node1Id;
-					neighborNodes.push_back(&clothEntity.cloth.getNode(nodeId).pointMass);
+				for(auto& clothLink : clothNodes.at(i).linkDirections.at(k)) {
+					if (clothLink->isStructural()) {
+						GLuint nodeId = i == clothLink->node1Id ? clothLink->node2Id : clothLink->node1Id;
+						neighborNodes.push_back(&clothEntity.cloth.getNode(nodeId).pointMass);
+					}
 				}
 			}
 			for (size_t k = 0; k < neighborNodes.size(); ++k)

@@ -238,25 +238,25 @@ Entity& ClothComponent::createCloth(Scene& scene, GLuint numPointsX, GLuint numP
 
 		// Structural Constraints
 		if (topRightCol < cloth.m_numPointMassesX)
-			cloth.addClothLink(topLeftIdx, topRightIdx, 1.0f, 0.25f);
+			cloth.addClothLink(topLeftIdx, topRightIdx, 1.0f, 0.1f);
 		if (bottomLeftRow < cloth.m_numPointMassesY)
-			cloth.addClothLink(topLeftIdx, bottomLeftIdx, 1.0f, 0.25f);
+			cloth.addClothLink(topLeftIdx, bottomLeftIdx, 1.0f, 0.1f);
 
 		// Shear Constraints
-		//if (bottomRightRow < cloth.m_numPointMassesY && bottomRightCol < cloth.m_numPointMassesX)
-		//	cloth.addClothLink(topLeftIdx, bottomRightIdx, 0.5f, 0);
-		//if (bottomLeftRow < cloth.m_numPointMassesY && topRightCol < cloth.m_numPointMassesX)
-		//	cloth.addClothLink(bottomLeftIdx, topRightIdx, 0.5f, 0);
+		if (bottomRightRow < cloth.m_numPointMassesY && bottomRightCol < cloth.m_numPointMassesX)
+			cloth.addClothLink(topLeftIdx, bottomRightIdx, 0.1f, 0);
+		if (bottomLeftRow < cloth.m_numPointMassesY && topRightCol < cloth.m_numPointMassesX)
+			cloth.addClothLink(bottomLeftIdx, topRightIdx, 0.1f, 0);
 
 		//// Bending Constraints
-		//if (topRightBendCol < cloth.m_numPointMassesX)
-		//	cloth.addClothLink(topLeftIdx, topRightBendIdx, 0.0001f, 0);
-		//if (bottomLeftBendRow < cloth.m_numPointMassesY)
-		//	cloth.addClothLink(topLeftIdx, bottomLeftBendIdx, 0.0001f, 0);
-		//if (bottomRightBendRow < cloth.m_numPointMassesY && bottomRightBendCol < cloth.m_numPointMassesX)
-		//	cloth.addClothLink(topLeftIdx, bottomRightBendIdx, 0.0001f, 0);
-		//if (bottomLeftBendRow < cloth.m_numPointMassesY && topRightBendCol < cloth.m_numPointMassesX)
-		//	cloth.addClothLink(bottomLeftBendIdx, topRightBendIdx, 0.0001f, 0);
+		if (topRightBendCol < cloth.m_numPointMassesX)
+			cloth.addClothLink(topLeftIdx, topRightBendIdx, 0.0001f, 0);
+		if (bottomLeftBendRow < cloth.m_numPointMassesY)
+			cloth.addClothLink(topLeftIdx, bottomLeftBendIdx, 0.0001f, 0);
+		if (bottomRightBendRow < cloth.m_numPointMassesY && bottomRightBendCol < cloth.m_numPointMassesX)
+			cloth.addClothLink(topLeftIdx, bottomRightBendIdx, 0.0001f, 0);
+		if (bottomLeftBendRow < cloth.m_numPointMassesY && topRightBendCol < cloth.m_numPointMassesX)
+			cloth.addClothLink(bottomLeftBendIdx, topRightBendIdx, 0.0001f, 0);
 	
 	}
 
