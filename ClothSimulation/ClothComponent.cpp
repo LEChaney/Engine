@@ -209,12 +209,21 @@ Entity& ClothComponent::createCloth(Scene& scene, GLuint numPointsX, GLuint numP
 		GLuint topRightIdx = i + 1;
 		GLuint topRightRow = topLeftRow;
 		GLuint topRightCol = topLeftCol + 1;
+		GLuint topRightBendIdx = topRightIdx + 1;
+		GLuint topRightBendRow = topRightRow;
+		GLuint topRightBendCol = topRightCol + 1;
 		GLuint bottomLeftIdx = i + cloth.m_numPointMassesX;
 		GLuint bottomLeftRow = topLeftRow + 1;
 		GLuint bottomLeftCol = topLeftCol;
+		GLuint bottomLeftBendIdx = bottomLeftIdx + 1;
+		GLuint bottomLeftBendRow = bottomLeftRow + 1;
+		GLuint bottomLeftBendCol = bottomLeftCol;
 		GLuint bottomRightIdx = i + cloth.m_numPointMassesX + 1;
 		GLuint bottomRightRow = topLeftRow + 1;
 		GLuint bottomRightCol = topLeftCol + 1;
+		GLuint bottomRightBendIdx = bottomRightIdx + 1;
+		GLuint bottomRightBendRow = bottomRightRow + 1;
+		GLuint bottomRightBendCol = bottomRightCol + 1;
 
 		// Structural Constraints
 		if (topRightCol < cloth.m_numPointMassesX)
@@ -229,14 +238,15 @@ Entity& ClothComponent::createCloth(Scene& scene, GLuint numPointsX, GLuint numP
 			cloth.addClothLink(bottomLeftIdx, topRightIdx, 0.5f, 0);
 
 		// Bending Constraints
-		//if (c < numPointsX - 2)
-		//	cloth.addSpringConstraint(r, c, r, c + 2, 0.1f, 0.25f);
-		//if (r < numPointsY - 2)
-		//	cloth.addSpringConstraint(r, c, r + 2, c, 0.1f, 0.25f);
-		//if (r < numPointsY - 2 && c < numPointsX - 2) {
-		//	cloth.addSpringConstraint(r, c, r + 2, c + 2, 0.1f, 0.25f);
-		//	cloth.addSpringConstraint(r, c + 2, r + 2, c, 0.1f, 0.25f);
-		//}
+		if (topRightBendCol < cloth.m_numPointMassesX)
+			cloth.addClothLink(topLeftIdx, topRightBendIdx, 0.1f, 0);
+		if (bottomLeftBendRow < cloth.m_numPointMassesY)
+			cloth.addClothLink(topLeftIdx, bottomLeftBendIdx, 0.1f, 0);
+		if (bottomRightBendRow < cloth.m_numPointMassesY && bottomRightBendCol < cloth.m_numPointMassesX)
+			cloth.addClothLink(topLeftIdx, bottomRightBendIdx, 0.1f, 0);
+		if (bottomLeftBendRow < cloth.m_numPointMassesY && topRightBendCol < cloth.m_numPointMassesX)
+			cloth.addClothLink(bottomLeftBendIdx, topRightBendIdx, 0.1f, 0);
+	
 	}
 
 	return clothEntity;
