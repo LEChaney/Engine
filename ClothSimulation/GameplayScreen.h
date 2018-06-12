@@ -18,6 +18,7 @@ private:
 	nanogui::Window* window;
 	int m_clothPointsX;
 	int m_clothPointsY;
+	int m_maxClothPoints;
 	int m_hookDistance;
 	ClothSystem* m_clothSystem;
 	float m_clothSize;

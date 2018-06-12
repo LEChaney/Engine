@@ -70,6 +70,8 @@ public:
 	std::vector<ClothNode> clothNodes;
 	std::vector<GLuint> triIndices;
 	std::list<ClothLink> clothLinks;
+	GLint clothPoints;
+	GLint maxClothPoints;
 
 private:
 	GLuint m_numPointMassesX;
