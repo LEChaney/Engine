@@ -27,8 +27,12 @@ void MousePickingSystem::update()
 	// Grab point mass on mouse button down
 	if (m_prevMouseState == GLFW_RELEASE && mouseState == GLFW_PRESS) {
 		m_grabbedPointMass = mousePick();
-		if (m_grabbedPointMass)
-			m_grabbedPointMass->isFixed = true;
+		if (m_grabbedPointMass) {
+			if (m_grabbedPointMass->isFixed)
+				m_grabbedPointMass = nullptr;
+			else
+				m_grabbedPointMass->isFixed = true;
+		}
 	}
 
 	// Release point mass on mouse button up

@@ -24,12 +24,16 @@
 #include <glm\gtc\matrix_transform.hpp>
 #include <gli\gli.hpp>
 
+#include <nanogui/nanogui.h>
+
 #include "Log.h"
 #include <unordered_map>
 #include <string>
 #include <sstream>
 
 #define BUFFER_OFFSET(i) ((GLvoid *)(i*sizeof(float)))
+
+using namespace nanogui;
 
 // Callback for handling glfw errors
 void errorCallback(int error, const char* description)
@@ -74,6 +78,10 @@ GLFWwindow* GLUtils::initOpenGL()
 		glfwTerminate();
 		exit(EXIT_FAILURE);
 	}
+
+	// Create a nanogui screen and pass the glfw pointer to initialize
+	Screen* screen = new Screen();
+	screen->initialize(glContext, true);
 
 	// Configure glContext
 	glfwSwapInterval(1);

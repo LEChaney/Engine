@@ -7,6 +7,8 @@
 
 #include <GLFW\glfw3.h>
 
+#include <nanogui/nanogui.h>
+
 #include <memory>
 
 GLFWwindow* g_window;

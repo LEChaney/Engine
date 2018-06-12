@@ -164,7 +164,7 @@ bool ClothComponent::hasConstraintBetween(GLuint idx1, GLuint idx2) const
 	return false;
 }
 
-Entity& ClothComponent::createCloth(Scene& scene, GLuint numPointsX, GLuint numPointsY, GLfloat width, GLfloat height, GLfloat weightPerUnitArea)
+Entity& ClothComponent::createCloth(Scene& scene, GLuint numPointsX, GLuint numPointsY, GLfloat width, GLfloat height, GLfloat weightPerUnitArea, GLint linkDistance)
 {
 	Entity& clothEntity = scene.createEntity(COMPONENT_CLOTH, COMPONENT_MODEL);
 	ClothComponent& cloth = clothEntity.cloth;
@@ -196,8 +196,8 @@ Entity& ClothComponent::createCloth(Scene& scene, GLuint numPointsX, GLuint numP
 	for (GLuint i = 0; i < vertices.size(); ++i) {
 		cloth.clothNodes.emplace_back(vertices[i].position, individualMass, false);
 
-		// Fix first 4 verts
-		if (i < numPointsX)
+		// Fix some of the top vertices
+		if (i < numPointsX && i % linkDistance == 0)
 			cloth.clothNodes[i].pointMass.isFixed = true;
 	}
 
@@ -232,20 +232,20 @@ Entity& ClothComponent::createCloth(Scene& scene, GLuint numPointsX, GLuint numP
 			cloth.addClothLink(topLeftIdx, bottomLeftIdx, 1.0f, 0.25f);
 
 		// Shear Constraints
-		if (bottomRightRow < cloth.m_numPointMassesY && bottomRightCol < cloth.m_numPointMassesX)
-			cloth.addClothLink(topLeftIdx, bottomRightIdx, 0.5f, 0);
-		if (bottomLeftRow < cloth.m_numPointMassesY && topRightCol < cloth.m_numPointMassesX)
-			cloth.addClothLink(bottomLeftIdx, topRightIdx, 0.5f, 0);
+		//if (bottomRightRow < cloth.m_numPointMassesY && bottomRightCol < cloth.m_numPointMassesX)
+		//	cloth.addClothLink(topLeftIdx, bottomRightIdx, 0.5f, 0);
+		//if (bottomLeftRow < cloth.m_numPointMassesY && topRightCol < cloth.m_numPointMassesX)
+		//	cloth.addClothLink(bottomLeftIdx, topRightIdx, 0.5f, 0);
 
-		// Bending Constraints
-		if (topRightBendCol < cloth.m_numPointMassesX)
-			cloth.addClothLink(topLeftIdx, topRightBendIdx, 0.1f, 0);
-		if (bottomLeftBendRow < cloth.m_numPointMassesY)
-			cloth.addClothLink(topLeftIdx, bottomLeftBendIdx, 0.1f, 0);
-		if (bottomRightBendRow < cloth.m_numPointMassesY && bottomRightBendCol < cloth.m_numPointMassesX)
-			cloth.addClothLink(topLeftIdx, bottomRightBendIdx, 0.1f, 0);
-		if (bottomLeftBendRow < cloth.m_numPointMassesY && topRightBendCol < cloth.m_numPointMassesX)
-			cloth.addClothLink(bottomLeftBendIdx, topRightBendIdx, 0.1f, 0);
+		//// Bending Constraints
+		//if (topRightBendCol < cloth.m_numPointMassesX)
+		//	cloth.addClothLink(topLeftIdx, topRightBendIdx, 0.0001f, 0);
+		//if (bottomLeftBendRow < cloth.m_numPointMassesY)
+		//	cloth.addClothLink(topLeftIdx, bottomLeftBendIdx, 0.0001f, 0);
+		//if (bottomRightBendRow < cloth.m_numPointMassesY && bottomRightBendCol < cloth.m_numPointMassesX)
+		//	cloth.addClothLink(topLeftIdx, bottomRightBendIdx, 0.0001f, 0);
+		//if (bottomLeftBendRow < cloth.m_numPointMassesY && topRightBendCol < cloth.m_numPointMassesX)
+		//	cloth.addClothLink(bottomLeftBendIdx, topRightBendIdx, 0.0001f, 0);
 	
 	}
 
@@ -262,7 +262,7 @@ GLint ClothComponent::getReverseDirection(GLint direction)
 	return wrapDirection(direction + 4);
 }
 
-Entity& Prefabs::createCloth(Scene& scene, GLuint numPointsX, GLuint numPointsY, GLfloat width, GLfloat height, GLfloat weightPerUnitArea)
+Entity& Prefabs::createCloth(Scene& scene, GLuint numPointsX, GLuint numPointsY, GLfloat width, GLfloat height, GLfloat weightPerUnitArea, GLint linkDistance)
 {
-	return ClothComponent::createCloth(scene, numPointsX, numPointsY, width, height, weightPerUnitArea);
+	return ClothComponent::createCloth(scene, numPointsX, numPointsY, width, height, weightPerUnitArea, linkDistance);
 }

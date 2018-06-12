@@ -186,6 +186,9 @@
     <ClCompile Include="PyramidCollisionComponent.cpp">
       <Filter>Source Files\Physics</Filter>
     </ClCompile>
+    <ClCompile Include="CapsuleCollisionComponent.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Scene.h">
@@ -361,6 +364,9 @@
     </ClInclude>
     <ClInclude Include="PyramidCollisionComponent.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CapsuleCollisionComponent.h">
+      <Filter>Source Files\Physics</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -13,9 +13,9 @@ public:
 	const glm::mat4& getView() const;
 	const glm::mat4& getProjection() const;
 	const glm::vec3& getPosition() const;
-	const glm::vec3& getForward() const;
-	const glm::vec3& getRight() const;
-	const glm::vec3& getUp() const;
+	glm::vec3 getForward() const;
+	glm::vec3 getRight() const;
+	glm::vec3 getUp() const;
 	GLfloat getNearClipDistance() const;
 	GLfloat getFarClipDistance() const;
 

@@ -16,6 +16,8 @@ ClothSystem::ClothSystem(Scene& scene)
 	, m_kDamping{ 0.01f }
 	, m_kTimeStep{ 1.0f / 60.0f }
 	, m_kTimeStepSq{ m_kTimeStep * m_kTimeStep }
+	, windDirection{1.0f, 0.0f, 0.0f}
+	, windForce(0.0f)
 {
 }
 
@@ -58,13 +60,34 @@ void ClothSystem::update()
 					++clothLinksIt;
 			}
 
+			// Add wind per triangle
+			for (size_t i = 0; i < cloth.triIndices.size(); i += 3) {
+				PointMass& point0 = cloth.clothNodes.at(cloth.triIndices.at(i)).pointMass;
+				PointMass& point1 = cloth.clothNodes.at(cloth.triIndices.at(i + 1)).pointMass;
+				PointMass& point2 = cloth.clothNodes.at(cloth.triIndices.at(i + 2)).pointMass;
+
+				if (&point0 == &point1 && &point1 == &point2)
+					continue;
+
+				glm::vec3 side1 = point1.getPosition() - point0.getPosition();
+				glm::vec3 side2 = point2.getPosition() - point0.getPosition();
+				glm::vec3 normal = glm::normalize(glm::cross(side1, side2));
+
+				glm::vec3 force = normal * glm::dot(normal, windDirection * windForce);
+
+				point0.force += force;
+				point1.force += force;
+				point2.force += force;
+			}
+
+			// Integrate pointmasses
 			for (GLuint i = 0; i < cloth.getNumClothNodes(); ++i) {
 				ClothNode& clothNode = cloth.getNode(i);
 				PointMass& pointMass = clothNode.pointMass;
 
+				// Add gravity
 				pointMass.force += pointMass.mass * glm::vec3{ 0, -9.81f, 0 };
 
-				// Integrate pointmasses
 				glm::vec3 tmp = pointMass.getPosition();
 				glm::vec3 acceleration = pointMass.force / pointMass.mass;
 				pointMass.addOffset((pointMass.getPosition() - pointMass.prevPosition) * (1.0f - m_kDamping) + acceleration * m_kTimeStepSq);
