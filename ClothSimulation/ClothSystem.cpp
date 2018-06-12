@@ -9,6 +9,7 @@
 #include "Mesh.h"
 #include "Clock.h"
 #include "RenderSystem.h"
+#include "Utils.h"
 
 ClothSystem::ClothSystem(Scene& scene)
 	: System(scene)
@@ -16,6 +17,7 @@ ClothSystem::ClothSystem(Scene& scene)
 	, m_kDamping{ 0.01f }
 	, m_kTimeStep{ 1.0f / 60.0f }
 	, m_kTimeStepSq{ m_kTimeStep * m_kTimeStep }
+	, m_kBurnPercentPerSecond{ 0.25 }
 	, windDirection{1.0f, 0.0f, 0.0f}
 	, windForce(0.0f)
 {
@@ -46,6 +48,23 @@ void ClothSystem::update()
 			// Break constraints
 			for (ClothLinkIterator clothLink = cloth.clothLinks.begin(); clothLink != cloth.clothLinks.end(); ++clothLink) {
 				if ((clothLink->springConstraint.getCurrentLength() - clothLink->springConstraint.getRestLength()) >= clothLink->springConstraint.getBreakDistance()) {
+					cloth.breakStructualLink(clothLink);
+				}
+
+				// Spread burning
+				if (clothLink->isStructural() 
+				&& (cloth.clothNodes[clothLink->node1Id].pointMass.isBurning
+				 || cloth.clothNodes[clothLink->node2Id].pointMass.isBurning)) {
+					GLuint unburntNodeId = cloth.clothNodes[clothLink->node1Id].pointMass.isBurning ? clothLink->node2Id : clothLink->node1Id;
+					GLuint burningNodeId = unburntNodeId == clothLink->node1Id ? clothLink->node2Id : clothLink->node1Id;
+					if (randomReal(0.1f, 1.0f) <= cloth.clothNodes[burningNodeId].pointMass.burnedPercent)
+						cloth.clothNodes[unburntNodeId].pointMass.isBurning = true;
+				}
+
+				// Break from burning
+				if (clothLink->isStructural()
+				&& (cloth.clothNodes[clothLink->node1Id].pointMass.burnedPercent >= 1
+				 || cloth.clothNodes[clothLink->node2Id].pointMass.burnedPercent >= 1)) {
 					cloth.breakStructualLink(clothLink);
 				}
 			}
@@ -85,9 +104,14 @@ void ClothSystem::update()
 				ClothNode& clothNode = cloth.getNode(i);
 				PointMass& pointMass = clothNode.pointMass;
 
+				// Update burn amount
+				if (clothNode.pointMass.isBurning)
+					clothNode.pointMass.burnedPercent += m_kBurnPercentPerSecond * m_kTimeStep;
+
 				// Add gravity
 				pointMass.force += pointMass.mass * glm::vec3{ 0, -9.81f, 0 };
 
+				// Integration
 				glm::vec3 tmp = pointMass.getPosition();
 				glm::vec3 acceleration = pointMass.force / pointMass.mass;
 				pointMass.addOffset((pointMass.getPosition() - pointMass.prevPosition) * (1.0f - m_kDamping) + acceleration * m_kTimeStepSq);
@@ -124,6 +148,7 @@ void ClothSystem::update()
 					 ptCol / static_cast<float>(cloth.getNumPointMassesX() - 1),
 					 ptRow / static_cast<float>(cloth.getNumPointMassesY() - 1)
 				};
+				vertices[i].color = { 0, 1 - cloth.getNode(i).pointMass.burnedPercent, 0 };
 			}
 
 			for (GLuint i = 0; i < cloth.getNumClothNodes(); ++i) {

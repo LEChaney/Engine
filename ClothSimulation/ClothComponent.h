@@ -31,6 +31,8 @@ struct ClothLink {
 	GLuint node2Id;
 	GLint direction;
 	SpringConstraint springConstraint;
+
+	bool isStructural() const;
 };
 
 using ClothLinkIterator = std::list<ClothLink>::iterator;

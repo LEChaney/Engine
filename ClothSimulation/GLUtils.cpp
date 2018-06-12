@@ -120,6 +120,15 @@ const Shader& GLUtils::getDefaultShader()
 	return s_shader;
 }
 
+const Shader & GLUtils::getVertexColorShader()
+{
+	static Shader s_shader = compileAndLinkShaders(
+		"Assets/Shaders/vertcolor_vert.glsl",
+		"Assets/Shaders/vertcolor_frag.glsl");
+
+	return s_shader;
+}
+
 const Shader& GLUtils::getMetalShader()
 {
 	static Shader s_shader = compileAndLinkShaders(
@@ -209,6 +218,7 @@ void GLUtils::createTessellatedQuadData(GLsizei numVertsX, GLsizei numVertsZ, fl
 				vertices[r * numVertsX + c].position = glm::vec3{ x, 0, z };
 				vertices[r * numVertsX + c].normal = glm::vec3{ 0, 1, 0 };
 				vertices[r * numVertsX + c].texCoord = glm::vec2{ (x + xExtent) / width, (z + zExtent) / height };
+				vertices[r * numVertsX + c].color = glm::vec3{ 0, 1, 0 };
 			}
 		}
 

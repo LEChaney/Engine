@@ -26,4 +26,5 @@ private:
 	const GLfloat m_kDamping;
 	const GLfloat m_kTimeStep;
 	const GLfloat m_kTimeStepSq;
+	const GLfloat m_kBurnPercentPerSecond;
 };

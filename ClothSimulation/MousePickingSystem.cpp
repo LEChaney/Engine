@@ -21,11 +21,20 @@ MousePickingSystem::MousePickingSystem(Scene& scene, Entity& cameraEntity)
 
 void MousePickingSystem::update()
 {
-	int mouseState = glfwGetMouseButton(glfwGetCurrentContext(), GLFW_MOUSE_BUTTON_LEFT);
+	int leftMouseState = glfwGetMouseButton(glfwGetCurrentContext(), GLFW_MOUSE_BUTTON_LEFT);
+	int rightMouseState = glfwGetMouseButton(glfwGetCurrentContext(), GLFW_MOUSE_BUTTON_RIGHT);
 	glfwGetCursorPos(glfwGetCurrentContext(), &m_mousePos.x, &m_mousePos.y);
 
+	// Start burning point on right click
+	if (m_prevRightMouseState == GLFW_RELEASE && rightMouseState == GLFW_PRESS) {
+		PointMass* pointMass = mousePick();
+		if (pointMass) {
+			pointMass->isBurning = true;
+		}
+	}
+
 	// Grab point mass on mouse button down
-	if (m_prevMouseState == GLFW_RELEASE && mouseState == GLFW_PRESS) {
+	if (m_prevLeftMouseState == GLFW_RELEASE && leftMouseState == GLFW_PRESS) {
 		m_grabbedPointMass = mousePick();
 		if (m_grabbedPointMass) {
 			if (m_grabbedPointMass->isFixed)
@@ -36,17 +45,18 @@ void MousePickingSystem::update()
 	}
 
 	// Release point mass on mouse button up
-	if (m_grabbedPointMass && m_prevMouseState == GLFW_PRESS && mouseState == GLFW_RELEASE) {
+	if (m_grabbedPointMass && m_prevLeftMouseState == GLFW_PRESS && leftMouseState == GLFW_RELEASE) {
 		m_grabbedPointMass->isFixed = false;
 		m_grabbedPointMass = nullptr;
 	}
 
 	// Drag grabbed point mass around when mouse is held down
-	if (mouseState == GLFW_PRESS && m_grabbedPointMass) {
+	if (leftMouseState == GLFW_PRESS && m_grabbedPointMass) {
 		updateGrabbedPointMass();
 	}
 
-	m_prevMouseState = mouseState;
+	m_prevLeftMouseState = leftMouseState;
+	m_prevRightMouseState = rightMouseState;
 	m_prevMousePos = m_mousePos;
 }
 

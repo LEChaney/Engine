@@ -20,7 +20,8 @@ private:
 	void updateGrabbedPointMass();
 
 	Entity* m_cameraEntity;
-	int m_prevMouseState;
+	int m_prevLeftMouseState;
+	int m_prevRightMouseState;
 	PointMass* m_grabbedPointMass;
 	glm::dvec2 m_mousePos;
 	glm::dvec2 m_prevMousePos;

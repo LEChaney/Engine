@@ -6,6 +6,8 @@ PointMass::PointMass(glm::vec3 position, GLfloat mass, GLboolean isFixed)
 	, force{ 0, 0, 0 }
 	, mass{ mass }
 	, isFixed{ isFixed }
+	, burnedPercent{ 0 }
+	, isBurning{ false }
 {
 }
 

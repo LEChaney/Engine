@@ -290,6 +290,8 @@ xcopy "$(ProjectDir)ext\nanogui\lib\release_libs\nanogui.dll" "$(OutDir)" /dsy</
     <None Include="Assets\Shaders\terrain_vert.glsl" />
     <None Include="Assets\Shaders\Text.fs" />
     <None Include="Assets\Shaders\Text.vs" />
+    <None Include="Assets\Shaders\vertcolor_frag.glsl" />
+    <None Include="Assets\Shaders\vertcolor_vert.glsl" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\Textures\PlaneTexture.jpg" />

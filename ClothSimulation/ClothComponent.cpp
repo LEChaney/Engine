@@ -8,6 +8,7 @@
 #include "VertexFormat.h"
 
 #include <algorithm>
+#include <limits>
 
 ClothLink::ClothLink(GLuint node1Id, GLuint node2Id, GLint linkDirection, const SpringConstraint& springConstraint)
 	: node1Id{ node1Id }
@@ -17,8 +18,14 @@ ClothLink::ClothLink(GLuint node1Id, GLuint node2Id, GLint linkDirection, const 
 {
 }
 
+bool ClothLink::isStructural() const
+{
+	return springConstraint.getBreakDistance() < std::numeric_limits<GLfloat>::max();
+}
+
 ClothNode::ClothNode(glm::vec3 position, GLfloat mass, GLboolean isFixed)
 	: pointMass(position, mass, isFixed)
+
 {
 }
 
@@ -125,6 +132,9 @@ GLuint ClothComponent::getNumPointMassesY() const
 
 void ClothComponent::breakStructualLink(ClothLinkIterator clothLink)
 {
+	if (!clothLink->isStructural())
+		return;
+
 	breakAllLinksFromNodeInDirection(clothLink->node1Id, wrapDirection(clothLink->direction - 1));
 	breakAllLinksFromNodeInDirection(clothLink->node1Id, clothLink->direction);
 	breakAllLinksFromNodeInDirection(clothLink->node1Id, wrapDirection(clothLink->direction  + 1));
@@ -189,6 +199,7 @@ Entity& ClothComponent::createCloth(Scene& scene, GLuint numPointsX, GLuint numP
 	// Set Material to use for drawing
 	Material material;
 	//material.willDrawWireframe = true;
+	material.shader = &GLUtils::getVertexColorShader();
 	clothEntity.model.materials.push_back(material);
 
 	// Create point masses from cloth vertices 

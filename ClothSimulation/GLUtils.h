@@ -41,6 +41,8 @@ namespace GLUtils {
 	// This function will build the shader if it is not already built.
 	const Shader& getDefaultShader();
 
+	const Shader& getVertexColorShader();
+
 	// Returns a handler to a shader that can take a metallicness map.
 	// This function will build the shader if it is not already built.
 	const Shader& getMetalShader();
