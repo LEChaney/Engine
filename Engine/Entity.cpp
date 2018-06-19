@@ -22,6 +22,7 @@ Entity::Entity(std::vector<EntityEventListener*>& eventListeners)
 	, simpleWorldSpaceMovement{}
 	, cloth{}
 	, sphereCollision{}
+	, directionalLight{}
 {
 }
 
@@ -44,6 +45,7 @@ void Entity::destroy()
 	simpleWorldSpaceMovement = {};
 	cloth = {};
 	sphereCollision = {};
+	directionalLight = {};
 }
 
 bool Entity::operator==(const Entity& rhs) const
@@ -66,14 +68,14 @@ bool Entity::hasComponents() const
 	return m_componentMask != 0;
 }
 
-bool Entity::matches(size_t lhscomponentMask, size_t rhscomponentMask)
+bool Entity::componentMaskContains(size_t componentMask, size_t containedComponentMask)
 {
-	return (lhscomponentMask & rhscomponentMask) == rhscomponentMask;
+	return (componentMask & containedComponentMask) == containedComponentMask;
 }
 
-bool Entity::matchesAny(size_t lhscomponentMask, size_t rhscomponentMask)
+bool Entity::componentMaskContainsAny(size_t componentMask, size_t containedComponentMask)
 {
-	return (lhscomponentMask & rhscomponentMask) > 0;
+	return (componentMask & containedComponentMask) > 0;
 }
 
 void Entity::triggerPostAddComponentsEvent(size_t componentMask)

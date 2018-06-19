@@ -1,4 +1,4 @@
-#include "MousePickingSystem.h"
+#include "ClothPickingSystem.h"
 
 #include "Scene.h"
 #include "Entity.h"
@@ -11,7 +11,7 @@
 
 using namespace glm;
 
-MousePickingSystem::MousePickingSystem(Scene& scene, Entity& cameraEntity)
+ClothPickingSystem::ClothPickingSystem(Scene& scene, Entity& cameraEntity)
 	: System(scene)
 	, m_cameraEntity{ &cameraEntity }
 {
@@ -19,7 +19,7 @@ MousePickingSystem::MousePickingSystem(Scene& scene, Entity& cameraEntity)
 	m_prevMousePos = m_mousePos;
 }
 
-void MousePickingSystem::update()
+void ClothPickingSystem::update()
 {
 	int leftMouseState = glfwGetMouseButton(glfwGetCurrentContext(), GLFW_MOUSE_BUTTON_LEFT);
 	int rightMouseState = glfwGetMouseButton(glfwGetCurrentContext(), GLFW_MOUSE_BUTTON_RIGHT);
@@ -60,15 +60,15 @@ void MousePickingSystem::update()
 	m_prevMousePos = m_mousePos;
 }
 
-void MousePickingSystem::beginFrame()
+void ClothPickingSystem::beginFrame()
 {
 }
 
-void MousePickingSystem::endFrame()
+void ClothPickingSystem::endFrame()
 {
 }
 
-PointMass* MousePickingSystem::mousePick()
+PointMass* ClothPickingSystem::mousePick()
 {
 	/**********************************/
 	/** Construct ray in world space **/
@@ -167,7 +167,7 @@ PointMass* MousePickingSystem::mousePick()
 	return closestPointMass;
 }
 
-void MousePickingSystem::updateGrabbedPointMass()
+void ClothPickingSystem::updateGrabbedPointMass()
 {
 	if (!m_grabbedPointMass)
 		return;

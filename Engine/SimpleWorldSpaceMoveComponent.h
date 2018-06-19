@@ -1,6 +1,6 @@
 #pragma once
 
-struct SimpleWorldSpcaeMoveComponent {
-	SimpleWorldSpcaeMoveComponent();
+struct SimpleWorldSpaceMoveComponent {
+	SimpleWorldSpaceMoveComponent();
 	float moveSpeed; // (m/s)
 };

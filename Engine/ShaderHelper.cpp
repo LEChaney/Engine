@@ -117,7 +117,6 @@ Shader compileAndLinkShaders(const std::string& vertexShaderFile, const std::str
 
 	std::vector<GLuint> shadersToLink;
 	shadersToLink.push_back(compileShader(GL_VERTEX_SHADER, vertexShaderSource));
-	shadersToLink.push_back(compileShader(GL_FRAGMENT_SHADER, fragmentShaderSource));
 
 	if (tessCtrlShaderFile) {
 		std::string tessellationShaderSource = readShaderFileFromResource(tessCtrlShaderFile);
@@ -133,14 +132,20 @@ Shader compileAndLinkShaders(const std::string& vertexShaderFile, const std::str
 		std::string geometryShaderSource = readShaderFileFromResource(geometryShaderFile);
 		shadersToLink.push_back(compileShader(GL_GEOMETRY_SHADER, geometryShaderSource));
 	}
+
+	GLuint fragShaderId = compileShader(GL_FRAGMENT_SHADER, fragmentShaderSource);
+	shadersToLink.push_back(fragShaderId);
 	
 	GLuint program = linkProgram(shadersToLink);
+	shadersToLink.pop_back();
+	GLuint shadowProgram = linkProgram(shadersToLink);
 	
 	for (GLuint shaderId : shadersToLink)
 		glDeleteShader(shaderId);
+	glDeleteShader(fragShaderId);
 
 	if (tessCtrlShaderFile || tessEvalShaderFile)
-		return Shader(program, true);
+		return Shader(program, shadowProgram, true);
 	else
-		return Shader(program, false);
+		return Shader(program, shadowProgram, false);
 }

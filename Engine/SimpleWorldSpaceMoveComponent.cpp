@@ -1,6 +1,6 @@
 #include "SimpleWorldSpaceMoveComponent.h"
 
-SimpleWorldSpcaeMoveComponent::SimpleWorldSpcaeMoveComponent()
+SimpleWorldSpaceMoveComponent::SimpleWorldSpaceMoveComponent()
 	: moveSpeed(1.0f)
 {
 }

@@ -5,9 +5,9 @@
 class Scene;
 struct PointMass;
 
-class MousePickingSystem : public System {
+class ClothPickingSystem : public System {
 public:
-	MousePickingSystem(Scene&, Entity& cameraEntity);
+	ClothPickingSystem(Scene&, Entity& cameraEntity);
 
 	// Inherited via System
 	virtual void update() override;

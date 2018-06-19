@@ -28,7 +28,7 @@ class Entity;
 struct ModelComponent;
 class Shader;
 
-class RenderSystem : public System {
+class RenderSystem : public System, public EntityEventListener {
 public:
 	RenderSystem(Scene&);
 	~RenderSystem() override;
@@ -67,10 +67,18 @@ public:
 	// Sets the irradiance map for image based lighting
 	void setIrradianceMap(GLuint irradianceMap);
 
-private:
-	static void renderModel(const ModelComponent&, const glm::mat4& transform);
+	// Detect lights added to the scene
+	virtual void onPostAddComponents(Entity& entity, size_t componentMaskAdded) override;
 
-	static RenderState s_renderState;
+	// Detect lights removed from the scene
+	virtual void onPreRemoveComponents(Entity& entity, size_t componentMaskToRemove) override;
+
+private:
+	static void renderModel(const ModelComponent&, const glm::mat4& transform, const glm::mat4* view = nullptr, bool isShadowPass = false);
+
+	static void bufferLightData();
+
+	static RenderState* s_renderState;
 	RenderState m_renderState;
 	std::vector<const Shader*> m_postProcessShaders;
 	GLsizei m_curPostProcessShaderIdx;

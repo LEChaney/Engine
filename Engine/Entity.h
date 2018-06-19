@@ -15,6 +15,7 @@
 #include "SphereCollisionComponent.h"
 #include "PyramidCollisionComponent.h"
 #include "CapsuleCollisionComponent.h"
+#include "DirectionalLightComponent.h"
 
 #include <vector>
 
@@ -35,7 +36,8 @@ enum ComponentType {
 	COMPONENT_SPHERE_COLLISION = 1 << 15,
 	COMPONENT_PYRAMID_COLLISION = 1 << 16,
 	COMPONENT_GROUND_COLLISION = 1 << 17,
-	COMPONENT_CAPSULE_COLLISION = 1 << 18
+	COMPONENT_CAPSULE_COLLISION = 1 << 18,
+	COMPONENT_DIRECTIONAL_LIGHT = 1 << 19
 };
 
 class Entity {
@@ -53,11 +55,12 @@ public:
 	BasicCameraMovementComponent basicCameraMovement;
 	TerrainComponent terrain;
 	TerrainFollowComponent terrainFollow;
-	SimpleWorldSpcaeMoveComponent simpleWorldSpaceMovement;
+	SimpleWorldSpaceMoveComponent simpleWorldSpaceMovement;
 	ClothComponent cloth;
 	SphereCollisionComponent sphereCollision;
 	PyramidCollisionComponent pyramidCollision;
 	CapsuleCollisionComponent capsuleCollision;
+	DirectionalLightComponent directionalLight;
 
 	Entity(Entity&&) = default;
 	Entity(const Entity&) = delete;
@@ -112,22 +115,22 @@ public:
 	static size_t assembleComponentMask(size_t componentMask);
 
 	// Returns true if ALL the specified components are present 
-	// in the entity.
+	// in the componentMask.
 	template<typename ...ComponentTs>
-	static bool matches(size_t componentMask, size_t first, ComponentTs... rest);
+	static bool componentMaskContains(size_t componentMask, size_t first, ComponentTs... rest);
 
-	// Returns true if ALL the components in the supplied component 
-	// mask are present in the entity.
-	static bool matches(size_t lhsComponentMask, size_t rhsComponentMask);
+	// Returns true if ALL the specified components are present 
+	// in the componentMask.
+	static bool componentMaskContains(size_t componentMask, size_t containedComponentMask);
 
 	// Returns true if ANY of the specified components are present
-	// in the entity.
+	// in the componentMask.
 	template<typename ...ComponentTs>
-	static bool matchesAny(size_t componentMask, size_t first, ComponentTs... rest);
+	static bool componentMaskContainsAny(size_t componentMask, size_t first, ComponentTs... rest);
 
 	// Returns true if ANY of the components in the supplied component
 	// mask are present in the entity.
-	static bool matchesAny(size_t lhsComponentMask, size_t rhsComponentMask);
+	static bool componentMaskContainsAny(size_t componentMask, size_t containedComponentMask);
 
 	void triggerPostAddComponentsEvent(size_t componentMask);
 	void triggerPreRemoveComponentsEvent(size_t componentMask);
@@ -175,13 +178,13 @@ inline size_t Entity::assembleComponentMask(size_t first, ComponentTs ...rest)
 }
 
 template<typename ...ComponentTs>
-inline bool Entity::matches(size_t componentMask, size_t first, ComponentTs ...rest)
+inline bool Entity::componentMaskContains(size_t componentMask, size_t first, ComponentTs ...rest)
 {
-	return matches(componentMask, first) && matches(componentMask, rest...);
+	return componentMaskContains(componentMask, first) && componentMaskContains(componentMask, rest...);
 }
 
 template<typename ...ComponentTs>
-inline bool Entity::matchesAny(size_t componentMask, size_t first, ComponentTs ...rest)
+inline bool Entity::componentMaskContainsAny(size_t componentMask, size_t first, ComponentTs ...rest)
 {
-	return matchesAny(componentMask, first) || matchesAny(componentMask, rest...);
+	return componentMaskContainsAny(componentMask, first) || componentMaskContainsAny(componentMask, rest...);
 }

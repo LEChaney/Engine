@@ -8,14 +8,21 @@
 class Shader
 {
 public:
-	Shader(GLuint gpuProgramHandle, bool hasTessellationStage = false);
+	Shader(GLuint gpuProgramHandle, GLuint gpuShadowProgramHandle, bool hasTessellationStage = false);
 	~Shader();
 
 	// Make this shader the current shader for rendering
 	void use() const;
+
+	// Make this shader's shadow version the current shader for rendering
+	// (Same shader, but excludes fragment stage)
+	void useShadow() const;
 	
 	// Returns a handle to the GPU shader object
 	GLuint getGPUHandle() const;
+
+	// Returns a handle to the GPU shadow shader object
+	GLuint getGPUShadowShaderHandle() const;
 
 	// Returns a handle to the specified uniform object on the GPU
 	GLint getUniformLocation(const std::string& uniformName) const;
@@ -28,6 +35,7 @@ public:
 
 private:
 	GLuint m_gpuHandle;
+	GLuint m_gpuShadowShaderHandle;
 	bool m_hasTessellationStage;
 	mutable std::unordered_map<std::string, GLint> m_uniformLocationCache;
 	mutable std::unordered_map<std::string, GLuint> m_uniformBlockIndexCache;

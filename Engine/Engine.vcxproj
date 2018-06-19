@@ -185,7 +185,7 @@ xcopy "$(ProjectDir)ext\nanogui\lib\release_libs\nanogui.dll" "$(OutDir)" /dsy</
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="ModelUtils.cpp" />
-    <ClCompile Include="MousePickingSystem.cpp" />
+    <ClCompile Include="ClothPickingSystem.cpp" />
     <ClCompile Include="PhysicsSystem.cpp" />
     <ClCompile Include="PointMass.cpp" />
     <ClCompile Include="PyramidCollisionComponent.cpp" />
@@ -217,8 +217,10 @@ xcopy "$(ProjectDir)ext\nanogui\lib\release_libs\nanogui.dll" "$(OutDir)" /dsy</
     <ClInclude Include="CapsuleCollisionComponent.h" />
     <ClInclude Include="ClothComponent.h" />
     <ClInclude Include="ClothSystem.h" />
-    <ClInclude Include="MousePickingSystem.h" />
+    <ClInclude Include="ClothPickingSystem.h" />
     <ClInclude Include="CollisionSystem.h" />
+    <ClInclude Include="DirectionalLightComponent.h" />
+    <ClInclude Include="LightDataBlockFormat.h" />
     <ClInclude Include="PointMass.h" />
     <ClInclude Include="PyramidCollisionComponent.h" />
     <ClInclude Include="SphereCollisionComponent.h" />
@@ -230,7 +232,6 @@ xcopy "$(ProjectDir)ext\nanogui\lib\release_libs\nanogui.dll" "$(OutDir)" /dsy</
     <ClInclude Include="FrameBuffer.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameplayScreen.h" />
-    <ClInclude Include="LevelLoader.h" />
     <ClInclude Include="Log.h" />
     <ClInclude Include="ModelComponent.h" />
     <ClInclude Include="PhysicsSystem.h" />

@@ -26,6 +26,12 @@ layout (std140) uniform UniformBlock {
 	bool discardTransparent;
 } u;
 
+layout(std140, binding = 1) uniform LightData {
+	vec4 directionalLightDirections[4];
+	vec4 directionalLightColors[4];
+	uint numDirectionalLights;
+};
+
 uniform vec3 debugColor;
 
 uniform sampler2D texSampler0;

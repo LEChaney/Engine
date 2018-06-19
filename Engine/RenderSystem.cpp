@@ -30,6 +30,7 @@
 #include "GLPrimitives.h"
 #include "Clock.h"
 #include "Shader.h"
+#include "LightDataBlockFormat.h"
 
 #include <glad\glad.h>
 #include <GLFW\glfw3.h>
@@ -37,19 +38,21 @@
 #include <glm\gtc\type_ptr.hpp>
 #include <glm\gtx\euler_angles.hpp>
 
+#include <algorithm>
 #include <cmath>
 
 using glm::mat4;
 using glm::vec3;
 using glm::vec4;
 
-RenderState RenderSystem::s_renderState;
+RenderState* RenderSystem::s_renderState = nullptr;
 
 RenderSystem::RenderSystem(Scene& scene)
 	: System{ scene }
 {
 	m_renderState.glContext = Game::getWindowContext();
-	m_renderState.uniformBindingPoint = 0;
+	m_renderState.uniformBindingIndex = 0;
+	m_renderState.lightDataBindingIndex = 1;
 	m_renderState.hasIrradianceMap = false;
 	m_renderState.hasRadianceMap = false;
 
@@ -88,7 +91,14 @@ RenderSystem::RenderSystem(Scene& scene)
 	glBindBufferBase(GL_UNIFORM_BUFFER, 0, m_renderState.uboCameraData);
 	glBufferData(GL_UNIFORM_BUFFER, sizeof(CameraDataBlockFormat), nullptr, GL_DYNAMIC_DRAW);
 
+	// Create buffer for light data
+	glGenBuffers(1, &m_renderState.uboLightData);
+	glBindBufferBase(GL_UNIFORM_BUFFER, 0, m_renderState.uboLightData);
+	glBufferData(GL_UNIFORM_BUFFER, sizeof(LightDataBlockFormat), nullptr, GL_DYNAMIC_DRAW);
+
 	glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
+
+	m_scene.registerEntityEventListener(this);
 }
 
 RenderSystem::~RenderSystem()
@@ -130,7 +140,7 @@ void RenderSystem::drawDebugArrow(const glm::vec3& base, const glm::vec3& _direc
 	}
 
 	// Can't render anything without a camera set
-	if (!s_renderState.cameraEntity) {
+	if (!s_renderState->cameraEntity) {
 		return;
 	}
 
@@ -143,6 +153,11 @@ void RenderSystem::beginFrame()
 
 	glDepthMask(GL_TRUE);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	// Swap the current global render state with this RenderSystems state.
+	s_renderState = &m_renderState;
+
+	bufferLightData();
 }
 
 void RenderSystem::endFrame()
@@ -194,9 +209,6 @@ void RenderSystem::update()
 
 		bool hasTransform = entity.hasComponents(COMPONENT_TRANSFORM);
 
-		// Swap the current global render state with this RenderSystems state.
-		s_renderState = m_renderState;
-
 		// Render the current entities model
 		renderModel(entity.model, GLMUtils::transformToMat(entity.transform));
 	}
@@ -219,8 +231,27 @@ void RenderSystem::setIrradianceMap(GLuint irradianceMap)
 	m_renderState.hasIrradianceMap = true;
 }
 
-void RenderSystem::renderModel(const ModelComponent& model, const glm::mat4& transform)
+void RenderSystem::onPostAddComponents(Entity& entity, size_t componentMaskAdded)
 {
+	if (Entity::componentMaskContains(componentMaskAdded, COMPONENT_DIRECTIONAL_LIGHT)) {
+		m_renderState.directionalLights.push_back(&entity);
+	}
+}
+
+void RenderSystem::onPreRemoveComponents(Entity& entity, size_t componentMaskToRemove)
+{
+	if (Entity::componentMaskContains(componentMaskToRemove, COMPONENT_DIRECTIONAL_LIGHT)) {
+		auto& lightArray = m_renderState.directionalLights;
+		lightArray.erase(std::remove(lightArray.begin(), lightArray.end(), &entity));
+	}
+}
+
+void RenderSystem::renderModel(const ModelComponent& model, const glm::mat4& transform, const glm::mat4* view, bool isShadowPass)
+{
+	// Can't render without render state
+	if (!s_renderState)
+		return;
+
 	// Get Aspect ratio
 	int width, height;
 	GLFWwindow* glContext = Game::getWindowContext();
@@ -231,9 +262,9 @@ void RenderSystem::renderModel(const ModelComponent& model, const glm::mat4& tra
 	UniformBlockFormat uniformBlock;
 	
 	uniformBlock.model = transform;
-	uniformBlock.view = s_renderState.cameraEntity->camera.getView();
-	uniformBlock.projection = s_renderState.cameraEntity->camera.getProjection();
-	uniformBlock.cameraPos = glm::vec4(s_renderState.cameraEntity->camera.getPosition(), 1.0f);
+	uniformBlock.view = view ? *view : s_renderState->cameraEntity->camera.getView();
+	uniformBlock.projection = s_renderState->cameraEntity->camera.getProjection();
+	uniformBlock.cameraPos = glm::vec4(s_renderState->cameraEntity->camera.getPosition(), 1.0f);
 
 	// Loop over all the meshes in the model
 	for (size_t i = 0; i < model.meshes.size(); ++i) {
@@ -247,7 +278,10 @@ void RenderSystem::renderModel(const ModelComponent& model, const glm::mat4& tra
 			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
 		// Tell the gpu what shader to use
-		material.shader->use();
+		if (isShadowPass)
+			material.shader->useShadow();
+		else
+			material.shader->use();
 
 		// Mostly here to ensure cubemaps don't draw on top of anything else
 		if (material.willDrawDepth) {
@@ -305,16 +339,16 @@ void RenderSystem::renderModel(const ModelComponent& model, const glm::mat4& tra
 		}
 
 		// Set environment map to use on GPU
-		if (s_renderState.hasRadianceMap) {
+		if (s_renderState->hasRadianceMap) {
 			glActiveTexture(GL_TEXTURE0 + textureUnit);
 			glUniform1i(material.shader->getUniformLocation("radianceSampler"), textureUnit);
-			glBindTexture(GL_TEXTURE_CUBE_MAP, s_renderState.radianceMap);
+			glBindTexture(GL_TEXTURE_CUBE_MAP, s_renderState->radianceMap);
 			++textureUnit;
 		}
-		if (s_renderState.hasIrradianceMap) {
+		if (s_renderState->hasIrradianceMap) {
 			glActiveTexture(GL_TEXTURE0 + textureUnit);
 			glUniform1i(material.shader->getUniformLocation("irradianceSampler"), textureUnit);
-			glBindTexture(GL_TEXTURE_CUBE_MAP, s_renderState.irradianceMap);
+			glBindTexture(GL_TEXTURE_CUBE_MAP, s_renderState->irradianceMap);
 			++textureUnit;
 		}
 
@@ -325,7 +359,7 @@ void RenderSystem::renderModel(const ModelComponent& model, const glm::mat4& tra
 		uniformBlock.time = Clock::getTime();
 
 		// Set spotlights
-		uniformBlock.numSpotlights = std::min(static_cast<GLuint>(s_renderState.spotlights.size()), UniformBlockFormat::s_kMaxSpotlights);
+		uniformBlock.numDirectionalLights = std::min(static_cast<GLuint>(s_renderState->spotlights.size()), UniformBlockFormat::s_kMaxSpotlights);
 		//for (GLuint i = 0; i < uniformBlock.numSpotlights; ++i) {
 		//	const Entity* spotlightEntity = s_renderState.spotlights.at(i);
 		//	glm::vec4 spotlightDir = glm::vec4(s_renderState.spotlights.at(i)->spotlight.direction, 0);
@@ -339,8 +373,8 @@ void RenderSystem::renderModel(const ModelComponent& model, const glm::mat4& tra
 		//}
 
 		// Send uniform data to the GPU
-		glUniformBlockBinding(material.shader->getGPUHandle(), material.shader->getUniformBlockIndex("UniformBlock"), s_renderState.uniformBindingPoint);
-		glBindBufferBase(GL_UNIFORM_BUFFER, s_renderState.uniformBindingPoint, s_renderState.uboUniforms);
+		glUniformBlockBinding(material.shader->getGPUHandle(), material.shader->getUniformBlockIndex("UniformBlock"), s_renderState->uniformBindingIndex);
+		glBindBufferBase(GL_UNIFORM_BUFFER, s_renderState->uniformBindingIndex, s_renderState->uboUniforms);
 		glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(UniformBlockFormat), &uniformBlock);
 		if (material.shader == &GLUtils::getDebugShader()) {
 			const glm::vec3& debugColor = material.debugColor;
@@ -360,4 +394,23 @@ void RenderSystem::renderModel(const ModelComponent& model, const glm::mat4& tra
 		if (material.willDrawWireframe)
 			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	}
+}
+
+void RenderSystem::bufferLightData()
+{
+	LightDataBlockFormat lightData;
+	lightData.numDirectionalLights = std::min(static_cast<GLuint>(s_renderState->directionalLights.size()), LightDataBlockFormat::s_kMaxDirectionalLights);
+	for (GLuint i = 0; i < lightData.numDirectionalLights; ++i) {
+		const Entity* directionalLightEntity = s_renderState->directionalLights.at(i);
+		glm::vec4 directionalLightDir = glm::vec4(s_renderState->directionalLights.at(i)->directionalLight.direction, 0);
+		glm::vec4 directionalLightColor = glm::vec4(directionalLightEntity->directionalLight.color, 1);
+
+		// Set directional light data in GPU block format
+		lightData.directionalLightDirections.at(i) = directionalLightDir;
+		lightData.directionalLightColors.at(i) = directionalLightColor;
+	}
+
+	// Send light data to the GPU
+	glBindBufferBase(GL_UNIFORM_BUFFER, s_renderState->lightDataBindingIndex, s_renderState->uboLightData);
+	glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(LightDataBlockFormat), &lightData);
 }

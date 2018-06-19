@@ -4,8 +4,9 @@
 
 #include <string>
 
-Shader::Shader(GLuint gpuProgramHandle, bool hasTessellationStage)
+Shader::Shader(GLuint gpuProgramHandle, GLuint gpuShadowProgramHandle, bool hasTessellationStage)
 	: m_gpuHandle{ gpuProgramHandle }
+	, m_gpuShadowShaderHandle{ gpuShadowProgramHandle }
 	, m_hasTessellationStage{ hasTessellationStage }
 {
 }
@@ -19,9 +20,19 @@ void Shader::use() const
 	return glUseProgram(m_gpuHandle);
 }
 
+void Shader::useShadow() const
+{
+	return glUseProgram(m_gpuShadowShaderHandle);
+}
+
 GLuint Shader::getGPUHandle() const
 {
 	return m_gpuHandle;
+}
+
+GLuint Shader::getGPUShadowShaderHandle() const
+{
+	return m_gpuShadowShaderHandle;
 }
 
 GLint Shader::getUniformLocation(const std::string& uniformName) const

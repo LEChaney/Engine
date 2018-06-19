@@ -36,7 +36,7 @@ struct UniformBlockFormat {
 	std::array<glm::vec4, s_kMaxSpotlights> spotlightPositions;
 	std::array<glm::vec4, s_kMaxSpotlights> spotlightDirections;
 	std::array<glm::vec4, s_kMaxSpotlights> spotlightColors;
-	GLuint numSpotlights;
+	GLuint numDirectionalLights;
 	GLfloat metallicness;
 	GLfloat glossiness;
 	GLfloat specBias;
