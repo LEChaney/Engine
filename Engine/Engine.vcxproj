@@ -178,6 +178,7 @@ xcopy "$(ProjectDir)ext\nanogui\lib\release_libs\nanogui.dll" "$(OutDir)" /dsy</
     <ClCompile Include="FrameBuffer.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameplayScreen.cpp" />
+    <ClCompile Include="GLMUtils.cpp" />
     <ClCompile Include="GLPrimitives.cpp" />
     <ClCompile Include="GLUtils.cpp" />
     <ClCompile Include="InputSystem.cpp" />

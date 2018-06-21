@@ -48,11 +48,11 @@ GameplayScreen::GameplayScreen()
 	renderSystem->setIrradianceMap(irradianceMap.id);
 
 	// Setup the camera
-	Entity& cameraEntity = Prefabs::createCamera(m_scene, { 0, 35, 25 }, { 0, 30, 0 }, { 0, 1, 0 });
+	Entity& cameraEntity = Prefabs::createCamera(m_scene, { 0, 45, 25 }, { 0, 40, 0 }, { 0, 1, 0 });
 	renderSystem->setCamera(&cameraEntity);
 	basicCameraMovementSystem->setCameraToControl(&cameraEntity);
 
-	Entity& terrain = Prefabs::createTerrain(m_scene, "Assets/Textures/Heightmaps/heightmap_2.png", 1000);
+	Entity& terrain = Prefabs::createTerrainPerlin(m_scene, 1000);
 
 	Entity& reflectiveSphere = Prefabs::createSphere(m_scene);
 	reflectiveSphere.transform.position += glm::vec3(0, 40, 0);
@@ -97,7 +97,7 @@ GameplayScreen::GameplayScreen()
 		{ -10, -10, -10 }, { 10, 10, 10 },
 		{ -1, -1, -1 }, { 1, 1, 1 }
 	);
-	particleEmitter.transform.position = glm::vec3{ 0, 35, 0 };
+	particleEmitter.transform.position = glm::vec3{ 0, 40, 0 };
 
 	m_activeSystems.push_back(std::move(renderSystem));
 	m_activeSystems.push_back(std::move(basicCameraMovementSystem));

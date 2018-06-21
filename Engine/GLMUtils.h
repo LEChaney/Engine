@@ -43,4 +43,8 @@ namespace GLMUtils {
 		     * eulerToMat(transform.eulerAngles)
 		     * glm::scale(glm::mat4{}, transform.scale);
 	}
+
+	float perlin(const glm::vec3& inputPos);
+
+	float octavePerlin(const glm::vec3& inputPos, int octaves, float persistence);
 }

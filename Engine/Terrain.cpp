@@ -4,6 +4,7 @@
 #include "VertexFormat.h"
 #include "GLUtils.h"
 #include "Scene.h"
+#include "GLMUtils.h"
 
 #include "stb_image.h"
 
@@ -60,32 +61,29 @@ bool TerrainUtils::castPosToHeightMapTexCoord(const Entity& terrainEntity, const
 	return true;
 }
 
-Entity& Prefabs::createTerrain(Scene& scene, const std::string& heightMapFile, float size, GLsizei baseTessellation, const glm::vec3& position)
+glm::vec3 TerrainUtils::castHeightMapTexCoordToWorldPos(const Entity& terrainEntity, const glm::vec2& texCoord)
 {
-	const float heightScale = size * 0.1f;
+	const float size = terrainEntity.terrain.size;
+	const float numPixelsX = terrainEntity.terrain.heightMapDimensions.x;
+	const float numPixelsY = terrainEntity.terrain.heightMapDimensions.y;
+	const float heightScale = terrainEntity.terrain.heightScale;
+	const float extent = size / 2;
+	const float xSpacing = size / (numPixelsX - 1);
+	const float zSpacing = size / (numPixelsY - 1);
+	const auto& heightMapData = terrainEntity.terrain.heightMap;
 
-	// Create the terrain entity
-	Entity& terrain = scene.createEntity(COMPONENT_MODEL, COMPONENT_TRANSFORM);
-	terrain.transform.position = position;
-	terrain.terrain.heightScale = heightScale;
-	terrain.terrain.size = size;
+	vec3 worldPos;
+	worldPos.x = texCoord.x * xSpacing - extent;
+	worldPos.y = heightMapData[static_cast<size_t>(glm::round(texCoord.y * numPixelsX + texCoord.x))] * heightScale;
+	worldPos.z = texCoord.y * zSpacing - extent;
+	worldPos += terrainEntity.transform.position; // Offset by overall terrain position
+	return worldPos;
+}
 
-	// Read height map from file
-	int numPixelsX, numPixelsY, numChannels;
-	unsigned char* heightMapImg = stbi_load(heightMapFile.c_str(), &numPixelsX, &numPixelsY, &numChannels, 0);
-	terrain.terrain.heightMapDimensions = { numPixelsX, numPixelsY };
-
-	// Convert to array of floats
-	terrain.terrain.heightMap = std::vector<float>(numPixelsX * numPixelsY);
+void _fillTerrain(Scene& scene, Entity& terrain, float size, GLsizei baseTessellation, const glm::vec3& position) {
 	std::vector<float>& heightMapData = terrain.terrain.heightMap;
-	for (GLsizei r = 0; r < numPixelsY; ++r) {
-		for (GLsizei c = 0; c < numPixelsX; ++c) {
-			heightMapData[r * numPixelsX + c] = heightMapImg[(r * numPixelsX + c) * numChannels] / 255.0f; // Ignore any extra channels by skipping over them
-		}
-	}
-	Texture heightMap = Texture::Texture2D(numPixelsX, numPixelsY, GL_RED, GL_FLOAT, GL_RED, heightMapData.data());
-
-	stbi_image_free(heightMapImg);
+	int numPixelsX = terrain.terrain.heightMapDimensions.x;
+	int numPixelsY = terrain.terrain.heightMapDimensions.y;
 
 	// Create CPU tesselated quad for base tesselation level
 	GLsizei numVertsX, numVertsZ;
@@ -93,19 +91,6 @@ Entity& Prefabs::createTerrain(Scene& scene, const std::string& heightMapFile, f
 	std::vector<VertexFormat> meshVertices;
 	std::vector<GLuint> meshIndices;
 	GLUtils::createTessellatedQuadData(numVertsX, numVertsZ, size, size, meshVertices, meshIndices);
-
-	auto heightMapIdxToVertPos = [size, numPixelsX, numPixelsY, &heightMapData, heightScale, position](GLsizei r, GLsizei c) -> vec3 {
-		const float extent = size / 2;
-		const float xSpacing = size / (numPixelsX - 1);
-		const float zSpacing = size / (numPixelsY - 1);
-
-		vec3 vertPos;
-		vertPos.x = c * xSpacing - extent;
-		vertPos.y = heightMapData[r * numPixelsX + c] * heightScale;
-		vertPos.z = r * zSpacing - extent;
-		vertPos += position; // Offset by overall terrain position
-		return vertPos;
-	};
 
 	// Compute normal map
 	std::vector<vec3> normalMapData(numPixelsX * numPixelsY);
@@ -124,7 +109,7 @@ Entity& Prefabs::createTerrain(Scene& scene, const std::string& heightMapFile, f
 						GLsizei pixelC = c + j + (k % 2);
 						pixelR = pixelR >= 0 && pixelR < numPixelsY ? pixelR : r;
 						pixelC = pixelC >= 0 && pixelC < numPixelsX ? pixelC : c;
-						cellVerts[k] = heightMapIdxToVertPos(pixelR, pixelC);
+						cellVerts[k] = TerrainUtils::castHeightMapTexCoordToWorldPos(terrain, { pixelC, pixelR });
 					}
 
 					// Get vertices for each tri in cell
@@ -169,8 +154,9 @@ Entity& Prefabs::createTerrain(Scene& scene, const std::string& heightMapFile, f
 	terrainMaterial.shader = &GLUtils::getTerrainShader();
 	terrainMaterial.colorMaps.push_back(GLUtils::loadTexture("Assets/Textures/dessert-floor.png"));
 	terrainMaterial.normalMaps.push_back(normalMap);
+	Texture heightMap = Texture::Texture2D(numPixelsX, numPixelsY, GL_RED, GL_FLOAT, GL_RED, heightMapData.data());
 	terrainMaterial.heightMaps.push_back(heightMap);
-	terrainMaterial.heightMapScale = heightScale;
+	terrainMaterial.heightMapScale = terrain.terrain.heightScale;
 	terrainMaterial.willDrawDepth = true;
 	terrainMaterial.shaderParams.metallicness = 0;
 	terrainMaterial.shaderParams.glossiness = 0;
@@ -183,13 +169,75 @@ Entity& Prefabs::createTerrain(Scene& scene, const std::string& heightMapFile, f
 	grassMaterial.colorMaps.push_back(GLUtils::loadTexture("Assets/Textures/weedy_grass.png"));
 	grassMaterial.colorMaps.push_back(GLUtils::loadTexture("Assets/Textures/vegetation_map.png", false, false));
 	grassMaterial.heightMaps.push_back(heightMap);
-	grassMaterial.heightMapScale = heightScale;
+	grassMaterial.heightMapScale = terrain.terrain.heightScale;
 	grassMaterial.willDrawDepth = true;
 	grassMaterial.shaderParams.metallicness = 0;
 	grassMaterial.shaderParams.glossiness = 0;
 	grassMaterial.shaderParams.specBias = 0;
 	grassMaterial.shaderParams.discardTransparent = true;
 	terrain.model.materials.push_back(std::move(grassMaterial));
+}
+
+Entity& Prefabs::createTerrain(Scene& scene, const std::string& heightMapFile, float size, GLsizei baseTessellation, const glm::vec3& position)
+{
+	const float heightScale = size * 0.1f;
+
+	// Read height map from file
+	int numPixelsX, numPixelsY, numChannels;
+	unsigned char* heightMapImg = stbi_load(heightMapFile.c_str(), &numPixelsX, &numPixelsY, &numChannels, 0);
+
+	// Create the terrain entity
+	Entity& terrain = scene.createEntity(COMPONENT_MODEL, COMPONENT_TRANSFORM);
+	terrain.terrain.heightMap = std::vector<float>(numPixelsX * numPixelsY);
+	terrain.terrain.heightMapDimensions = { numPixelsX, numPixelsY };
+
+	// Fill terrain variables
+	terrain.transform.position = position;
+	terrain.terrain.heightScale = heightScale;
+	terrain.terrain.size = size;
+
+	// Convert to array of floats
+	std::vector<float>& heightMapData = terrain.terrain.heightMap;
+	for (GLsizei r = 0; r < numPixelsY; ++r) {
+		for (GLsizei c = 0; c < numPixelsX; ++c) {
+			heightMapData[r * numPixelsX + c] = heightMapImg[(r * numPixelsX + c) * numChannels] / 255.0f; // Ignore any extra channels by skipping over them
+		}
+	}
+
+	stbi_image_free(heightMapImg);
+
+	_fillTerrain(scene, terrain, size, baseTessellation, position);
+
+	return terrain;
+}
+
+Entity& Prefabs::createTerrainPerlin(Scene& scene, float size, GLuint heightMapResolution, GLsizei baseTessellation, const glm::vec3& position)
+{
+	const float heightScale = size * 0.1f;
+
+	// Create the terrain entity
+	Entity& terrain = scene.createEntity(COMPONENT_MODEL, COMPONENT_TRANSFORM);
+	terrain.terrain.heightMap = std::vector<float>(heightMapResolution * heightMapResolution);
+	terrain.terrain.heightMapDimensions = { heightMapResolution, heightMapResolution };
+
+	// Fill terrain variables
+	terrain.transform.position = position;
+	terrain.terrain.heightScale = heightScale;
+	terrain.terrain.size = size;
+
+	// Fill height map with perlin noise
+	std::vector<float>& heightMapData = terrain.terrain.heightMap;
+	for (GLuint y = 0; y < heightMapResolution; ++y) {
+		for (GLuint x = 0; x < heightMapResolution; ++x) {
+			heightMapData[y * heightMapResolution + x] = GLMUtils::octavePerlin(
+				glm::vec3{ x / 250.0f, y / 250.0f, 0 },
+				6,
+				2
+			);
+		}
+	}
+
+	_fillTerrain(scene, terrain, size, baseTessellation, position);
 
 	return terrain;
 }
