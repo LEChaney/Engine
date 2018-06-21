@@ -78,8 +78,21 @@ vec3 calcLrSpotlight(vec3 Cdiff, vec3 Cspec, vec3 normal, vec3 viewDir, vec3 lig
 	}	
 }
 
+float calcShadow(vec4 lightSpacePos, vec3 lightDir, vec3 normal) {
+	vec3 shadowCoords = lightSpacePos.xyz / lightSpacePos.w;
+	shadowCoords = shadowCoords * 0.5 + 0.5; // Convert from NDC to texture coordinate space
+
+	float shadowMapDepth = texture(shadowMapSampler, shadowCoords.xy).r;
+	float currentDepth = shadowCoords.z;
+
+	float bias = max(0.005 * (1.0 - dot(normal, lightDir)), 0.0005);
+	return currentDepth - bias > shadowMapDepth ? 1.0 : 0.0;
+}
+
 vec3 calcLrDirectionalLight(vec3 Cdiff, vec3 Cspec, vec3 normal, vec3 viewDir, vec3 lightDir, vec3 lightCol, float specPow, float specNorm)
 {
+	float shadow = calcShadow(i.lightSpacePos, lightDir, normal);
+
 	lightDir = normalize(lightDir);
 
 	vec3 halfVector = normalize(lightDir + viewDir);
@@ -90,7 +103,7 @@ vec3 calcLrDirectionalLight(vec3 Cdiff, vec3 Cspec, vec3 normal, vec3 viewDir, v
 	vec3 Fdiff = Cdiff * (1 - Fspec) / (1.0000001 - Cspec);
 
 	vec3 BRDFspec = specNorm * Fspec * pow(ndoth, specPow);
-	return lightCol * (Fdiff + BRDFspec) * ndotl;
+	return lightCol * (Fdiff + BRDFspec) * ndotl * (1 - shadow);
 }
 
 void main(void)
