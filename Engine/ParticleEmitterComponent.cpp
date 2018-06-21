@@ -28,7 +28,9 @@ Entity& Prefabs::createParticleEmitter(Scene& scene, GLuint numParticles, const 
 	for (GLuint i = 0; i < numParticles; ++i) {
 		GLfloat lifetime = glm::linearRand(minLifetime, maxLifetime);
 		particles[i].positionAndRemainingLifetime = glm::vec4(glm::linearRand(minInitPos, maxInitPos), lifetime);
-		particles[i].velocityAndInitLifetime = glm::vec4(glm::linearRand(minInitVel, maxInitVel), lifetime);
+		particles[i].velocity = glm::vec4(glm::linearRand(minInitVel, maxInitVel), 0);
+		particles[i].initialPositionAndLifetime = particles[i].positionAndRemainingLifetime;
+		particles[i].initialVelocity = particles[i].velocity;
 	}
 
 	// Unmap GPU particle buffer

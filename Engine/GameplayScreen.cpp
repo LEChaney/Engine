@@ -93,7 +93,7 @@ GameplayScreen::GameplayScreen()
 
 	Entity& particleEmitter = Prefabs::createParticleEmitter(m_scene, 
 		128 * 1000, 
-		0.125, 1,
+		1, 5,
 		{ -10, -10, -10 }, { 10, 10, 10 },
 		{ -1, -1, -1 }, { 1, 1, 1 }
 	);

@@ -20,8 +20,9 @@ void ParticleSystem::update()
 			ParticleEmitterComponent emitter = entity.particleEmitter;
 
 			GLUtils::getPhysicsComputeShader().use();
-			glBindBuffer(GL_SHADER_STORAGE_BUFFER, emitter.particleBuffer);
+			glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, emitter.particleBuffer);
 			glDispatchCompute(emitter.numParticles / 128, 1, 1);
+			glMemoryBarrier(GL_ALL_BARRIER_BITS);
 		}
 	}
 }

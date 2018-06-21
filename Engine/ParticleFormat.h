@@ -4,6 +4,7 @@
 
 struct ParticleFormat {
 	glm::vec4 positionAndRemainingLifetime;
-	glm::vec4 velocityAndInitLifetime;
-	glm::vec4 acceleration;
+	glm::vec4 velocity;
+	glm::vec4 initialPositionAndLifetime;
+	glm::vec4 initialVelocity;
 };
