@@ -9,6 +9,7 @@ out VertexData {
     vec2 texCoord;
 	vec3 viewDir;
 	vec3 worldPos;
+	vec4 lightSpacePos;
 } o;
 
 layout (std140) uniform UniformBlock {
@@ -27,6 +28,13 @@ layout (std140) uniform UniformBlock {
 	bool discardTransparent;
 } u;
 
+layout(std140, binding = 1) uniform LightData {
+	vec4 directionalLightDirections[4];
+	vec4 directionalLightColors[4];
+	mat4 lightSpaceMatrix;
+	uint numDirectionalLights;
+};
+
 void main()
 {
 	vec3 worldPos = (u.model * vec4(inPosition, 1)).xyz;
@@ -35,6 +43,7 @@ void main()
     o.texCoord = inTexCoord;
 	o.viewDir = (u.cameraPos.xyz - worldPos).xyz;
 	o.worldPos = worldPos;
+	o.lightSpacePos = lightSpaceMatrix * vec4(worldPos, 1.0);
 
     gl_Position = u.projection * u.view * vec4(worldPos, 1);
 }

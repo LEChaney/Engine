@@ -74,9 +74,10 @@ public:
 	virtual void onPreRemoveComponents(Entity& entity, size_t componentMaskToRemove) override;
 
 private:
-	static void renderModel(const ModelComponent&, const glm::mat4& transform, const glm::mat4* view = nullptr, bool isShadowPass = false);
+	static void renderModel(const ModelComponent&, const glm::mat4& transform, const glm::mat4* view = nullptr, const glm::mat4* projection = nullptr, bool isShadowPass = false);
 
-	static void bufferLightData();
+	// Buffers light data and sets lightSpaceMatrix for shadow mapping on GPU
+	static void bufferLightData(const glm::mat4& lightSpaceMatrix);
 
 	static RenderState* s_renderState;
 	RenderState m_renderState;

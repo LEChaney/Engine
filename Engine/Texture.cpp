@@ -4,6 +4,9 @@ Texture Texture::Texture2D(GLsizei width, GLsizei height, GLenum colorFormat, GL
 {
 	Texture texture;
 	texture.target = GL_TEXTURE_2D;
+	texture.width = width;
+	texture.height = height;
+
 	glGenTextures(1, &texture.id);
 	glBindTexture(texture.target, texture.id);
 	glTexImage2D(texture.target, 0, colorFormat, width, height, 0, colorFormat, componentType, data);

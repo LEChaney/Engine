@@ -30,7 +30,15 @@ out VertexData {
     vec2 texCoord;
 	vec3 viewDir;
 	vec3 worldPos;
+	vec4 lightSpacePos;
 } te_out;
+
+layout(std140, binding = 1) uniform LightData {
+	vec4 directionalLightDirections[4];
+	vec4 directionalLightColors[4];
+	mat4 lightSpaceMatrix;
+	uint numDirectionalLights;
+};
 
 uniform sampler2D normalMapSampler;
 uniform sampler2D heightMapSampler;
@@ -41,7 +49,7 @@ vec2 interpolate2D(vec2 v0, vec2 v1, vec2 v2)
 	return gl_TessCoord.x * v0 + gl_TessCoord.y * v1 + gl_TessCoord.z * v2;
 }
 
-vec3 interpolate3D(vec3 v0, vec3 v1, vec3 v2) 
+vec3 interpolate3D(vec3 v0, vec3 v1, vec3 v2)
 {
 	return gl_TessCoord.x * v0 + gl_TessCoord.y * v1 + gl_TessCoord.z * v2;
 }
@@ -54,5 +62,6 @@ void main()
 	te_out.worldPos.y += texture(heightMapSampler, te_out.texCoord).r * heightMapScale;
 	te_out.viewDir = normalize(u.cameraPos.xyz - te_out.worldPos);
 
+	te_out.lightSpacePos = lightSpaceMatrix * vec4(te_out.worldPos, 1);
 	gl_Position = u.projection * u.view * vec4(te_out.worldPos, 1);
 }

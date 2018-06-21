@@ -7,4 +7,6 @@ struct Texture {
 
 	GLuint id;
 	GLenum target;
+	GLsizei width;
+	GLsizei height;
 };

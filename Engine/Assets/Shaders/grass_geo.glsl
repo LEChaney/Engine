@@ -19,11 +19,19 @@ layout (std140) uniform UniformBlock {
 	bool discardTransparent;
 } sh;
 
+layout(std140, binding = 1) uniform LightData {
+	vec4 directionalLightDirections[4];
+	vec4 directionalLightColors[4];
+	mat4 lightSpaceMatrix;
+	uint numDirectionalLights;
+};
+
 in VertexData {
     vec3 normal;
     vec2 texCoord;
 	vec3 viewDir;
 	vec3 worldPos;
+	vec4 lightSpacePos;
 } gs_in[];
 
 out VertexData {
@@ -31,6 +39,7 @@ out VertexData {
     vec2 texCoord;
 	vec3 viewDir;
 	vec3 worldPos;
+	vec4 lightSpacePos;
 } gs_out;
 
 const vec3 windDir = vec3(0, 0, -1);
@@ -88,6 +97,7 @@ void main() {
 			gs_out.texCoord = vec2(0, 1);
 			gs_out.worldPos = lowerLeft;
 			gs_out.viewDir = sh.cameraPos.xyz - gs_out.worldPos;
+			gs_out.lightSpacePos = lightSpaceMatrix * vec4(gs_out.worldPos, 1);
 			gl_Position = vp * vec4(gs_out.worldPos, 1);
 			EmitVertex();
 
@@ -96,6 +106,7 @@ void main() {
 			gs_out.texCoord = vec2(1, 1);
 			gs_out.worldPos = lowerRight;
 			gs_out.viewDir = sh.cameraPos.xyz - gs_out.worldPos;
+			gs_out.lightSpacePos = lightSpaceMatrix * vec4(gs_out.worldPos, 1);
 			gl_Position = vp * vec4(gs_out.worldPos, 1);
 			EmitVertex();
 
@@ -104,6 +115,7 @@ void main() {
 			gs_out.texCoord = vec2(0, 0);
 			gs_out.worldPos = upperLeft;
 			gs_out.viewDir = sh.cameraPos.xyz - gs_out.worldPos;
+			gs_out.lightSpacePos = lightSpaceMatrix * vec4(gs_out.worldPos, 1);
 			gl_Position = vp * vec4(gs_out.worldPos, 1);
 			EmitVertex();
 
@@ -112,6 +124,7 @@ void main() {
 			gs_out.texCoord = vec2(1, 0);
 			gs_out.worldPos = upperRight;
 			gs_out.viewDir = sh.cameraPos.xyz - gs_out.worldPos;
+			gs_out.lightSpacePos = lightSpaceMatrix * vec4(gs_out.worldPos, 1);
 			gl_Position = vp * vec4(gs_out.worldPos, 1);
 			EmitVertex();
 

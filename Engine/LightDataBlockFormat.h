@@ -13,6 +13,7 @@ struct LightDataBlockFormat {
 	//std::array<glm::vec4, s_kMaxSpotlights> spotlightColors;
 	std::array<glm::vec4, s_kMaxDirectionalLights> directionalLightDirections;
 	std::array<glm::vec4, s_kMaxDirectionalLights> directionalLightColors;
+	glm::mat4 lightSpaceMatrix;
 	GLuint numDirectionalLights;
 	//GLuint numSpotlights;
 };

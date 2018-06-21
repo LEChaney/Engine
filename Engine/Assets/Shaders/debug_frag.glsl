@@ -5,6 +5,7 @@ in VertexData {
 	vec2 texCoord;
 	vec3 viewDir;
 	vec3 worldPos;
+	vec4 lightSpacePos;
 } i;
 
 out vec4 outColor;
@@ -28,11 +29,13 @@ layout (std140) uniform UniformBlock {
 layout(std140, binding = 1) uniform LightData {
 	vec4 directionalLightDirections[4];
 	vec4 directionalLightColors[4];
+	mat4 lightSpaceMatrix;
 	uint numDirectionalLights;
 };
 
 uniform vec3 debugColor;
 
+uniform sampler2D shadowMapSampler;
 uniform sampler2D texSampler0;
 uniform samplerCube radianceSampler;
 uniform samplerCube irradianceSampler;

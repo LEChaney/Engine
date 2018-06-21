@@ -81,6 +81,26 @@ RenderSystem::RenderSystem(Scene& scene)
 	assert(glCheckFramebufferStatus(framebuffer.target) == GL_FRAMEBUFFER_COMPLETE);
 	glBindFramebuffer(framebuffer.target, 0);
 
+	// Shadow framebuffer
+	FrameBuffer& shadowMapFramebuffer = m_renderState.shadowMapFramebuffer;
+	glGenFramebuffers(1, &shadowMapFramebuffer.id);
+	glBindFramebuffer(shadowMapFramebuffer.target, shadowMapFramebuffer.id);
+
+	// Shadow map buffer
+	Texture& shadowMapBuffer = m_renderState.shadowMapBuffer = Texture::Texture2D(8192, 8192, GL_DEPTH_COMPONENT, GL_FLOAT);
+	glBindTexture(shadowMapBuffer.target, shadowMapBuffer.id);
+	glTexParameteri(shadowMapBuffer.target, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(shadowMapBuffer.target, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(shadowMapBuffer.target, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(shadowMapBuffer.target, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glFramebufferTexture2D(shadowMapFramebuffer.target, GL_DEPTH_ATTACHMENT, shadowMapBuffer.target, shadowMapBuffer.id, 0);
+	glDrawBuffer(GL_NONE);
+	glReadBuffer(GL_NONE);
+
+	assert(glCheckFramebufferStatus(shadowMapFramebuffer.target) == GL_FRAMEBUFFER_COMPLETE);
+	glBindTexture(shadowMapBuffer.target, 0);
+	glBindFramebuffer(shadowMapFramebuffer.target, 0);
+
 	// Create buffer for uniformBlock
 	glGenBuffers(1, &m_renderState.uboUniforms);
 	glBindBufferBase(GL_UNIFORM_BUFFER, 0, m_renderState.uboUniforms);
@@ -149,15 +169,8 @@ void RenderSystem::drawDebugArrow(const glm::vec3& base, const glm::vec3& _direc
 
 void RenderSystem::beginFrame()
 {
-	glBindFramebuffer(m_renderState.sceneFramebuffer.target, m_renderState.sceneFramebuffer.id);
-
-	glDepthMask(GL_TRUE);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
 	// Swap the current global render state with this RenderSystems state.
 	s_renderState = &m_renderState;
-
-	bufferLightData();
 }
 
 void RenderSystem::endFrame()
@@ -193,7 +206,54 @@ void RenderSystem::endFrame()
 
 void RenderSystem::update()
 {
-	// Render entity models
+	/********************/
+	/** Render Shadows **/
+	/********************/
+
+	glBindFramebuffer(m_renderState.shadowMapFramebuffer.target, m_renderState.shadowMapFramebuffer.id);
+	glViewport(0, 0, m_renderState.shadowMapBuffer.width, m_renderState.shadowMapBuffer.width);
+	glClear(GL_DEPTH_BUFFER_BIT);
+	glCullFace(GL_FRONT);
+
+	if (m_renderState.directionalLights.size() > 0) {
+
+		// Shadow matrices
+		float near_plane = 0.1f, far_plane = 2000.0f;
+		glm::vec3 lightLoc = glm::normalize(m_renderState.directionalLights[0]->directionalLight.direction) * 1000.0f;
+		glm::mat4 lightView = glm::lookAt(lightLoc, { 0, 0, 0 }, { 0, 1, 0 });
+		glm::mat4 lightProjection = glm::ortho(-800.0f, 800.0f, -800.0f, 800.0f, near_plane, far_plane);
+		glm::mat4 lightSpaceMatrix = lightProjection * lightView;
+
+		bufferLightData(lightSpaceMatrix);
+
+		for (size_t i = 0; i < m_scene.getEntityCount(); ++i) {
+			Entity& entity = m_scene.getEntity(i);
+
+			// Filter renderable entities
+			const size_t kRenderableMask = COMPONENT_MODEL;
+			if (!entity.hasComponents(kRenderableMask))
+				continue;
+
+			bool hasTransform = entity.hasComponents(COMPONENT_TRANSFORM);
+
+			// Render current entity to shadow map
+			renderModel(entity.model, GLMUtils::transformToMat(entity.transform), &lightView, &lightProjection, true);
+		}
+	}
+
+	glCullFace(GL_BACK);
+
+	/*****************/
+	/** Render scene */
+	/*****************/
+
+	glBindFramebuffer(m_renderState.sceneFramebuffer.target, m_renderState.sceneFramebuffer.id);
+	int width, height;
+	GLFWwindow* glContext = Game::getWindowContext();
+	glfwGetFramebufferSize(glContext, &width, &height);
+	glViewport(0, 0, width, height);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
 	for (size_t i = 0; i < m_scene.getEntityCount(); ++i) {
 		Entity& entity = m_scene.getEntity(i);
 
@@ -246,7 +306,7 @@ void RenderSystem::onPreRemoveComponents(Entity& entity, size_t componentMaskToR
 	}
 }
 
-void RenderSystem::renderModel(const ModelComponent& model, const glm::mat4& transform, const glm::mat4* view, bool isShadowPass)
+void RenderSystem::renderModel(const ModelComponent& model, const glm::mat4& transform, const glm::mat4* view, const glm::mat4* projection, bool isShadowPass)
 {
 	// Can't render without render state
 	if (!s_renderState)
@@ -263,7 +323,7 @@ void RenderSystem::renderModel(const ModelComponent& model, const glm::mat4& tra
 	
 	uniformBlock.model = transform;
 	uniformBlock.view = view ? *view : s_renderState->cameraEntity->camera.getView();
-	uniformBlock.projection = s_renderState->cameraEntity->camera.getProjection();
+	uniformBlock.projection = projection ? *projection : s_renderState->cameraEntity->camera.getProjection();
 	uniformBlock.cameraPos = glm::vec4(s_renderState->cameraEntity->camera.getPosition(), 1.0f);
 
 	// Loop over all the meshes in the model
@@ -294,7 +354,6 @@ void RenderSystem::renderModel(const ModelComponent& model, const glm::mat4& tra
 		}
 
 		// Tell the gpu what diffuse textures to use
-		// TODO: Send all textures to the GPU, not just 1
 		GLuint textureUnit = 0;
 		for (GLsizei j = 0; j < material.colorMaps.size(); ++j) {
 			const Texture& texture = material.colorMaps.at(j);
@@ -352,6 +411,14 @@ void RenderSystem::renderModel(const ModelComponent& model, const glm::mat4& tra
 			++textureUnit;
 		}
 
+		// Set shader map on GPU
+		if (!isShadowPass) {
+			glActiveTexture(GL_TEXTURE0 + textureUnit);
+			glUniform1i(material.shader->getUniformLocation("shadowMapSampler"), textureUnit);
+			glBindTexture(s_renderState->shadowMapBuffer.target, s_renderState->shadowMapBuffer.id);
+			++textureUnit;
+		}
+
 		// Set shader parameters
 		uniformBlock.metallicness = material.shaderParams.metallicness;
 		uniformBlock.glossiness = material.shaderParams.glossiness;
@@ -396,9 +463,11 @@ void RenderSystem::renderModel(const ModelComponent& model, const glm::mat4& tra
 	}
 }
 
-void RenderSystem::bufferLightData()
+void RenderSystem::bufferLightData(const glm::mat4& lightSpaceMatrix)
 {
 	LightDataBlockFormat lightData;
+	lightData.lightSpaceMatrix = lightSpaceMatrix;
+
 	lightData.numDirectionalLights = std::min(static_cast<GLuint>(s_renderState->directionalLights.size()), LightDataBlockFormat::s_kMaxDirectionalLights);
 	for (GLuint i = 0; i < lightData.numDirectionalLights; ++i) {
 		const Entity* directionalLightEntity = s_renderState->directionalLights.at(i);
