@@ -61,7 +61,7 @@ RenderSystem::RenderSystem(Scene& scene)
 
 	// Set post processing shader
 	m_postProcessShaders.push_back(&GLUtils::getPPMotionBlurShader());
-	//m_postProcessShaders.push_back(&GLUtils::getPPToonShader());
+	m_postProcessShaders.push_back(&GLUtils::getPPToonShader());
 	m_postProcessShaders.push_back(&GLUtils::getFullscreenQuadShader());
 	m_postProcessShaders.push_back(&GLUtils::getPPEdgeDetectShader());
 	m_curPostProcessShaderIdx = 0;
