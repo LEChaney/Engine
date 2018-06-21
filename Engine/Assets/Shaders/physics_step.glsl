@@ -10,23 +10,22 @@ uniform vec3 BlackHolePos2 = vec3(0, 0, 0);
 uniform float ParticleInvMass = 1.0 / 0.1;
 uniform float DeltaT = 0.0005;
 
-struct PointMass {
+struct Particle {
 	vec4 position;
 	vec4 velocity;
-	vec4 force;
-	float mass;
+	vec4 acceleration;
 };
 
-layout (std430, binding=0) buffer PointMasses {
-	PointMass pointMasses[];
+layout (std430, binding=0) buffer Particles {
+	Particle particle[];
 };
 
 void main() {
 	uint idx = gl_GlobalInvocationID.x;
 	//pointMasses[idx].position = vec4(0, float(idx) * 0.1f, 0, 1);
 	
-	vec3 p = pointMasses[idx].position.xyz;
-	vec3 v = pointMasses[idx].velocity.xyz;
+	vec3 p = particle[idx].position.xyz;
+	vec3 v = particle[idx].velocity.xyz;
 	
 	// Force from black hole #1
 	vec3 d = BlackHolePos1 - p;
@@ -38,7 +37,7 @@ void main() {
 	
 	// Apply simple Euler integrator
 	vec3 a = force * ParticleInvMass;
-	pointMasses[idx].position = vec4(
+	particle[idx].position = vec4(
 	      p + v * DeltaT + 0.5 * a * DeltaT * DeltaT, 1.0);
-	pointMasses[idx].velocity = vec4( v + a * DeltaT, 0.0);
+	particle[idx].velocity = vec4( v + a * DeltaT, 0.0);
 }

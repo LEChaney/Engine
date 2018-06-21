@@ -26,6 +26,7 @@ class Scene;
 struct GLFWwindow;
 class Entity;
 struct ModelComponent;
+struct ParticleEmitterComponent;
 class Shader;
 
 class RenderSystem : public System, public EntityEventListener {
@@ -75,6 +76,8 @@ public:
 
 private:
 	static void renderModel(const ModelComponent&, const glm::mat4& transform, const glm::mat4* view = nullptr, const glm::mat4* projection = nullptr, bool isShadowPass = false);
+
+	static void renderParticles(const ParticleEmitterComponent&, const glm::mat4 transform);
 
 	// Buffers light data and sets lightSpaceMatrix for shadow mapping on GPU
 	static void bufferLightData(const glm::mat4& lightSpaceMatrix);

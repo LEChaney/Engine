@@ -12,6 +12,8 @@
 #include "TerrainFollowSystem.h"
 #include "SimpleWorldSpaceMoveSystem.h"
 #include "ModelUtils.h"
+#include "ParticleEmitterComponent.h"
+#include "ParticleSystem.h"
 
 #include <glm\gtc\constants.hpp>
 #include <nanogui\nanogui.h>
@@ -89,9 +91,17 @@ GameplayScreen::GameplayScreen()
 	directionalLight.directionalLight.color = { 0.64, 0.39, 0.31 };
 	directionalLight.directionalLight.direction = { 1, 1, -1 };
 
+	Entity& particleEmitter = Prefabs::createParticleEmitter(m_scene, 
+		128 * 1000, 
+		0.125, 1,
+		{ -10, -10, -10 }, { 10, 10, 10 },
+		{ -1, -1, -1 }, { 1, 1, 1 }
+	);
+
 	m_activeSystems.push_back(std::move(renderSystem));
 	m_activeSystems.push_back(std::move(basicCameraMovementSystem));
 	m_activeSystems.push_back(std::make_unique<PhysicsSystem>(m_scene));
+	m_activeSystems.push_back(std::make_unique<ParticleSystem>(m_scene));
 }
 
 

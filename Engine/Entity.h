@@ -16,6 +16,7 @@
 #include "PyramidCollisionComponent.h"
 #include "CapsuleCollisionComponent.h"
 #include "DirectionalLightComponent.h"
+#include "ParticleEmitterComponent.h"
 
 #include <vector>
 
@@ -37,7 +38,8 @@ enum ComponentType {
 	COMPONENT_PYRAMID_COLLISION = 1 << 16,
 	COMPONENT_GROUND_COLLISION = 1 << 17,
 	COMPONENT_CAPSULE_COLLISION = 1 << 18,
-	COMPONENT_DIRECTIONAL_LIGHT = 1 << 19
+	COMPONENT_DIRECTIONAL_LIGHT = 1 << 19,
+	COMPONENT_PARTICLE_EMITTER = 1 << 20
 };
 
 class Entity {
@@ -61,6 +63,7 @@ public:
 	PyramidCollisionComponent pyramidCollision;
 	CapsuleCollisionComponent capsuleCollision;
 	DirectionalLightComponent directionalLight;
+	ParticleEmitterComponent particleEmitter;
 
 	Entity(Entity&&) = default;
 	Entity(const Entity&) = delete;

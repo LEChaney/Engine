@@ -31,6 +31,7 @@
 #include "Clock.h"
 #include "Shader.h"
 #include "LightDataBlockFormat.h"
+#include "ParticleEmitterComponent.h"
 
 #include <glad\glad.h>
 #include <GLFW\glfw3.h>
@@ -53,6 +54,8 @@ RenderSystem::RenderSystem(Scene& scene)
 	m_renderState.glContext = Game::getWindowContext();
 	m_renderState.uniformBindingIndex = 0;
 	m_renderState.lightDataBindingIndex = 1;
+	m_renderState.modelDataBindingIndex = 2;
+	m_renderState.cameraDataBindingIndex = 3;
 	m_renderState.hasIrradianceMap = false;
 	m_renderState.hasRadianceMap = false;
 
@@ -110,6 +113,11 @@ RenderSystem::RenderSystem(Scene& scene)
 	glGenBuffers(1, &m_renderState.uboCameraData);
 	glBindBufferBase(GL_UNIFORM_BUFFER, 0, m_renderState.uboCameraData);
 	glBufferData(GL_UNIFORM_BUFFER, sizeof(CameraDataBlockFormat), nullptr, GL_DYNAMIC_DRAW);
+
+	// Create buffer for modelDataBlock
+	glGenBuffers(1, &m_renderState.uboModelData);
+	glBindBufferBase(GL_UNIFORM_BUFFER, 0, m_renderState.uboModelData);
+	glBufferData(GL_UNIFORM_BUFFER, sizeof(ModelDataBlockFormat), nullptr, GL_DYNAMIC_DRAW);
 
 	// Create buffer for light data
 	glGenBuffers(1, &m_renderState.uboLightData);
@@ -262,15 +270,21 @@ void RenderSystem::update()
 			return;
 		}
 
-		// Filter renderable entities
-		const size_t kRenderableMask = COMPONENT_MODEL;
-		if (!entity.hasComponents(kRenderableMask))
-			continue;
+		// Render Models
+		if (entity.hasComponents(COMPONENT_MODEL)) {
+			bool hasTransform = entity.hasComponents(COMPONENT_TRANSFORM);
 
-		bool hasTransform = entity.hasComponents(COMPONENT_TRANSFORM);
+			// Render the current entities model
+			renderModel(entity.model, GLMUtils::transformToMat(entity.transform));
+		}
 
-		// Render the current entities model
-		renderModel(entity.model, GLMUtils::transformToMat(entity.transform));
+		// Render Particles
+		if (entity.hasComponents(COMPONENT_PARTICLE_EMITTER)) {
+			bool hasTransform = entity.hasComponents(COMPONENT_TRANSFORM);
+
+			// Render the current entities model
+			renderParticles(entity.particleEmitter, GLMUtils::transformToMat(entity.transform));
+		}
 	}
 }
 
@@ -461,6 +475,39 @@ void RenderSystem::renderModel(const ModelComponent& model, const glm::mat4& tra
 		if (material.willDrawWireframe)
 			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	}
+}
+
+void RenderSystem::renderParticles(const ParticleEmitterComponent& emitter, const glm::mat4 transform)
+{
+	// Can't render without render state
+	if (!s_renderState)
+		return;
+
+	// Get Aspect ratio
+	int width, height;
+	GLFWwindow* glContext = Game::getWindowContext();
+	glfwGetFramebufferSize(glContext, &width, &height);
+	float aspectRatio = static_cast<float>(width) / height;
+
+	// Get model, view and projection matrices
+	CameraDataBlockFormat cameraData;
+	ModelDataBlockFormat modelData;
+
+	modelData.model = transform;
+	cameraData.view = s_renderState->cameraEntity->camera.getView();
+	cameraData.projection = s_renderState->cameraEntity->camera.getProjection();
+	cameraData.cameraPos = glm::vec4(s_renderState->cameraEntity->camera.getPosition(), 1.0f);
+
+	emitter.material.shader->use();
+
+	// Send uniform data to the GPU
+	glBindBufferBase(GL_UNIFORM_BUFFER, s_renderState->modelDataBindingIndex, s_renderState->uboModelData);
+	glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(ModelDataBlockFormat), &modelData);
+	glBindBufferBase(GL_UNIFORM_BUFFER, s_renderState->cameraDataBindingIndex, s_renderState->uboCameraData);
+	glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(CameraDataBlockFormat), &cameraData);
+
+	glBindVertexArray(emitter.VAO);
+	glDrawArrays(GL_POINTS, 0, emitter.numParticles);
 }
 
 void RenderSystem::bufferLightData(const glm::mat4& lightSpaceMatrix)

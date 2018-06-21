@@ -1,14 +1,18 @@
 #version 420 core
 
-layout (location = 0) in vec4 inWorldPosition;
+layout (location = 0) in vec4 inPositionAndRemainingLifetime;
 
-layout (std140, binding=0) uniform CameraData {
+layout (std140, binding=3) uniform CameraData {
     mat4 view;
     mat4 projection;
-} cam;
+};
+
+layout (std140, binding=2) uniform ModelData {
+	mat4 model;
+};
 
 void main()
 {
 	gl_PointSize = 1.0;
-    gl_Position = cam.projection * cam.view * inWorldPosition;
+    gl_Position = projection * view * model * vec4(inPositionAndRemainingLifetime.xyz, 1.0);
 }

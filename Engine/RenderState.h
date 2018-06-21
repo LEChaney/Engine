@@ -21,6 +21,7 @@ struct RenderState {
 	bool hasIrradianceMap;
 	GLuint uboUniforms; // TODO: Remove this and replace with more specific UBOs that can be buffered at different times to remove uneccessary buffering from CPU to GPU.
 	GLuint uboCameraData;
+	GLuint uboModelData;
 	GLuint uboLightData;
 	FrameBuffer sceneFramebuffer;
 	FrameBuffer shadowMapFramebuffer;
@@ -30,6 +31,8 @@ struct RenderState {
 	const Shader* postProcessShader;
 	GLuint uniformBindingIndex;
 	GLuint lightDataBindingIndex;
+	GLuint modelDataBindingIndex;
+	GLuint cameraDataBindingIndex;
 	std::vector<const Entity*> spotlights;
 	std::vector<const Entity*> directionalLights;
 };
