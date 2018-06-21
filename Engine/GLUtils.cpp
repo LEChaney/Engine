@@ -174,6 +174,24 @@ const Shader& GLUtils::getPPEdgeDetectShader()
 	return s_shader;
 }
 
+const Shader& GLUtils::getPPToonShader()
+{
+	static Shader s_shader = compileAndLinkShaders(
+		"Assets/Shaders/fullscreen_quad_vert.glsl",
+		"Assets/Shaders/pp_toon_frag.glsl");
+
+	return s_shader;
+}
+
+const Shader & GLUtils::getPPMotionBlurShader()
+{
+	static Shader s_shader = compileAndLinkShaders(
+		"Assets/Shaders/fullscreen_quad_vert.glsl",
+		"Assets/Shaders/pp_motion_blur_frag.glsl");
+
+	return s_shader;
+}
+
 const Shader& GLUtils::getTerrainGrassGeoShader()
 {
 	static Shader s_shader = compileAndLinkShaders(

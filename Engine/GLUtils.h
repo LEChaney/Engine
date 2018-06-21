@@ -66,6 +66,16 @@ namespace GLUtils {
 	// in texture unit 0.
 	const Shader& getPPEdgeDetectShader();
 
+	// Retuns a post processing toon shader.
+	// This should be applied to a full screen quad with scene color buffer bound
+	// in texture unit 0.
+	const Shader& getPPToonShader();
+
+	// Retuns a motion blur post processing shader.
+	// This should be applied to a full screen quad with scene color buffer bound
+	// in texture unit 0 and depth bound in texture unit 1.
+	const Shader& getPPMotionBlurShader();
+
 	// Retures a shader used to generate grass from a terrain mesh.
 	const Shader& getTerrainGrassGeoShader();
 

@@ -3,7 +3,7 @@
 layout (local_size_x = 128) in;
 
 uniform float Gravity1 = 10.0;
-uniform vec3 BlackHolePos1 = vec3(0, 100, 0);
+uniform vec3 BlackHolePos1 = vec3(0, 15, 0);
 uniform float Gravity2 = 10.0;
 uniform vec3 BlackHolePos2 = vec3(0, 0, 0);
 

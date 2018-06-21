@@ -83,7 +83,7 @@ Entity& Prefabs::createTerrain(Scene& scene, const std::string& heightMapFile, f
 			heightMapData[r * numPixelsX + c] = heightMapImg[(r * numPixelsX + c) * numChannels] / 255.0f; // Ignore any extra channels by skipping over them
 		}
 	}
-	Texture heightMap = Texture::Texture2D(numPixelsX, numPixelsY, GL_RED, GL_FLOAT, heightMapData.data());
+	Texture heightMap = Texture::Texture2D(numPixelsX, numPixelsY, GL_RED, GL_FLOAT, GL_RED, heightMapData.data());
 
 	stbi_image_free(heightMapImg);
 
@@ -152,7 +152,7 @@ Entity& Prefabs::createTerrain(Scene& scene, const std::string& heightMapFile, f
 		}
 	}
 	// Create GPU normalMap Texture
-	Texture normalMap = Texture::Texture2D(numPixelsX, numPixelsY, GL_RGB, GL_FLOAT, normalMapData.data());
+	Texture normalMap = Texture::Texture2D(numPixelsX, numPixelsY, GL_RGB, GL_FLOAT, GL_RGB, normalMapData.data());
 
 	// Create GPU mesh
 	Mesh mesh = GLUtils::bufferMeshData(meshVertices, meshIndices);

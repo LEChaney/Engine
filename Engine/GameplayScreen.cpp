@@ -97,6 +97,7 @@ GameplayScreen::GameplayScreen()
 		{ -10, -10, -10 }, { 10, 10, 10 },
 		{ -1, -1, -1 }, { 1, 1, 1 }
 	);
+	particleEmitter.transform.position = glm::vec3{ 0, 35, 0 };
 
 	m_activeSystems.push_back(std::move(renderSystem));
 	m_activeSystems.push_back(std::move(basicCameraMovementSystem));

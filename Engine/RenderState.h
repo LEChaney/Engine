@@ -27,7 +27,7 @@ struct RenderState {
 	FrameBuffer shadowMapFramebuffer;
 	Texture sceneColorBuffer;
 	Texture shadowMapBuffer;
-	RenderBuffer sceneDepthStencilBuffer;
+	Texture sceneDepthStencilBuffer;
 	const Shader* postProcessShader;
 	GLuint uniformBindingIndex;
 	GLuint lightDataBindingIndex;

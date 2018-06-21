@@ -451,6 +451,15 @@
     <None Include="Assets\Shaders\vertcolor_frag.glsl">
       <Filter>Assets\Shaders</Filter>
     </None>
+    <None Include="Assets\Shaders\pp_motion_blur_frag.glsl">
+      <Filter>Assets\Shaders</Filter>
+    </None>
+    <None Include="Assets\Shaders\pp_motion_blur_plus_toon_frag.glsl">
+      <Filter>Assets\Shaders</Filter>
+    </None>
+    <None Include="Assets\Shaders\pp_toon_frag.glsl">
+      <Filter>Assets\Shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\Textures\PlaneTexture.jpg">

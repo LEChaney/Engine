@@ -5,6 +5,7 @@ out vec4 outColor;
 in vec2 texCoord;
 
 uniform sampler2D sceneSampler;
+uniform sampler2D depthSampler;
 
 const float gamma = 2.2;
 

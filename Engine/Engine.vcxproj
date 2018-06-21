@@ -289,6 +289,9 @@ xcopy "$(ProjectDir)ext\nanogui\lib\release_libs\nanogui.dll" "$(OutDir)" /dsy</
     <None Include="Assets\Shaders\pp_edge_detect_frag.glsl" />
     <None Include="Assets\Shaders\fullscreen_quad_vert.glsl" />
     <None Include="Assets\Shaders\metal_frag.glsl" />
+    <None Include="Assets\Shaders\pp_motion_blur_frag.glsl" />
+    <None Include="Assets\Shaders\pp_motion_blur_plus_toon_frag.glsl" />
+    <None Include="Assets\Shaders\pp_toon_frag.glsl" />
     <None Include="Assets\Shaders\skybox_frag.glsl" />
     <None Include="Assets\Shaders\skybox_vert.glsl" />
     <None Include="Assets\Shaders\terrain_tess_ctrl.glsl" />

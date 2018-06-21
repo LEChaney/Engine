@@ -60,6 +60,8 @@ RenderSystem::RenderSystem(Scene& scene)
 	m_renderState.hasRadianceMap = false;
 
 	// Set post processing shader
+	m_postProcessShaders.push_back(&GLUtils::getPPMotionBlurShader());
+	//m_postProcessShaders.push_back(&GLUtils::getPPToonShader());
 	m_postProcessShaders.push_back(&GLUtils::getFullscreenQuadShader());
 	m_postProcessShaders.push_back(&GLUtils::getPPEdgeDetectShader());
 	m_curPostProcessShaderIdx = 0;
@@ -74,14 +76,26 @@ RenderSystem::RenderSystem(Scene& scene)
 	int windowWidth, windowHeight;
 	glfwGetFramebufferSize(m_renderState.glContext, &windowWidth, &windowHeight);
 	Texture& colorBuffer = m_renderState.sceneColorBuffer = Texture::Texture2D(windowWidth, windowHeight);
+	glBindTexture(colorBuffer.target, colorBuffer.id);
+	glTexParameteri(colorBuffer.target, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(colorBuffer.target, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(colorBuffer.target, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(colorBuffer.target, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glFramebufferTexture2D(framebuffer.target, GL_COLOR_ATTACHMENT0, colorBuffer.target, colorBuffer.id, 0);
+	glBindTexture(colorBuffer.target, 0);
 
 	// Scene Depth and Stencil buffers
-	m_renderState.sceneDepthStencilBuffer = RenderBuffer(GL_DEPTH24_STENCIL8, windowWidth, windowHeight);
-	RenderBuffer& depthStencilBuffer = m_renderState.sceneDepthStencilBuffer;
-	glFramebufferRenderbuffer(framebuffer.target, GL_DEPTH_STENCIL_ATTACHMENT, depthStencilBuffer.target, depthStencilBuffer.id);
+	m_renderState.sceneDepthStencilBuffer = Texture::Texture2D(windowWidth, windowHeight, GL_DEPTH24_STENCIL8, GL_UNSIGNED_INT_24_8, GL_DEPTH_STENCIL);
+	Texture& depthStencilBuffer = m_renderState.sceneDepthStencilBuffer;
+	glBindTexture(depthStencilBuffer.target, depthStencilBuffer.id);
+	glTexParameteri(depthStencilBuffer.target, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(depthStencilBuffer.target, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(depthStencilBuffer.target, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(depthStencilBuffer.target, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glFramebufferTexture2D(framebuffer.target, GL_DEPTH_STENCIL_ATTACHMENT, depthStencilBuffer.target, depthStencilBuffer.id, 0);
 
 	assert(glCheckFramebufferStatus(framebuffer.target) == GL_FRAMEBUFFER_COMPLETE);
+	glBindTexture(depthStencilBuffer.target, 0);
 	glBindFramebuffer(framebuffer.target, 0);
 
 	// Shadow framebuffer
@@ -94,8 +108,8 @@ RenderSystem::RenderSystem(Scene& scene)
 	glBindTexture(shadowMapBuffer.target, shadowMapBuffer.id);
 	glTexParameteri(shadowMapBuffer.target, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(shadowMapBuffer.target, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(shadowMapBuffer.target, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(shadowMapBuffer.target, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(shadowMapBuffer.target, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(shadowMapBuffer.target, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glFramebufferTexture2D(shadowMapFramebuffer.target, GL_DEPTH_ATTACHMENT, shadowMapBuffer.target, shadowMapBuffer.id, 0);
 	glDrawBuffer(GL_NONE);
 	glReadBuffer(GL_NONE);
@@ -195,19 +209,39 @@ void RenderSystem::endFrame()
 	glBindFramebuffer(m_renderState.sceneFramebuffer.target, 0);
 	glClear(GL_COLOR_BUFFER_BIT);
 
-	// Render full screen quad with post process shader
+	// Setup render state
 	m_renderState.postProcessShader->use();
 	glDisable(GL_DEPTH_TEST);
-	const Mesh& quadMesh = GLPrimitives::getQuadMesh();
-	glBindVertexArray(quadMesh.VAO);
+
+	// Attach color buffer for reading
 	glActiveTexture(GL_TEXTURE0);
 	glUniform1i(m_renderState.postProcessShader->getUniformLocation("sceneSampler"), 0);
 	glBindTexture(m_renderState.sceneColorBuffer.target, m_renderState.sceneColorBuffer.id);
+
+	// Attach depth buffer for reading
+	glActiveTexture(GL_TEXTURE1);
+	glUniform1i(m_renderState.postProcessShader->getUniformLocation("depthSampler"), 1);
+	glBindTexture(m_renderState.sceneDepthStencilBuffer.target, m_renderState.sceneDepthStencilBuffer.id);
+
+	// Send inverse view projection to GPU
+	const CameraComponent& camera = m_renderState.cameraEntity->camera;
+	glm::mat4 inverseViewProjection = glm::inverse(camera.getProjection() * camera.getView());
+	glUniformMatrix4fv(m_renderState.postProcessShader->getUniformLocation("inverseViewProjection"), 1, false, glm::value_ptr(inverseViewProjection));
+
+	// Send previous frame view projection to GPU
+	glm::mat4 previousViewProjection = camera.getPreviousProjection() * camera.getPreviousView();
+	glUniformMatrix4fv(m_renderState.postProcessShader->getUniformLocation("previousViewProjection"), 1, false, glm::value_ptr(previousViewProjection));
+
+	// Draw full screen 
+	const Mesh& quadMesh = GLPrimitives::getQuadMesh();
+	glBindVertexArray(quadMesh.VAO);
 	glDrawElements(GL_TRIANGLES, quadMesh.numIndices, GL_UNSIGNED_INT, 0);
 
+	// Restore state
 	glEnable(GL_DEPTH_TEST);
 	glBindVertexArray(0);
 	glBindTexture(m_renderState.sceneColorBuffer.target, 0);
+	glBindTexture(m_renderState.sceneDepthStencilBuffer.target, 0);
 
 	glfwSwapBuffers(m_renderState.glContext);
 }
