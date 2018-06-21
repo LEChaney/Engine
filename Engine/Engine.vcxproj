@@ -189,6 +189,7 @@ xcopy "$(ProjectDir)ext\nanogui\lib\release_libs\nanogui.dll" "$(OutDir)" /dsy</
     <ClCompile Include="ClothPickingSystem.cpp" />
     <ClCompile Include="ParticleEmitterComponent.cpp" />
     <ClCompile Include="ParticleSystem.cpp" />
+    <ClCompile Include="PhysicsComponent.cpp" />
     <ClCompile Include="PhysicsSystem.cpp" />
     <ClCompile Include="PointMass.cpp" />
     <ClCompile Include="PyramidCollisionComponent.cpp" />
@@ -198,6 +199,7 @@ xcopy "$(ProjectDir)ext\nanogui\lib\release_libs\nanogui.dll" "$(OutDir)" /dsy</
     <ClCompile Include="SphereCollisionComponent.cpp" />
     <ClCompile Include="SpringConstraint.cpp" />
     <ClCompile Include="Terrain.cpp" />
+    <ClCompile Include="TerrainFollowComponent.cpp" />
     <ClCompile Include="TerrainFollowSystem.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="RenderSystem.cpp" />

@@ -61,13 +61,15 @@ GameplayScreen::GameplayScreen()
 	reflectiveSphere.model.materials[0].shaderParams.glossiness = 1.0f;
 	reflectiveSphere.model.materials[0].shaderParams.metallicness = 1.0f;
 	reflectiveSphere.addComponents(COMPONENT_TERRAIN_FOLLOW, COMPONENT_SIMPLE_WORLD_SPACE_MOVE_COMPONENT,
-	                               COMPONENT_INPUT, COMPONENT_INPUT_MAP);
+	                               COMPONENT_INPUT, COMPONENT_INPUT_MAP, COMPONENT_PHYSICS);
 	reflectiveSphere.terrainFollow.terrainToFollow = &terrain;
 	reflectiveSphere.inputMap.forwardBtnMap = GLFW_KEY_UP;
 	reflectiveSphere.inputMap.backwardBtnMap = GLFW_KEY_DOWN;
 	reflectiveSphere.inputMap.leftBtnMap = GLFW_KEY_LEFT;
 	reflectiveSphere.inputMap.rightBtnMap = GLFW_KEY_RIGHT;
+	reflectiveSphere.inputMap.upBtnMap = GLFW_KEY_SPACE;
 	reflectiveSphere.simpleWorldSpaceMovement.moveSpeed = 10;
+	reflectiveSphere.terrainFollow.jumpEnabled = true;
 	reflectiveSphere.terrainFollow.followerHalfHeight = 1.0f;
 
 	Entity& diffuseSphere = Prefabs::createSphere(m_scene);
@@ -78,13 +80,15 @@ GameplayScreen::GameplayScreen()
 	diffuseSphere.model.materials[0].shaderParams.metallicness = 0.0f;
 	diffuseSphere.model.materials[0].shaderParams.specBias = -0.04f;
 	diffuseSphere.addComponents(COMPONENT_TERRAIN_FOLLOW, COMPONENT_SIMPLE_WORLD_SPACE_MOVE_COMPONENT,
-		COMPONENT_INPUT, COMPONENT_INPUT_MAP);
+	                            COMPONENT_INPUT, COMPONENT_INPUT_MAP, COMPONENT_PHYSICS);
 	diffuseSphere.terrainFollow.terrainToFollow = &terrain;
 	diffuseSphere.inputMap.forwardBtnMap = GLFW_KEY_UP;
 	diffuseSphere.inputMap.backwardBtnMap = GLFW_KEY_DOWN;
 	diffuseSphere.inputMap.leftBtnMap = GLFW_KEY_LEFT;
 	diffuseSphere.inputMap.rightBtnMap = GLFW_KEY_RIGHT;
+	diffuseSphere.inputMap.upBtnMap = GLFW_KEY_SPACE;
 	diffuseSphere.simpleWorldSpaceMovement.moveSpeed = 10;
+	diffuseSphere.terrainFollow.jumpEnabled = true;
 	diffuseSphere.terrainFollow.followerHalfHeight = 1.0f;
 
 	Entity& directionalLight = m_scene.createEntity(COMPONENT_DIRECTIONAL_LIGHT);
