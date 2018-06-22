@@ -15,6 +15,7 @@
 #include "ParticleEmitterComponent.h"
 #include "ParticleSystem.h"
 #include "ssAnimatedModel.h"
+#include "AnimationSystem.h"
 
 #include <glm\gtc\constants.hpp>
 #include <nanogui\nanogui.h>
@@ -31,6 +32,7 @@ GameplayScreen::GameplayScreen()
 	// Init systems
 	m_activeSystems.push_back(std::make_unique<InputSystem>(m_scene));
 	m_activeSystems.push_back(std::make_unique<TerrainFollowSystem>(m_scene));
+	m_activeSystems.push_back(std::make_unique<AnimationSystem>(m_scene));
 	m_activeSystems.push_back(std::make_unique<SimpleWorldSpaceMoveSystem>(m_scene));
 	auto basicCameraMovementSystem = std::make_unique<BasicCameraMovementSystem>(m_scene);
 	auto renderSystem = std::make_unique<RenderSystem>(m_scene);
@@ -82,10 +84,11 @@ GameplayScreen::GameplayScreen()
 	//diffuseSphere.model.materials[0].shaderParams.metallicness = 0.0f;
 	//diffuseSphere.model.materials[0].shaderParams.specBias = -0.04f;
 	character.animatedModel.model = std::make_unique<ssAnimatedModel>("Assets/Models/theDude/theDude.DAE", "Assets/Models/theDude/theDude.png", GLUtils::getDebugShader().getGPUHandle());
+	character.animatedModel.model->setCurrentAnimation(0, 30); // Idle
 	character.addComponents(COMPONENT_TERRAIN_FOLLOW, COMPONENT_SIMPLE_WORLD_SPACE_MOVE_COMPONENT,
 	                        COMPONENT_INPUT, COMPONENT_INPUT_MAP, COMPONENT_PHYSICS);
 	character.terrainFollow.terrainToFollow = &terrain;
-	//character.transform.eulerAngles.x = -glm::half_pi<float>();
+	character.transform.eulerAngles.y = glm::pi<float>();
 	character.transform.scale *= 0.1f;
 	character.inputMap.forwardBtnMap = GLFW_KEY_UP;
 	character.inputMap.backwardBtnMap = GLFW_KEY_DOWN;

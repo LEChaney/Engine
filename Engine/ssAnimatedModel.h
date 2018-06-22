@@ -253,6 +253,7 @@ public:
 	void rotate(float speed);
 	
 	bool bMoving = false;
+	bool bFalling = false;
 
 private:
 

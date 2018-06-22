@@ -26,6 +26,7 @@ void TerrainFollowSystem::update()
 		float targetYPos = terrainHeight + halfHeight;
 		if (success && yPos - targetYPos < 0.1f) {
 			entity.physics.gravityEnabled = false;
+			entity.terrainFollow.isOnGround = true;
 			entity.transform.position.y = glm::lerp(yPos, targetYPos, Clock::getDeltaTime() * 50.0f);
 			entity.physics.velocity.y = glm::max(entity.physics.velocity.y, 0.0f);
 
@@ -36,6 +37,7 @@ void TerrainFollowSystem::update()
 		}
 		else {
 			entity.physics.gravityEnabled = true;
+			entity.terrainFollow.isOnGround = false;
 		}
 	}
 }

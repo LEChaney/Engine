@@ -8,4 +8,5 @@ struct TerrainFollowComponent {
 	Entity* terrainToFollow;
 	float followerHalfHeight;
 	bool jumpEnabled;
+	bool isOnGround;
 };

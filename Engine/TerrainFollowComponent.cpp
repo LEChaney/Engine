@@ -4,5 +4,6 @@ TerrainFollowComponent::TerrainFollowComponent()
 	: terrainToFollow{ nullptr }
 	, followerHalfHeight{ 1.0f }
 	, jumpEnabled{ false }
+	, isOnGround{ false }
 {
 }
