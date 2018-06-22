@@ -4,7 +4,7 @@
 // Auckland
 // New Zealand
 //
-// (c) 2017 Media Design School
+// (c) 2018 Media Design School
 //
 // Description  : Material parameters used by the GPU.
 //                This struct corresponds to an equivalent 

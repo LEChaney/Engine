@@ -4,7 +4,7 @@
 // Auckland
 // New Zealand
 //
-// (c) 2017 Media Design School
+// (c) 2018 Media Design School
 //
 // Description  : A struct containing model, view and projection matrices
 //                as well as camera position.

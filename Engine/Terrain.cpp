@@ -1,3 +1,16 @@
+//
+// Bachelor of Software Engineering
+// Media Design School
+// Auckland
+// New Zealand
+//
+// (c) 2018 Media Design School
+//
+//                scene.
+// Author       : Lance Chaney
+// Mail         : lance.cha7337@mediadesign.school.nz
+//
+
 #include "Terrain.h"
 
 #include "Entity.h"

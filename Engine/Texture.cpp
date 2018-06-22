@@ -1,3 +1,15 @@
+//
+// Bachelor of Software Engineering
+// Media Design School
+// Auckland
+// New Zealand
+//
+// (c) 2018 Media Design School
+//
+// Author       : Lance Chaney
+// Mail         : lance.cha7337@mediadesign.school.nz
+//
+
 #include "Texture.h"
 
 Texture Texture::Texture2D(GLsizei width, GLsizei height, GLint internalFormat, GLenum componentType, GLenum format, const void* data)

@@ -1,3 +1,13 @@
+//
+// Bachelor of Software Engineering
+// Media Design School
+// Auckland
+// New Zealand
+//
+// (c) 2018 Media Design School
+//
+
+
 #include "ssAnimatedModel.h"
 
 #include <stb_image.h>

@@ -4,7 +4,7 @@
 // Auckland
 // New Zealand
 //
-// (c) 2017 Media Design School
+// (c) 2018 Media Design School
 //
 // Description  : A collection of utility functions that rely on the GLM libary
 // Author       : Lance Chaney
