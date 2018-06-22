@@ -474,7 +474,7 @@ void RenderSystem::renderModel(const ModelComponent& model, const glm::mat4& tra
 		uniformBlock.time = Clock::getTime();
 
 		// Set spotlights
-		uniformBlock.numDirectionalLights = std::min(static_cast<GLuint>(s_renderState->spotlights.size()), UniformBlockFormat::s_kMaxSpotlights);
+		uniformBlock.numSpotLights = std::min(static_cast<GLuint>(s_renderState->spotlights.size()), UniformBlockFormat::s_kMaxSpotlights);
 		//for (GLuint i = 0; i < uniformBlock.numSpotlights; ++i) {
 		//	const Entity* spotlightEntity = s_renderState.spotlights.at(i);
 		//	glm::vec4 spotlightDir = glm::vec4(s_renderState.spotlights.at(i)->spotlight.direction, 0);
