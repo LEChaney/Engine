@@ -22,13 +22,13 @@ bool TerrainUtils::castPosToTerrainHeight(const Entity& terrainEntity, const vec
 	float yBlend = glm::fract(texCoord.y);
 
 	// Blend top left and top right corners of the 2 by 2 pixel square
-	float heightTopLeft = terrainEntity.terrain.heightMap[glm::floor(texCoord.y) * numPixelsX + glm::floor(texCoord.x)];
-	float heightTopRight = terrainEntity.terrain.heightMap[glm::floor(texCoord.y) * numPixelsX + glm::ceil(texCoord.x)];
+	float heightTopLeft = terrainEntity.terrain.heightMap[static_cast<GLuint>(glm::floor(texCoord.y)) * numPixelsX + static_cast<GLuint>(glm::floor(texCoord.x))];
+	float heightTopRight = terrainEntity.terrain.heightMap[static_cast<GLuint>(glm::floor(texCoord.y)) * numPixelsX + static_cast<GLuint>(glm::ceil(texCoord.x))];
 	float heightTop = (1 - xBlend) * heightTopLeft + xBlend * heightTopRight;
 
 	// Blend bottom left and bottom right corners of the 2 by 2 pixel square
-	float heightBottomLeft = terrainEntity.terrain.heightMap[glm::ceil(texCoord.y) * numPixelsX + glm::floor(texCoord.x)];
-	float heightBottomRight = terrainEntity.terrain.heightMap[glm::ceil(texCoord.y) * numPixelsX + glm::ceil(texCoord.x)];
+	float heightBottomLeft = terrainEntity.terrain.heightMap[static_cast<GLuint>(glm::ceil(texCoord.y)) * numPixelsX + static_cast<GLuint>(glm::floor(texCoord.x))];
+	float heightBottomRight = terrainEntity.terrain.heightMap[static_cast<GLuint>(glm::ceil(texCoord.y)) * numPixelsX + static_cast<GLuint>(glm::ceil(texCoord.x))];
 	float heightBottom = (1 - xBlend) * heightBottomLeft + xBlend * heightBottomRight;
 
 	// Blend the two above results across the y component for final blend
@@ -64,8 +64,8 @@ bool TerrainUtils::castPosToHeightMapTexCoord(const Entity& terrainEntity, const
 glm::vec3 TerrainUtils::castHeightMapTexCoordToWorldPos(const Entity& terrainEntity, const glm::vec2& texCoord)
 {
 	const float size = terrainEntity.terrain.size;
-	const float numPixelsX = terrainEntity.terrain.heightMapDimensions.x;
-	const float numPixelsY = terrainEntity.terrain.heightMapDimensions.y;
+	const int numPixelsX = terrainEntity.terrain.heightMapDimensions.x;
+	const int numPixelsY = terrainEntity.terrain.heightMapDimensions.y;
 	const float heightScale = terrainEntity.terrain.heightScale;
 	const float extent = size / 2;
 	const float xSpacing = size / (numPixelsX - 1);

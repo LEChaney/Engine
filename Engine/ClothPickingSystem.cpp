@@ -121,7 +121,7 @@ PointMass* ClothPickingSystem::mousePick()
 		auto& triIndices = cloth.triIndices;
 		
 		for (size_t i = 0; i < cloth.triIndices.size(); i += 3) {
-			const float EPSILON = 0.0000001;
+			const float EPSILON = 0.0000001f;
 			PointMass& p0 = cloth.getNode(triIndices[i]).pointMass;
 			PointMass& p1 = cloth.getNode(triIndices[i + 1]).pointMass;
 			PointMass& p2 = cloth.getNode(triIndices[i + 2]).pointMass;

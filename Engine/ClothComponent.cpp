@@ -112,12 +112,12 @@ ClothNode& ClothComponent::getNode(GLuint id)
 
 GLuint ClothComponent::getNumClothNodes() const
 {
-	return clothNodes.size();
+	return static_cast<GLuint>(clothNodes.size());
 }
 
 GLuint ClothComponent::getNumClothLinks() const
 {
-	return clothLinks.size();
+	return static_cast<GLuint>(clothLinks.size());
 }
 
 GLuint ClothComponent::getNumPointMassesX() const

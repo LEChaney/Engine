@@ -242,7 +242,7 @@ std::vector<glm::vec3> CollisionSystem::PenetratingPoints(std::vector<glm::vec3>
 
 	float shortestDistance = glm::dot(normal, triangle[0]);
 
-	for (size_t i = 0; i < penetratingTriangle.size(); ++i)
+	for (int i = 0; i < penetratingTriangle.size(); ++i)
 	{
 		float pointDistance = glm::dot(normal, penetratingTriangle[i]) - shortestDistance;
 
@@ -449,10 +449,10 @@ int CollisionSystem::TriangleTriangleIntersection(std::vector<glm::vec3>& T1, st
 	float vp0, vp1, vp2;
 	float up0, up1, up2;
 	float b, c, max;
-	float tmp; 
+
 	glm::vec3 diff;
 	int smallest1, smallest2;
-	float epsilon = 0.000001;
+	float epsilon = 0.000001f;
 
 	// Compute plane equation for triangle 1
 	E1 = T1[1] - T1[0];

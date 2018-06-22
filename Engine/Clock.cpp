@@ -43,7 +43,7 @@ float Clock::getUIDeltaTime()
 
 float Clock::getTime()
 {
-	return glfwGetTime();
+	return static_cast<float>(glfwGetTime());
 }
 
 void Clock::setTimeDilation(double timeDilation)
