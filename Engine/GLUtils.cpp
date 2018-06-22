@@ -120,6 +120,15 @@ const Shader& GLUtils::getDefaultShader()
 	return s_shader;
 }
 
+const Shader & GLUtils::getAnimShader()
+{
+	static Shader s_shader = compileAndLinkShaders(
+		"Assets/Shaders/anim_vert.glsl",
+		"Assets/Shaders/debug_frag.glsl");
+
+	return s_shader;
+}
+
 const Shader & GLUtils::getVertexColorShader()
 {
 	static Shader s_shader = compileAndLinkShaders(

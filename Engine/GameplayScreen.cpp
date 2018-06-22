@@ -14,12 +14,14 @@
 #include "ModelUtils.h"
 #include "ParticleEmitterComponent.h"
 #include "ParticleSystem.h"
+#include "ssAnimatedModel.h"
 
 #include <glm\gtc\constants.hpp>
 #include <nanogui\nanogui.h>
 
 #include <cmath>
 #include <list>
+#include <memory>
 
 GameplayScreen::GameplayScreen()
 	: Screen()
@@ -72,24 +74,27 @@ GameplayScreen::GameplayScreen()
 	reflectiveSphere.terrainFollow.jumpEnabled = true;
 	reflectiveSphere.terrainFollow.followerHalfHeight = 1.0f;
 
-	Entity& diffuseSphere = Prefabs::createSphere(m_scene);
-	diffuseSphere.transform.position += glm::vec3(5, 40, 0);
-	diffuseSphere.model.materials[0].shader = &GLUtils::getDebugShader();
-	diffuseSphere.model.materials[0].debugColor = glm::vec3(1, 1, 1);
-	diffuseSphere.model.materials[0].shaderParams.glossiness = 0.0f;
-	diffuseSphere.model.materials[0].shaderParams.metallicness = 0.0f;
-	diffuseSphere.model.materials[0].shaderParams.specBias = -0.04f;
-	diffuseSphere.addComponents(COMPONENT_TERRAIN_FOLLOW, COMPONENT_SIMPLE_WORLD_SPACE_MOVE_COMPONENT,
-	                            COMPONENT_INPUT, COMPONENT_INPUT_MAP, COMPONENT_PHYSICS);
-	diffuseSphere.terrainFollow.terrainToFollow = &terrain;
-	diffuseSphere.inputMap.forwardBtnMap = GLFW_KEY_UP;
-	diffuseSphere.inputMap.backwardBtnMap = GLFW_KEY_DOWN;
-	diffuseSphere.inputMap.leftBtnMap = GLFW_KEY_LEFT;
-	diffuseSphere.inputMap.rightBtnMap = GLFW_KEY_RIGHT;
-	diffuseSphere.inputMap.upBtnMap = GLFW_KEY_SPACE;
-	diffuseSphere.simpleWorldSpaceMovement.moveSpeed = 10;
-	diffuseSphere.terrainFollow.jumpEnabled = true;
-	diffuseSphere.terrainFollow.followerHalfHeight = 1.0f;
+	Entity& character = m_scene.createEntity(COMPONENT_ANIMATED_MODEL, COMPONENT_TRANSFORM);
+	character.transform.position += glm::vec3(5, 40, 0);
+	//diffuseSphere.model.materials[0].shader = &GLUtils::getDebugShader();
+	//diffuseSphere.model.materials[0].debugColor = glm::vec3(1, 1, 1);
+	//diffuseSphere.model.materials[0].shaderParams.glossiness = 0.0f;
+	//diffuseSphere.model.materials[0].shaderParams.metallicness = 0.0f;
+	//diffuseSphere.model.materials[0].shaderParams.specBias = -0.04f;
+	character.animatedModel.model = std::make_unique<ssAnimatedModel>("Assets/Models/theDude/theDude.DAE", "Assets/Models/theDude/theDude.png", GLUtils::getDebugShader().getGPUHandle());
+	character.addComponents(COMPONENT_TERRAIN_FOLLOW, COMPONENT_SIMPLE_WORLD_SPACE_MOVE_COMPONENT,
+	                        COMPONENT_INPUT, COMPONENT_INPUT_MAP, COMPONENT_PHYSICS);
+	character.terrainFollow.terrainToFollow = &terrain;
+	//character.transform.eulerAngles.x = -glm::half_pi<float>();
+	character.transform.scale *= 0.1f;
+	character.inputMap.forwardBtnMap = GLFW_KEY_UP;
+	character.inputMap.backwardBtnMap = GLFW_KEY_DOWN;
+	character.inputMap.leftBtnMap = GLFW_KEY_LEFT;
+	character.inputMap.rightBtnMap = GLFW_KEY_RIGHT;
+	character.inputMap.upBtnMap = GLFW_KEY_SPACE;
+	character.simpleWorldSpaceMovement.moveSpeed = 10;
+	character.terrainFollow.jumpEnabled = true;
+	character.terrainFollow.followerHalfHeight = 0.0f;
 
 	Entity& directionalLight = m_scene.createEntity(COMPONENT_DIRECTIONAL_LIGHT);
 	directionalLight.directionalLight.color = { 0.64, 0.39, 0.31 };

@@ -28,6 +28,7 @@ class Entity;
 struct ModelComponent;
 struct ParticleEmitterComponent;
 class Shader;
+struct AnimatedModelComponent;
 
 class RenderSystem : public System, public EntityEventListener {
 public:
@@ -76,6 +77,7 @@ public:
 
 private:
 	static void renderModel(const ModelComponent&, const glm::mat4& transform, const glm::mat4* view = nullptr, const glm::mat4* projection = nullptr, bool isShadowPass = false);
+	static void renderModel(const AnimatedModelComponent&, const glm::mat4& transform, const glm::mat4* view = nullptr, const glm::mat4* projection = nullptr, bool isShadowPass = false);
 
 	static void renderParticles(const ParticleEmitterComponent&, const glm::mat4 transform);
 

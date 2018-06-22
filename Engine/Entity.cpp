@@ -24,6 +24,7 @@ Entity::Entity(std::vector<EntityEventListener*>& eventListeners)
 	, sphereCollision{}
 	, directionalLight{}
 	, particleEmitter{}
+	, animatedModel{}
 {
 }
 
@@ -48,6 +49,7 @@ void Entity::destroy()
 	sphereCollision = {};
 	directionalLight = {};
 	particleEmitter = {};
+	animatedModel = {};
 }
 
 bool Entity::operator==(const Entity& rhs) const

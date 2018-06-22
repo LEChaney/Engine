@@ -165,6 +165,7 @@ xcopy "$(ProjectDir)ext\nanogui\lib\release_libs\nanogui.dll" "$(OutDir)" /dsy</
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="AnimatedModelComponent.cpp" />
     <ClCompile Include="Audio.cpp" />
     <ClCompile Include="BasicCameraMovementSystem.cpp" />
     <ClCompile Include="CameraComponent.cpp" />
@@ -198,6 +199,7 @@ xcopy "$(ProjectDir)ext\nanogui\lib\release_libs\nanogui.dll" "$(OutDir)" /dsy</
     <ClCompile Include="SimpleWorldSpaceMoveSystem.cpp" />
     <ClCompile Include="SphereCollisionComponent.cpp" />
     <ClCompile Include="SpringConstraint.cpp" />
+    <ClCompile Include="ssAnimatedModel.cpp" />
     <ClCompile Include="Terrain.cpp" />
     <ClCompile Include="TerrainFollowComponent.cpp" />
     <ClCompile Include="TerrainFollowSystem.cpp" />
@@ -215,6 +217,7 @@ xcopy "$(ProjectDir)ext\nanogui\lib\release_libs\nanogui.dll" "$(OutDir)" /dsy</
     <ClCompile Include="TransformComponent.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AnimatedModelComponent.h" />
     <ClInclude Include="Audio.h" />
     <ClInclude Include="BasicCameraMovementComponent.h" />
     <ClInclude Include="BasicCameraMovementSystem.h" />
@@ -233,6 +236,7 @@ xcopy "$(ProjectDir)ext\nanogui\lib\release_libs\nanogui.dll" "$(OutDir)" /dsy</
     <ClInclude Include="PyramidCollisionComponent.h" />
     <ClInclude Include="SphereCollisionComponent.h" />
     <ClInclude Include="SpringConstraint.h" />
+    <ClInclude Include="ssAnimatedModel.h" />
     <ClInclude Include="UBOBlockFormats.h" />
     <ClInclude Include="Clock.h" />
     <ClInclude Include="Entity.h" />
@@ -280,6 +284,7 @@ xcopy "$(ProjectDir)ext\nanogui\lib\release_libs\nanogui.dll" "$(OutDir)" /dsy</
     <ClInclude Include="VertexFormat.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Assets\Shaders\anim_vert.glsl" />
     <None Include="Assets\Shaders\debug_frag.glsl" />
     <None Include="Assets\Shaders\default_frag.glsl" />
     <None Include="Assets\Shaders\default_vert.glsl" />

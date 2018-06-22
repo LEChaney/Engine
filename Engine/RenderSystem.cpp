@@ -272,14 +272,14 @@ void RenderSystem::update()
 			Entity& entity = m_scene.getEntity(i);
 
 			// Filter renderable entities
-			const size_t kRenderableMask = COMPONENT_MODEL;
-			if (!entity.hasComponents(kRenderableMask))
-				continue;
-
-			bool hasTransform = entity.hasComponents(COMPONENT_TRANSFORM);
-
-			// Render current entity to shadow map
-			renderModel(entity.model, GLMUtils::transformToMat(entity.transform), &lightView, &lightProjection, true);
+			if (entity.hasComponents(COMPONENT_MODEL)) {
+				// Render current entity to shadow map
+				renderModel(entity.model, GLMUtils::transformToMat(entity.transform), &lightView, &lightProjection, true);
+			}
+			if (entity.hasComponents(COMPONENT_ANIMATED_MODEL)) {
+				// Render current entity to shadow map
+				renderModel(entity.animatedModel, GLMUtils::transformToMat(entity.transform), &lightView, &lightProjection, true);
+			}
 		}
 	}
 
@@ -306,16 +306,16 @@ void RenderSystem::update()
 
 		// Render Models
 		if (entity.hasComponents(COMPONENT_MODEL)) {
-			bool hasTransform = entity.hasComponents(COMPONENT_TRANSFORM);
-
 			// Render the current entities model
 			renderModel(entity.model, GLMUtils::transformToMat(entity.transform));
+		}
+		if (entity.hasComponents(COMPONENT_ANIMATED_MODEL)) {
+			// Render current entity to shadow map
+			renderModel(entity.animatedModel, GLMUtils::transformToMat(entity.transform));
 		}
 
 		// Render Particles
 		if (entity.hasComponents(COMPONENT_PARTICLE_EMITTER)) {
-			bool hasTransform = entity.hasComponents(COMPONENT_TRANSFORM);
-
 			// Render the current entities model
 			renderParticles(entity.particleEmitter, GLMUtils::transformToMat(entity.transform));
 		}
@@ -509,6 +509,44 @@ void RenderSystem::renderModel(const ModelComponent& model, const glm::mat4& tra
 		if (material.willDrawWireframe)
 			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	}
+}
+
+void RenderSystem::renderModel(const AnimatedModelComponent& animModel, const glm::mat4& transform, const glm::mat4* view, const glm::mat4* projection, bool isShadowPass)
+{
+	ModelComponent model;
+	
+	Mesh mesh;
+	mesh.VAO = animModel.model->getVAO();
+	mesh.numIndices = animModel.model->getNumIndices();
+	mesh.materialIndex = 0;
+
+	Material material;
+	material.shader = &GLUtils::getAnimShader();
+
+	model.meshes.push_back(mesh);
+	model.materials.push_back(material);
+
+	material.shader->use();
+
+	// get uniform location for transforms
+	std::array<GLuint, 100> boneLocations;
+	for (unsigned int i = 0; i < boneLocations.size(); i++) {
+		char name[128];
+		memset(name, 0, sizeof(name));
+		sprintf_s(name, "jointTransforms[%d]", i);
+		boneLocations[i] = material.shader->getUniformLocation(name);
+	}
+	
+	std::vector<Matrix4f> transforms; // = getJointTransforms();
+	
+	animModel.model->boneTransforms(Clock::getDeltaTime(), transforms);
+	
+	for (int i = 0; i < transforms.size(); i++) {
+		Matrix4f transform = transforms[i];
+		glUniformMatrix4fv(boneLocations[i], 1, GL_TRUE, (const GLfloat*)(transform));
+	}
+	
+	renderModel(model, transform, view, projection, isShadowPass);
 }
 
 void RenderSystem::renderParticles(const ParticleEmitterComponent& emitter, const glm::mat4 transform)

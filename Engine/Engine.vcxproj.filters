@@ -204,6 +204,12 @@
     <ClCompile Include="PhysicsSystem.cpp">
       <Filter>Source Files\Physics</Filter>
     </ClCompile>
+    <ClCompile Include="ssAnimatedModel.cpp">
+      <Filter>Source Files\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="AnimatedModelComponent.cpp">
+      <Filter>Source Files\Graphics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Scene.h">
@@ -395,6 +401,12 @@
     <ClInclude Include="ParticleSystem.h">
       <Filter>Header Files\Systems</Filter>
     </ClInclude>
+    <ClInclude Include="ssAnimatedModel.h">
+      <Filter>Header Files\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="AnimatedModelComponent.h">
+      <Filter>Source Files\Graphics</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Shaders\default_frag.glsl">
@@ -467,6 +479,9 @@
       <Filter>Assets\Shaders</Filter>
     </None>
     <None Include="Assets\Shaders\pp_toon_frag.glsl">
+      <Filter>Assets\Shaders</Filter>
+    </None>
+    <None Include="Assets\Shaders\anim_vert.glsl">
       <Filter>Assets\Shaders</Filter>
     </None>
   </ItemGroup>

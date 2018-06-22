@@ -41,6 +41,9 @@ namespace GLUtils {
 	// This function will build the shader if it is not already built.
 	const Shader& getDefaultShader();
 
+	// Returns a handler to the default shader for handling animated models.
+	const Shader& getAnimShader();
+
 	const Shader& getVertexColorShader();
 
 	// Returns a handler to a shader that can take a metallicness map.
